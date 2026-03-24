@@ -1,4 +1,4 @@
-# 📚 Projeto SABER — LPOO
+# 📚 Infinity Aura
 
 > Sistema desenvolvido para a disciplina de **Linguagem e Programação Orientada a Objetos** — IF Baiano.
 
