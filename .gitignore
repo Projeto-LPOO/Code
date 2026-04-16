@@ -42,3 +42,21 @@ database.properties
 
 # Linux
 *~
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+
+# Tomcat
+*.war
+*.ear
+
+# Smart Tomcat
+.SmartTomcat/
+
+# OS
+.DS_Store
+Thumbs.db
