@@ -1,3 +1,4 @@
+package availability;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -148,7 +149,7 @@ public class View {
                 System.out.print("Nova Hora de Fim (HH:mm): ");
                 String hrFim = scanner.nextLine();
 
-                controller.UpdateAvailability(id, dispExistente.getIdUserCommercial(), novoDia, hrInicio, hrFim);
+                controller.UpdateAvailability(id, dispExistente.getUser().getId(), novoDia, hrInicio, hrFim);
                 System.out.println("Atualização enviada com sucesso!");
 
             } catch (Exception e) {

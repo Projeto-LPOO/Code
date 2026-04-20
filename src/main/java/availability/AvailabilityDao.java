@@ -1,4 +1,4 @@
-
+package availability;
 
 
 import java.sql.PreparedStatement;

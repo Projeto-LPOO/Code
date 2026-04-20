@@ -1,3 +1,4 @@
+	package availability;
 
 	import java.time.DayOfWeek;
 	import java.time.LocalTime;
