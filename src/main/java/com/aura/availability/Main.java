@@ -1,4 +1,4 @@
-package availability;
+package com.aura.availability;
 
 public class Main {
     public static void main(String[] args) {
