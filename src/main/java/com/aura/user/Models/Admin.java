@@ -1,4 +1,4 @@
 package com.aura.user.Models;
 
-public class Admin {
+public class Admin extends User {
 }
