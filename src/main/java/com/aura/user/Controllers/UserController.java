@@ -1,17 +1,19 @@
 package com.aura.user.Controllers;
 
 
-
+import com.aura.shared.security.BCryptPasswordHasher;
+import com.aura.shared.security.PasswordHasher;
 import com.aura.user.Dao.UserDao;
 import com.aura.user.Models.CommercialUser;
+
 
 import java.util.List;
 
 public class UserController {
-    private UserDao userDao = new UserDao();
+    private final UserDao userDao = new UserDao();
 
-    public void registerUsuario(String name, int age, String address, String phone,
-                                String cpf, String email, String hashPassword)
+    public void registerUser(String name, int age, String address, String phone,
+                                String cpf, String email, String password)
     {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
@@ -24,7 +26,7 @@ public class UserController {
             throw new IllegalArgumentException("Email inválido.");
         }
 
-        if (hashPassword == null || hashPassword.length() < 6) {
+        if (password == null || password.length() < 6) {
             throw new IllegalArgumentException("A senha deve ter pelo menos 6 caracteres.");
         }
 
@@ -47,30 +49,36 @@ public class UserController {
             throw new IllegalArgumentException("Endereço é obrigatório.");
         }
 
+        PasswordHasher hasher = new BCryptPasswordHasher();
+        String hashPassword = hasher.hash(password);
+
         CommercialUser commercialUser = new CommercialUser
                 (name, age, address, phone, cpf, email, hashPassword);
 
         userDao.registerUser(commercialUser);
     }
 
-    public List<String> getCommercialUsersName()
+    public List<String> findAll()
     {
-        return userDao.getCommercialUsersName();
+        return userDao.findAll();
     }
-    public CommercialUser getById(int id)
+
+    public CommercialUser findById(int id) {return userDao.findById(id);}
+
+    public List<CommercialUser> findByName(String name)
     {
-        return userDao.getById(id);
+        return userDao.findByName(name);
     }
-    public List<CommercialUser> getByName(String name)
-    {
-        return userDao.getByName(name);
-    }
+
     public void deleteUser(int id)
     {
         userDao.deleteUser(id);
     }
+
     public void updateUser(CommercialUser commercialUser)
     {
         userDao.updateUser(commercialUser);
     }
+
+
 }
