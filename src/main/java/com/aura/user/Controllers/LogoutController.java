@@ -1,6 +1,5 @@
 package com.aura.user.Controllers;
 
-import com.aura.user.Dao.UserDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,8 +12,6 @@ import java.io.IOException;
 @WebServlet("/logout")
 public class LogoutController extends HttpServlet {
 
-    private UserDao userDao = new UserDao();
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -24,7 +21,7 @@ public class LogoutController extends HttpServlet {
         {
             session.invalidate();
         }
-        response.sendRedirect("login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 
 }
