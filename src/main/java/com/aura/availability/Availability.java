@@ -10,12 +10,11 @@ import com.aura.user.Models.CommercialUser;
 
 
 public class Availability extends BaseEntity{
-	protected int idAvailability;
-	protected CommercialUser user;
-	protected DayOfWeek dayWeek;
-	protected LocalTime hourStart;
-	protected LocalTime hourEnd;
-	protected boolean Active;
+	private CommercialUser user;
+	private DayOfWeek dayWeek;
+	private LocalTime hourStart;
+	private LocalTime hourEnd;
+	private boolean active;
 	
 	public Availability(CommercialUser user, DayOfWeek dayWeek, LocalTime hourStart, LocalTime hourEnd) {
 		this.user = user;
@@ -28,18 +27,10 @@ public class Availability extends BaseEntity{
 		
 	}
 	public boolean isActive() {
-	    return Active;
+	    return active;
 	}
 	public void setActive(boolean Available) {
-	    this.Active = Available;
-	}
-
-	public int getIdAvailability() {
-		return idAvailability;
-	}
-
-	public void setIdAvailability(int idAvailability) {
-		this.idAvailability = idAvailability;
+	    this.active = Available;
 	}
 	
 
