@@ -1,4 +1,4 @@
-package availability;
+package com.aura.availability;
 
 
 import java.sql.PreparedStatement;
@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aura.dbConfig.dbFactory;
 import com.aura.user.Models.CommercialUser;
 
 import java.sql.Connection;

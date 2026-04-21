@@ -1,4 +1,4 @@
-package availability;
+package com.aura.availability;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
