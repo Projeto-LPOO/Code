@@ -13,7 +13,9 @@
 <main>
     <section class="card-bv">
         <h1>Bem-vindo, ${user.name}</h1>
+        <a href="${pageContext.request.contextPath}/logout">Sair</a>
     </section>
+
 </main>
 </body>
 </html>
