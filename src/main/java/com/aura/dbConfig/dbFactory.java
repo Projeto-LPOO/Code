@@ -15,6 +15,9 @@ public class dbFactory {
 
     static {
         try {
+            // FORÇA carregamento do driver
+            Class.forName("org.postgresql.Driver");
+
             Properties props = new Properties();
             InputStream input = dbFactory.class
                     .getClassLoader()
@@ -30,6 +33,10 @@ public class dbFactory {
             config.setJdbcUrl(props.getProperty("db.url"));
             config.setUsername(props.getProperty("db.username"));
             config.setPassword(props.getProperty("db.password"));
+
+            // 🔹 ESSENCIAL pro Hikari
+            config.setDriverClassName("org.postgresql.Driver");
+
             config.setMaximumPoolSize(Integer.parseInt(props.getProperty("db.pool.maxSize")));
             config.setMinimumIdle(Integer.parseInt(props.getProperty("db.pool.minIdle")));
             config.setIdleTimeout(Long.parseLong(props.getProperty("db.pool.idleTimeout")));
@@ -42,7 +49,9 @@ public class dbFactory {
             dataSource = new HikariDataSource(config);
 
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao carregar database.properties: " + e.getMessage());
+            throw new RuntimeException("Erro ao carregar db.properties: " + e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Driver do PostgreSQL não encontrado!", e);
         }
     }
 
