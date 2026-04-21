@@ -1,19 +1,14 @@
 package com.aura.user.View;
 
-
-
 import com.aura.user.Controllers.UserController;
 import com.aura.user.Models.CommercialUser;
-
-import java.io.Console;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class UserView {
 
-    private Scanner scanner;
-    private UserController userController;
+    private final Scanner scanner;
+    private final UserController userController;
 
     public UserView()
     {
@@ -45,7 +40,7 @@ public class UserView {
                     break;
 
                 case 2:
-                    getAllCommercialUserNames();
+                    findAll();
                     break;
 
                 case 3:
@@ -56,7 +51,7 @@ public class UserView {
                     updateUser();
                     break;
                 case 5:
-                    getByName();
+                    findByName();
                 case 0:
                     break;
 
@@ -90,22 +85,22 @@ public class UserView {
         System.out.println("Senha:");
         String password = scanner.nextLine();
 
-        userController.registerUsuario(name, age, adress, phone, cpf, email, password);
+        userController.registerUser(name, age, adress, phone, cpf, email, password);
     }
-    private void getAllCommercialUserNames()
+    private void findAll()
     {
-        List<String> userNames = userController.getCommercialUsersName();
+        List<String> userNames = userController.findAll();
        for(String s : userNames)
        {
            System.out.println(s);
        }
     }
-    private void getByName()
+    private void findByName()
     {
         System.out.println("Buscar usuario: ");
         String name = scanner.nextLine();
 
-        List<CommercialUser> commercialUsers = userController.getByName(name);
+        List<CommercialUser> commercialUsers = userController.findByName(name);
         for(CommercialUser cmmu : commercialUsers)
         {
             System.out.println(cmmu.toString());
@@ -132,7 +127,7 @@ public class UserView {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        CommercialUser cmmu = userController.getById(id);
+        CommercialUser cmmu = userController.findById(id);
 
         System.out.println("Nome atual: " + cmmu.getName());
         System.out.println("Novo nome: ");
