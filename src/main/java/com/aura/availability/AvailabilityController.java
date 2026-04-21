@@ -86,7 +86,7 @@ import com.aura.user.Models.CommercialUser;
 			    }
 				List<Availability> existingSchedules = findAllAvailability(idUserCommercial);
 				for(Availability existing : existingSchedules) {
-					if (existing.getIdAvailability() != idAvailability) {
+					if (existing.getId() != idAvailability) {
 						if(existing.getDayWeek().equals(dayWeek)) {
 							LocalTime exStart = existing.getHourStart();
 							LocalTime exEnd = existing.getHourEnd();
@@ -101,7 +101,7 @@ import com.aura.user.Models.CommercialUser;
 		        user.setId(idUserCommercial);
 		        
 				Availability upAvailability = new Availability(user, dayWeek, hourStart, hourEnd);
-				upAvailability.setIdAvailability(idAvailability);
+				upAvailability.setId(idAvailability);
 				AvailabilityDao.updateAvailability(upAvailability);
 		        
 		    } catch (Exception e) {

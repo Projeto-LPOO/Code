@@ -63,7 +63,7 @@ public class AvailabilityDao {
 			stmt.setString(1, translateDayToDb(upAvailability.getDayWeek()));
 				stmt.setTime(2, Time.valueOf(upAvailability.getHourStart()));
 				stmt.setTime(3, Time.valueOf(upAvailability.getHourEnd()));
-				stmt.setInt(4, upAvailability.getIdAvailability());
+				stmt.setInt(4, upAvailability.getId());
 				stmt.setInt(5, upAvailability.getUser().getId());
 				
 				stmt.executeUpdate();
@@ -86,14 +86,14 @@ public class AvailabilityDao {
 			
 			if (rs.next()) {
 				dispo = new Availability();
-				dispo.setIdAvailability(idAvailability);
+				dispo.setId(idAvailability);
 				CommercialUser user = new CommercialUser();
 		        user.setId(rs.getInt("id_user_commercial"));
 		        dispo.setUser(user);
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("is_active"));
+				dispo.setActive(rs.getBoolean("active"));
 				
 				}
 			}catch(Exception e) {
@@ -115,14 +115,14 @@ public class AvailabilityDao {
 
 			while (rs.next()) {
 				Availability dispo = new Availability();
-				dispo.setIdAvailability(rs.getInt("id"));
+				dispo.setId(rs.getInt("id"));
 				CommercialUser user = new CommercialUser();
 		        user.setId(rs.getInt("id_user_commercial"));
 		        dispo.setUser(user);
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("is_active"));
+				dispo.setActive(rs.getBoolean("active"));
 				
 				lista.add(dispo);
 			}
@@ -133,7 +133,7 @@ public class AvailabilityDao {
 	}
 	
 	public void changeStatus(int idAvailability, boolean newStatus) {
-		String sql = "UPDATE availability SET is_active = ? WHERE id = ?";
+		String sql = "UPDATE availability SET active = ? WHERE id = ?";
 	    
 	    try(Connection connection = dbFactory.getConnection();
 	        PreparedStatement stmt = connection.prepareStatement(sql)) {

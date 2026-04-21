@@ -101,7 +101,7 @@ public class View {
             for (Availability disp : lista) {
             	String status = disp.isActive() ? "[ACTIVE]" : "[PAUSED]";
                 System.out.println("Status: " + status +
-                				   " | ID: " + disp.getIdAvailability() + 
+                				   " | ID: " + disp.getId() + 
                                    " | Dia: " + disp.getDayWeek() + 
                                    " | Das " + disp.getHourStart() + 
                                    " às " + disp.getHourEnd());
@@ -116,7 +116,7 @@ public class View {
 
         Availability disp = controller.getById(id);
 
-        if (disp != null && disp.getIdAvailability() != 0) {
+        if (disp != null && disp.getId() != 0) {
         	String status = disp.isActive() ? "[ACTIVE]" : "[PAUSED]";
             System.out.println("--- Disponibilidade Encontrada ---");
             System.out.println("User ID: " + disp.getUser().getId() +
@@ -136,7 +136,7 @@ public class View {
 
         Availability dispExistente = controller.getById(id);
 
-        if (dispExistente != null && dispExistente.getIdAvailability() != 0) {
+        if (dispExistente != null && dispExistente.getId() != 0) {
             try {
                 System.out.print("Novo Dia da Semana (1=Segunda a 7=Domingo): ");
                 int numDia = scanner.nextInt();
@@ -168,7 +168,7 @@ public class View {
 
         Availability disp = controller.getById(id);
 
-        if (disp != null && disp.getIdAvailability() != 0) {
+        if (disp != null && disp.getId() != 0) {
             boolean statusAtual = disp.isActive();
             boolean novoStatus = !statusAtual; 
 
