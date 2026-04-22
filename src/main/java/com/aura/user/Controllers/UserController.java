@@ -58,7 +58,7 @@ public class UserController {
         userDao.registerUser(commercialUser);
     }
 
-    public List<String> findAll()
+    public List<CommercialUser> findAll()
     {
         return userDao.findAll();
     }
