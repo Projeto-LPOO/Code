@@ -89,10 +89,10 @@ public class UserView {
     }
     private void findAll()
     {
-        List<String> userNames = userController.findAll();
-       for(String s : userNames)
+        List<CommercialUser> userNames = userController.findAll();
+       for(CommercialUser cmmu : userNames)
        {
-           System.out.println(s);
+           System.out.println(cmmu);
        }
     }
     private void findByName()
