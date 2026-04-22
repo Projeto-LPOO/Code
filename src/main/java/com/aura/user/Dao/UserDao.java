@@ -36,33 +36,43 @@ public class UserDao {
         }
     }
 
-    public List<String> findAll()
+    public List<CommercialUser> findAll()
     {
-        List<String> userNames = new ArrayList<>();
-        String sql = "select name from users where type = 'COMMERCIAL'::user_type";
+        List<CommercialUser> commercialUsers = new ArrayList<>();
+
+        String sql = "select * from users where type = 'COMMERCIAL'::user_type";
 
         try(Connection connection = dbFactory.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();)
+            ResultSet rs = stmt.executeQuery())
         {
             while (rs.next())
             {
-                userNames.add(rs.getString("name"));
+                CommercialUser commercialUser = new CommercialUser();
+                commercialUser.setId(rs.getInt("id"));
+                commercialUser.setName(rs.getString("name"));
+                commercialUser.setAge(rs.getInt("age"));
+                commercialUser.setAddress(rs.getString("address"));
+                commercialUser.setPhone(rs.getString("phone"));
+                commercialUser.setCpf(rs.getString("cpf"));
+                commercialUser.setEmail(rs.getString("email"));
+                commercialUser.setHashPassword(rs.getString("password"));
+
+                commercialUsers.add(commercialUser);
             }
-
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return userNames;
+        return commercialUsers;
     }
+
     public CommercialUser findById(int id)
     {
         CommercialUser commercialUser = null;
         String sql = "select * from users where id = ? and type = 'COMMERCIAL'::user_type";
 
         try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql);)
+            PreparedStatement stmt = connection.prepareStatement(sql))
         {
             stmt.setInt(1, id);
 
@@ -126,13 +136,30 @@ public class UserDao {
 
     public List<CommercialUser> findByName(String name)
     {
+        //agr buscar se o nome é igual ao nome do usuario ou nome do interesse, mas precisa atualizar o metodo
+        // de listar users pra aparecer os interests
         List<CommercialUser> users = new ArrayList<>();
-        String sql = "SELECT * FROM users WHERE name LIKE ? AND type = 'COMMERCIAL'::user_type";
+        String sql = "SELECT u.*\n" +
+                "FROM users u\n" +
+                "WHERE LOWER(u.name) LIKE LOWER(?)\n" +
+                "  AND u.type = 'COMMERCIAL'::user_type\n" +
+                "\n" +
+                "UNION\n" +
+                "\n" +
+                "SELECT u.*\n" +
+                "FROM users u\n" +
+                "JOIN user_interests ui ON ui.user_id = u.id\n" +
+                "JOIN interests i ON i.id = ui.interest_id\n" +
+                "WHERE LOWER(i.name) LIKE LOWER(?)\n" +
+                "  AND u.type = 'COMMERCIAL'::user_type;";
+
 
         try(Connection connection = dbFactory.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql))
         {
             stmt.setString(1, "%" + name + "%");
+            stmt.setString(2, "%" + name + "%");
+
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next())
@@ -186,7 +213,7 @@ public class UserDao {
         String sql = "UPDATE users SET name = ?, address = ?, phone = ? WHERE id = ?";
 
         try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql);)
+            PreparedStatement stmt = connection.prepareStatement(sql))
         {
             stmt.setString(1, commercialUser.getName());
             stmt.setString(2, commercialUser.getAddress());
