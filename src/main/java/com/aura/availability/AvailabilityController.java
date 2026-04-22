@@ -70,43 +70,40 @@ import com.aura.user.Models.CommercialUser;
 		}
 		
 		public void UpdateAvailability(int idAvailability, int idUserCommercial, DayOfWeek dayWeek, String textStart, String textEnd) {
-			try {
-				LocalTime hourStart = formattedHour(textStart);
-				LocalTime hourEnd = formattedHour(textEnd);
-				
-				if(hourStart == null) {
-					throw new IllegalArgumentException("Hora de inicio inválida.");
-				}
-				if(hourEnd == null){
-					throw new IllegalArgumentException("Hora de fim inválido.");
-				}
-				
-				if(hourStart.isAfter(hourEnd) || hourStart.equals(hourEnd)) {
-			        throw new IllegalArgumentException("Erro A hora nao pode ser menor ou igual hora do termino");
-			    }
-				List<Availability> existingSchedules = findAllAvailability(idUserCommercial);
-				for(Availability existing : existingSchedules) {
-					if (existing.getId() != idAvailability) {
-						if(existing.getDayWeek().equals(dayWeek)) {
-							LocalTime exStart = existing.getHourStart();
-							LocalTime exEnd = existing.getHourEnd();
-							if(hourStart.isBefore(exEnd) && hourEnd.isAfter(exStart)) {
-								throw new IllegalArgumentException("Conflito de horário! Esse Usuario já tem um compromisso das " 
-		                                + exStart + " às " + exEnd + " na " + dayWeek);
-							}
+			LocalTime hourStart = formattedHour(textStart);
+			LocalTime hourEnd = formattedHour(textEnd);
+			
+			if(hourStart == null) {
+				throw new IllegalArgumentException("Hora de inicio inválida.");
+			}
+			if(hourEnd == null){
+				throw new IllegalArgumentException("Hora de fim inválido.");
+			}
+			
+			if(hourStart.isAfter(hourEnd) || hourStart.equals(hourEnd)) {
+		        throw new IllegalArgumentException("Erro A hora nao pode ser menor ou igual hora do termino");
+		    }
+			List<Availability> existingSchedules = findAllAvailability(idUserCommercial);
+			for(Availability existing : existingSchedules) {
+				if (existing.getId() != idAvailability) {
+					if(existing.getDayWeek().equals(dayWeek)) {
+						LocalTime exStart = existing.getHourStart();
+						LocalTime exEnd = existing.getHourEnd();
+						if(hourStart.isBefore(exEnd) && hourEnd.isAfter(exStart)) {
+							throw new IllegalArgumentException("Conflito de horário! Esse Usuario já tem um compromisso das " 
+	                                + exStart + " às " + exEnd + " na " + dayWeek);
 						}
 					}
 				}
-				CommercialUser user = new CommercialUser();
-		        user.setId(idUserCommercial);
+			}
+			CommercialUser user = new CommercialUser();
+	        user.setId(idUserCommercial);
+	        
+			Availability upAvailability = new Availability(user, dayWeek, hourStart, hourEnd);
+			upAvailability.setId(idAvailability);
+			AvailabilityDao.updateAvailability(upAvailability);
 		        
-				Availability upAvailability = new Availability(user, dayWeek, hourStart, hourEnd);
-				upAvailability.setId(idAvailability);
-				AvailabilityDao.updateAvailability(upAvailability);
-		        
-		    } catch (Exception e) {
-		        System.out.println("Erro no Controller ao tentar atualizar disponibilidade: " + e.getMessage());
-		    }
+		    
 		}
 		
 		public Availability getById(int idDisponibility) {
