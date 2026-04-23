@@ -50,19 +50,19 @@ public class MeetingDao {
                     throw new RuntimeException(e);
                 }
 
-                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsLearner))
-                {
-                    pstmt.setInt(1, meetingid);
-                    pstmt.setInt(2, meeting.getLearner().getId());
-                    pstmt.executeUpdate();
-                }
-
-                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsTeacher))
-                {
-                    pstmt.setInt(1, meetingid);
-                    pstmt.setInt(2, meeting.getTeacher().getId());
-                    pstmt.executeUpdate();
-                }
+//                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsLearner))
+//                {
+//                    pstmt.setInt(1, meetingid);
+//                    pstmt.setInt(2, meeting.getLearner().getId());
+//                    pstmt.executeUpdate();
+//                }
+//
+//                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsTeacher))
+//                {
+//                    pstmt.setInt(1, meetingid);
+//                    pstmt.setInt(2, meeting.getTeacher().getId());
+//                    pstmt.executeUpdate();
+//                }
 
                 if (meeting instanceof FaceToFaceMeeting ftf)
                 {
@@ -100,7 +100,7 @@ public class MeetingDao {
 
     public void updateLocationId(Connection conn, int meetingId, int locationId)
     {
-        String sql = "UPDATE meetings SET locationId = ? WHERE id = ?";
+        String sql = "UPDATE meetings SET location_id = ? WHERE id = ?";
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, locationId);
             pstmt.setInt(2, meetingId);
@@ -142,7 +142,7 @@ public class MeetingDao {
         String sql       = "SELECT * FROM meetings WHERE id = ?";
         String learnerSql = "SELECT * FROM meeting_participants WHERE meeting_id = ? AND role = 'LEARNER'";
         String teacherSql = "SELECT * FROM meeting_participants WHERE meeting_id = ? AND role = 'TEACHER'";
-        String locationSql = "SELECT * FROM location WHERE id = (SELECT location_id FROM meetings WHERE id = ?)";
+        String locationSql = "SELECT * FROM locations WHERE id = (SELECT location_id FROM meetings WHERE id = ?)";
 
         try(Connection conn = dbFactory.getConnection();
             PreparedStatement pstmt   = conn.prepareStatement(sql);

@@ -5,7 +5,11 @@ import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Location;
 import com.aura.meeting.model.Meeting;
 import com.aura.meeting.model.OnlineMeeting;
+import com.aura.user.Models.CommercialUser;
+import com.aura.user.Models.Teacher;
+import com.aura.user.Controllers.*;
 
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -80,6 +84,7 @@ public class MeetingView {
         String dataStr = scanner.nextLine();
         LocalDateTime dataHora = parseDateTime(dataStr);
         if (dataHora == null) return;
+
 
         Meeting meeting;
 
