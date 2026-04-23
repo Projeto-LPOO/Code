@@ -81,7 +81,6 @@ public class MeetingView {
         LocalDateTime dataHora = parseDateTime(dataStr);
         if (dataHora == null) return;
 
-        // Learner e Teacher ficam null até o fluxo de usuários estar completo
         Meeting meeting;
 
         if (tipo == 2) {
@@ -270,7 +269,7 @@ public class MeetingView {
             } catch (IllegalArgumentException e) {
                 System.out.println("Erro: " + e.getMessage());
             } catch (RuntimeException e) {
-                System.out.println("Erro ao deletar meeting.");
+                System.out.println("Erro ao deletar meeting." + e.getMessage());
             }
         } else {
             System.out.println("Operação cancelada.");

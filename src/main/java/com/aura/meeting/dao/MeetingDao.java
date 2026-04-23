@@ -113,7 +113,7 @@ public class MeetingDao {
     public List<String> getMeetings()
     {
         List<String> meetings = new ArrayList<>();
-        String sql = "SELECT id, status, meeting_type, category FROM meetings";
+        String sql = "SELECT id, status, meeting_type, category_id FROM meetings";
         try(Connection conn = dbFactory.getConnection();
             PreparedStatement pstm = conn.prepareStatement(sql);
             ResultSet rs = pstm.executeQuery())
@@ -125,7 +125,7 @@ public class MeetingDao {
                         rs.getString("id") + "| " +
                         rs.getString("status") + "| " +
                         rs.getString("meeting_type") + "| " +
-                        rs.getString("category");
+                        rs.getString("category_id");
 
                 meetings.add(register);
             }
@@ -263,7 +263,7 @@ public class MeetingDao {
     public void deleteMeeting(int meetingId) {
 
         String deleteParticipants = "DELETE FROM meeting_participants WHERE meeting_id = ?";
-        String deleteLocation = "DELETE FROM location WHERE id = (SELECT location_id FROM meetings WHERE id = ?)";
+        String deleteLocation = "DELETE FROM locations WHERE id = (SELECT location_id FROM meetings WHERE id = ?)";
         String deleteMeeting = "DELETE FROM meetings WHERE id = ?";
 
         try (Connection conn = dbFactory.getConnection()) {
@@ -291,12 +291,12 @@ public class MeetingDao {
 
             } catch (SQLException e) {
                 conn.rollback();
-                System.out.println("falha ao deletar meeting");
+                System.out.println("falha ao deletar meeting" + e.getMessage());
                 throw new RuntimeException(e);
             }
 
         } catch (SQLException e) {
-            System.out.println("falha na conexao com o banco");
+            System.out.println("falha na conexao com o banco" + e.getMessage());
             throw new RuntimeException(e);
         }
     }
