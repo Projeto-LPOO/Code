@@ -23,12 +23,12 @@ public class MeetingController {
         if (meeting.getDayTime().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("A data do meeting não pode ser no passado.");
         }
-//        if (meeting.getLearner() == null) {
-//            throw new IllegalArgumentException("O meeting precisa de um Learner.");
-//        }
-//        if (meeting.getTeacher() == null) {
-//            throw new IllegalArgumentException("O meeting precisa de um Teacher.");
-//        }
+        if (meeting.getLearner() == null) {
+            throw new IllegalArgumentException("O meeting precisa de um Learner.");
+        }
+        if (meeting.getTeacher() == null) {
+            throw new IllegalArgumentException("O meeting precisa de um Teacher.");
+        }
         if (meeting instanceof FaceToFaceMeeting ftf) {
             if (ftf.getLocation() == null) {
                 throw new IllegalArgumentException("Meeting presencial precisa de uma localização.");

@@ -50,19 +50,19 @@ public class MeetingDao {
                     throw new RuntimeException(e);
                 }
 
-//                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsLearner))
-//                {
-//                    pstmt.setInt(1, meetingid);
-//                    pstmt.setInt(2, meeting.getLearner().getId());
-//                    pstmt.executeUpdate();
-//                }
-//
-//                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsTeacher))
-//                {
-//                    pstmt.setInt(1, meetingid);
-//                    pstmt.setInt(2, meeting.getTeacher().getId());
-//                    pstmt.executeUpdate();
-//                }
+                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsLearner))
+                {
+                    pstmt.setInt(1, meetingid);
+                    pstmt.setInt(2, meeting.getLearner().getId());
+                    pstmt.executeUpdate();
+                }
+
+                try(PreparedStatement pstmt = conn.prepareStatement(tabelaMeetingParticipantsTeacher))
+                {
+                    pstmt.setInt(1, meetingid);
+                    pstmt.setInt(2, meeting.getTeacher().getId());
+                    pstmt.executeUpdate();
+                }
 
                 if (meeting instanceof FaceToFaceMeeting ftf)
                 {
