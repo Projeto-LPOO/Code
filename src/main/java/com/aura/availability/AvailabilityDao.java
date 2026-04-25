@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aura.dbConfig.dbFactory;
-import com.aura.user.Models.CommercialUser;
+import com.aura.user.models.CommercialUser;
 
 import java.sql.Connection;
 
 public class AvailabilityDao {
 	public void registerAvailability(Availability myAvailability) {
-		String sql = "INSERT INTO availability (id_user_commercial, day_of_week, hour_start, hour_end) VALUES (?, ?::day_of_week, ?, ?)";
+		String sql = "INSERT INTO availability (user_commercial_id, day_of_week, hour_start, hour_end, available) VALUES (?, ?::day_of_week, ?, ?, ?)";
 		
 		 try(Connection connection = dbFactory.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)){
@@ -24,6 +24,7 @@ public class AvailabilityDao {
 		            stmt.setString(2, translateDayToDb(myAvailability.getDayWeek()));
 		            stmt.setTime(3, java.sql.Time.valueOf(myAvailability.getHourStart()));
 		            stmt.setTime(4, java.sql.Time.valueOf(myAvailability.getHourEnd()));
+					stmt.setBoolean(5, myAvailability.isActive());
 		            stmt.executeUpdate();
 
 		        }catch (Exception e) {
@@ -55,7 +56,7 @@ public class AvailabilityDao {
 	}
 	
 	public void updateAvailability(Availability upAvailability) {
-		String sql = "UPDATE availability SET day_of_week = ?::day_of_week, hour_start = ?, hour_end = ? WHERE id = ? AND id_user_commercial = ?";
+		String sql = "UPDATE availability SET day_of_week = ?::day_of_week, hour_start = ?, hour_end = ? WHERE id = ? AND user_commercial_id = ?";
 		
 		try(Connection connection = dbFactory.getConnection();
 			PreparedStatement stmt = connection.prepareStatement(sql)){
@@ -88,12 +89,12 @@ public class AvailabilityDao {
 				dispo = new Availability();
 				dispo.setId(idAvailability);
 				CommercialUser user = new CommercialUser();
-		        user.setId(rs.getInt("id_user_commercial"));
+		        user.setId(rs.getInt("user_commercial_id"));
 		        dispo.setUser(user);
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("active"));
+				dispo.setActive(rs.getBoolean("available"));
 				
 				}
 			}catch(Exception e) {
@@ -101,29 +102,30 @@ public class AvailabilityDao {
 			}
 			return dispo;
 	}
-	
+
 	public List<Availability> findAllAvailability(int idUserCommercial){
-		String sql = "SELECT * FROM availability WHERE id_user_commercial = ?";
+
+		String sql = "SELECT * FROM availability WHERE user_commercial_id = ?";
 		List<Availability> lista = new ArrayList<>();
-		
+
 		try(Connection connection = dbFactory.getConnection();
-			PreparedStatement stmt = connection.prepareStatement(sql)){
-			
+		    PreparedStatement stmt = connection.prepareStatement(sql)){
+
 			stmt.setInt(1, idUserCommercial);
 			ResultSet rs = stmt.executeQuery();
-			
+
 
 			while (rs.next()) {
 				Availability dispo = new Availability();
 				dispo.setId(rs.getInt("id"));
 				CommercialUser user = new CommercialUser();
-		        user.setId(rs.getInt("id_user_commercial"));
-		        dispo.setUser(user);
+				user.setId(rs.getInt("user_commercial_id"));
+				dispo.setUser(user);
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("active"));
-				
+				dispo.setActive(rs.getBoolean("available"));
+
 				lista.add(dispo);
 			}
 		} catch(Exception e) {
@@ -133,7 +135,7 @@ public class AvailabilityDao {
 	}
 	
 	public void changeStatus(int idAvailability, boolean newStatus) {
-		String sql = "UPDATE availability SET active = ? WHERE id = ?";
+		String sql = "UPDATE availability SET available = ? WHERE id = ?";
 	    
 	    try(Connection connection = dbFactory.getConnection();
 	        PreparedStatement stmt = connection.prepareStatement(sql)) {

@@ -20,17 +20,17 @@ public class AuthFilter implements Filter {
 
         HttpSession session = request.getSession(false);
 
-        if( session == null || session.getAttribute("user") == null)
-        {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/");
             return;
         }
-        // Impede cache de páginas protegidas
+        
+
+        // Impede cache
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Expires", "0");
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
-
 }

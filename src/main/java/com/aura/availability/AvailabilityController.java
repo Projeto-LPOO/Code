@@ -6,7 +6,7 @@
 	import java.time.format.DateTimeParseException;
 	import java.util.List;
 
-import com.aura.user.Models.CommercialUser;
+import com.aura.user.models.CommercialUser;
 
 	
 	public class AvailabilityController {
