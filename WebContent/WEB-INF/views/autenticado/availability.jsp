@@ -6,8 +6,8 @@
 <html>
 <head>
     <title>Aura - Disponibilidade</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/autenticado/shared/style.css">
-    <link rel="stylesheet" href="/assets/home.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/shared/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/home.css">
 
     <script>
         function showNovoForm() {

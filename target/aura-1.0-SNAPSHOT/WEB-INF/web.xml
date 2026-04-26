@@ -7,13 +7,17 @@
 
     <display-name>Aura</display-name>
 
-    <welcome-file-list>
-        <welcome-file>login.jsp</welcome-file>
-    </welcome-file-list>
-
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
 
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/assets/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>login</welcome-file>
+    </welcome-file-list>
+
 </web-app>
-        EOF
