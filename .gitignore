@@ -55,7 +55,7 @@ release.properties
 *.ear
 
 # Smart Tomcat
-.SmartTomcat/
+.smarttomcat/
 
 # OS
 .DS_Store
