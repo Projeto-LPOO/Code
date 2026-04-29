@@ -1,0 +1,64 @@
+services:
+
+  # PostgreSQL
+  db:
+    image: postgres:18-alpine
+    container_name: aura-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_HOST_PORT}:5432"
+    volumes:
+      - aura-pgdata:/var/lib/postgresql
+      - ./aura_dump.sql:/docker-entrypoint-initdb.d/aura_dump.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - aura-network
+
+  # Aplicação Java/Tomcat
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CONTEXT_PATH: aura
+    container_name: aura-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST:               db
+      POSTGRES_PORT:               5432
+      POSTGRES_DB:                 ${POSTGRES_DB}
+      POSTGRES_USER:               ${POSTGRES_USER}
+      POSTGRES_PASSWORD:           ${POSTGRES_PASSWORD}
+      DB_POOL_MAX_SIZE:            ${DB_POOL_MAX_SIZE}
+      DB_POOL_MIN_IDLE:            ${DB_POOL_MIN_IDLE}
+      DB_POOL_IDLE_TIMEOUT:        ${DB_POOL_IDLE_TIMEOUT}
+      DB_POOL_CONNECTION_TIMEOUT:  ${DB_POOL_CONNECTION_TIMEOUT}
+      TOMCAT_CONTEXT_PATH:         ${TOMCAT_CONTEXT_PATH}
+      CATALINA_OPTS:               ${JAVA_OPTS}
+    ports:
+      - "${APP_HOST_PORT}:8080"
+    networks:
+      - aura-network
+
+# Volumes
+volumes:
+  aura-pgdata:
+    name: aura-pgdata
+
+# Rede interna
+networks:
+  aura-network:
+    name: aura-network
+    driver: bridge
