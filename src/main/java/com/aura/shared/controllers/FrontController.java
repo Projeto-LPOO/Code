@@ -1,5 +1,6 @@
 package com.aura.shared.controllers;
 
+import com.aura.availability.AvailabilityServlet;
 import com.aura.interest.controllers.InterestController;
 import com.aura.user.controllers.UsersController;
 import jakarta.servlet.ServletException;
@@ -24,6 +25,8 @@ public class FrontController extends HttpServlet {
         routes.put("/home", new HomeController());
         routes.put("/users", new UsersController());
         routes.put("/interest", new InterestController());
+        routes.put("/availability", new AvailabilityServlet());
+
 
         for (HttpServlet controller : routes.values()) {
             controller.init(getServletConfig()); //inicia manualmente cada controller
@@ -51,15 +54,14 @@ public class FrontController extends HttpServlet {
         controller.service(req, resp);
     }
     private String extractPath(HttpServletRequest req) {
-        String pathInfo = req.getPathInfo(); //pega a url
-        System.out.println("pathInfo: " + pathInfo);
-        if (pathInfo == null || pathInfo.isEmpty()) return "/"; //se não tiver nada retorna a raiz /
+        String pathInfo = req.getPathInfo(); // ex: /interest/learn
 
-        int secondSlash = pathInfo.indexOf('/', 1); //procura segunda barra na url tipo /user/create
+        if (pathInfo == null || pathInfo.equals("/")) {
+            return "/";
+        }
 
-        //faz tratamento para indepentende da ação sempre retorne para o mesmo controller
-        return (secondSlash > 0)
-                ? pathInfo.substring(0, secondSlash)
-                : pathInfo;
+        String[] parts = pathInfo.split("/");
+
+        return parts.length > 1 ? "/" + parts[1] : "/";
     }
 }

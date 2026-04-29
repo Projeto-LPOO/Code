@@ -11,10 +11,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/autenticado/AvailabilityServlet")
 public class AvailabilityServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private AvailabilityController controller = new AvailabilityController();
+    private static final String VIEW_BASE = "/WEB-INF/views/autenticado/";
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
@@ -42,7 +42,8 @@ public class AvailabilityServlet extends HttpServlet {
         }
 
         request.setAttribute("horarios", horarios);
-        request.getRequestDispatcher("availability.jsp").forward(request, response);
+        forward(request, response, "availability.jsp");
+       
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -76,5 +77,11 @@ public class AvailabilityServlet extends HttpServlet {
         }
 
         doGet(request, response);
+    }
+    private void forward(HttpServletRequest req, HttpServletResponse resp, String view)
+            throws ServletException, IOException {
+
+        req.getRequestDispatcher(VIEW_BASE + view)
+                .forward(req, resp);
     }
 }

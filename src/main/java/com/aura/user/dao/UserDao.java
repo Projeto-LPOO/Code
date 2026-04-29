@@ -14,13 +14,13 @@ import java.util.List;
 
 public class UserDao {
 
-    public void registerUser(CommercialUser usuario)
+    public CommercialUser registerUser(CommercialUser usuario)
     {
         String sql = "INSERT INTO users(name, age, address, phone, cpf, email, password, type, updated_at) " +
-                      "VALUES (?, ?, ?, ?, ?, ?, ?, 'COMMERCIAL'::user_type, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, 'COMMERCIAL'::user_type, ?) RETURNING id";
 
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql))
         {
             stmt.setString(1, usuario.getName());
             stmt.setInt(2, usuario.getAge());
@@ -30,12 +30,20 @@ public class UserDao {
             stmt.setString(6, usuario.getEmail());
             stmt.setString(7, usuario.getHashPassword());
             stmt.setTimestamp(8, usuario.getUpdatedAt());
-            stmt.executeUpdate();
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                usuario.setId(rs.getInt("id"));
+            }
+
+            return usuario;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 
     public List<CommercialUser> findAll()
     {

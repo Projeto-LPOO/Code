@@ -16,7 +16,7 @@
         <ul>
             <li><a href="${pageContext.request.contextPath}/autenticado/home">Dashboard</a></li>
             <li><a href="${pageContext.request.contextPath}/autenticado/users">Lista de usuários</a></li>
-            <li><a href="${pageContext.request.contextPath}/autenticado/agenda">Agenda</a></li>
+            <li><a href="${pageContext.request.contextPath}/autenticado/availability">Agenda</a></li>
             <li><a href="${pageContext.request.contextPath}/logout">Sair</a></li>
         </ul>
     </nav>

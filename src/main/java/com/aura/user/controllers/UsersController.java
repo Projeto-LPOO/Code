@@ -1,5 +1,7 @@
 package com.aura.user.controllers;
 
+import com.aura.shared.security.BCryptPasswordHasher;
+import com.aura.shared.security.PasswordHasher;
 import com.aura.user.dao.UserDao;
 import com.aura.user.models.CommercialUser;
 import com.google.gson.*;
@@ -35,6 +37,8 @@ public class UsersController extends HttpServlet {
             default -> listAll(req, resp);
         }
     }
+
+
 
     private void listAll(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
