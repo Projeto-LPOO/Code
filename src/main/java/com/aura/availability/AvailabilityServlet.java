@@ -4,17 +4,15 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.util.List;
 
+import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class AvailabilityServlet extends HttpServlet {
+public class AvailabilityServlet extends BaseController {
 	private static final long serialVersionUID = 1L;
 	private AvailabilityController controller = new AvailabilityController();
-    private static final String VIEW_BASE = "/WEB-INF/views/autenticado/";
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
@@ -42,8 +40,8 @@ public class AvailabilityServlet extends HttpServlet {
         }
 
         request.setAttribute("horarios", horarios);
-        forward(request, response, "availability.jsp");
-       
+        forward(request, response, "/autenticado/availability.jsp");
+
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -78,10 +76,5 @@ public class AvailabilityServlet extends HttpServlet {
 
         doGet(request, response);
     }
-    private void forward(HttpServletRequest req, HttpServletResponse resp, String view)
-            throws ServletException, IOException {
 
-        req.getRequestDispatcher(VIEW_BASE + view)
-                .forward(req, resp);
-    }
 }

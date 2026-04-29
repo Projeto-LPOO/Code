@@ -7,6 +7,7 @@ import com.aura.interest.dao.UserInterestDao;
 import com.aura.interest.model.Interest;
 
 import com.aura.interest.model.InterestType;
+import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
 import jakarta.servlet.ServletException;
 
@@ -15,13 +16,11 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.*;
 
-public class InterestController extends HttpServlet {
+public class InterestController extends BaseController {
 
     private final InterestDao interestDao = new InterestDao();
     private final CategoryDao categoryDAO = new CategoryDao();
     private final UserInterestDao userInterestDao = new UserInterestDao();
-    private static final String VIEW_BASE = "/WEB-INF/views/autenticado/";
-
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,9 +31,9 @@ public class InterestController extends HttpServlet {
         loadInterests(request);
 
         switch (action) {
-            case "skills" -> forward(request, response, "skillList.jsp");
-            case "learn" -> forward(request, response, "learnList.jsp");
-            default -> forward(request, response, "learnList.jsp");
+            case "skills" -> forward(request, response, "/autenticado/skillList.jsp");
+            case "learn" -> forward(request, response, "/autenticado/learnList.jsp");
+            default -> forward(request, response, "/autenticado/learnList.jsp");
         }
     }
 
@@ -123,28 +122,4 @@ public class InterestController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/autenticado/home");
     }
 
-    private void showSkills(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        forward(request, response, "skillList.jsp");
-    }
-    private String getAction(HttpServletRequest req)
-    {
-        String uri = req.getRequestURI();
-        String context = req.getContextPath();
-
-        String path = uri.substring(context.length() + "/autenticado/interest".length());
-
-        if (path == null || path.isBlank() || path.equals("/")) {
-            return "learn";
-        }
-
-        return path.substring(1).toLowerCase();
-    }
-    private void forward(HttpServletRequest req, HttpServletResponse resp, String view)
-            throws ServletException, IOException {
-
-        req.getRequestDispatcher(VIEW_BASE + view)
-                .forward(req, resp);
-    }
 }

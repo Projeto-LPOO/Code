@@ -1,5 +1,6 @@
 package com.aura.user.controllers;
 
+import com.aura.shared.controllers.BaseController;
 import com.aura.shared.security.BCryptPasswordHasher;
 import com.aura.shared.security.PasswordHasher;
 import com.aura.user.dao.UserDao;
@@ -14,11 +15,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class UsersController extends HttpServlet {
+public class UsersController extends BaseController {
 
     private final UserDao userDao = new UserDao();
-
-    private static final String VIEW_BASE = "/WEB-INF/views/autenticado/";
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class,
@@ -37,8 +36,6 @@ public class UsersController extends HttpServlet {
             default -> listAll(req, resp);
         }
     }
-
-
 
     private void listAll(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -62,25 +59,5 @@ public class UsersController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         resp.getWriter().write(gson.toJson(users));
-    }
-
-    private String getAction(HttpServletRequest req) {
-        String pathInfo = req.getPathInfo();
-
-        if (pathInfo == null || pathInfo.equals("/") || pathInfo.isBlank()) {
-            return "/";
-        }
-
-        String cleanPath = pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo;
-        String[] parts = cleanPath.split("/");
-
-        return parts.length > 1 ? parts[1].toLowerCase() : "/";
-    }
-
-    private void forward(HttpServletRequest req, HttpServletResponse resp, String view)
-            throws ServletException, IOException {
-
-        req.getRequestDispatcher(VIEW_BASE + view)
-                .forward(req, resp);
     }
 }
