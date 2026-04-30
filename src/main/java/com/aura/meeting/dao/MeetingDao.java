@@ -5,8 +5,8 @@ import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Location;
 import com.aura.meeting.model.Meeting;
 import com.aura.meeting.model.OnlineMeeting;
-import com.aura.user.Models.Learner;
-import com.aura.user.Models.Teacher;
+import com.aura.user.models.Learner;
+import com.aura.user.models.Teacher;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -2,8 +2,8 @@ package com.aura.meeting.model;
 
 import com.aura.category.Category;
 import com.aura.shared.BaseEntity;
-import com.aura.user.Models.Learner;
-import com.aura.user.Models.Teacher;
+import com.aura.user.models.Learner;
+import com.aura.user.models.Teacher;
 
 import java.time.LocalDateTime;
 

@@ -43,7 +43,6 @@ public class InterestController extends BaseController {
 
         String action = getAction(request);
 
-
         switch (action) {
             case "learn" -> registerUserLearn(request, response);
             case "skills" -> registerUserSkills(request, response);

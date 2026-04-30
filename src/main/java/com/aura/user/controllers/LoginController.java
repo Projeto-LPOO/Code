@@ -16,7 +16,7 @@ import java.io.IOException;
 @WebServlet("/login")
 public class LoginController extends HttpServlet{
 
-    private UserDao userDao = new UserDao();
+    private final UserDao userDao = new UserDao();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

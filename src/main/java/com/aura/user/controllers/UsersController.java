@@ -1,13 +1,10 @@
 package com.aura.user.controllers;
 
 import com.aura.shared.controllers.BaseController;
-import com.aura.shared.security.BCryptPasswordHasher;
-import com.aura.shared.security.PasswordHasher;
 import com.aura.user.dao.UserDao;
 import com.aura.user.models.CommercialUser;
 import com.google.gson.*;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -26,38 +23,38 @@ public class UsersController extends BaseController {
             .create();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String action = getAction(req);
+        String action = getAction(request);
 
         switch (action) {
-            case "search" -> search(req, resp);
-            default -> listAll(req, resp);
+            case "search" -> search(request, response);
+            default -> listAll(request, response);
         }
     }
 
-    private void listAll(HttpServletRequest req, HttpServletResponse resp)
+    private void listAll(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         List<CommercialUser> users = userDao.findAll();
 
-        req.setAttribute("commercialUsers", users);
+        request.setAttribute("commercialUsers", users);
 
-        forward(req, resp, "userList.jsp");
+        forward(request, response, "autenticado/userList.jsp");
     }
 
-    private void search(HttpServletRequest req, HttpServletResponse resp)
+    private void search(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        String name = req.getParameter("name");
+        String name = request.getParameter("name");
         if (name == null) name = "";
 
         List<CommercialUser> users = userDao.findByName(name);
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
-        resp.getWriter().write(gson.toJson(users));
+        response.getWriter().write(gson.toJson(users));
     }
 }

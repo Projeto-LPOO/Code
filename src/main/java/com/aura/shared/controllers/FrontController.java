@@ -1,6 +1,5 @@
 package com.aura.shared.controllers;
 
-import com.aura.availability.AvailabilityServlet;
 import com.aura.interest.controllers.InterestController;
 import com.aura.user.controllers.UsersController;
 import jakarta.servlet.ServletException;
@@ -25,33 +24,31 @@ public class FrontController extends HttpServlet {
         routes.put("/home", new HomeController());
         routes.put("/users", new UsersController());
         routes.put("/interest", new InterestController());
-        routes.put("/availability", new AvailabilityServlet());
-
 
         for (HttpServlet controller : routes.values()) {
             controller.init(getServletConfig()); //inicia manualmente cada controller
         }
     }
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String path = extractPath(req);
+        String path = extractPath(request);
 
 
         if (path.equals("/")) {
-            resp.sendRedirect(req.getContextPath() + "/autenticado/home");
+            response.sendRedirect(request.getContextPath() + "/autenticado/home");
             return;
         }
 
         HttpServlet controller = routes.get(path);
 
         if (controller == null) {
-            resp.sendError(404);
+            response.sendError(404);
             return;
         }
 
-        controller.service(req, resp);
+        controller.service(request, response);
     }
     private String extractPath(HttpServletRequest req) {
         String pathInfo = req.getPathInfo(); // ex: /interest/learn
