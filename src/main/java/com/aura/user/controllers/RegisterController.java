@@ -1,5 +1,6 @@
 package com.aura.user.controllers;
 
+import com.aura.shared.controllers.BaseController;
 import com.aura.shared.security.BCryptPasswordHasher;
 import com.aura.shared.security.PasswordHasher;
 import com.aura.user.dao.UserDao;
@@ -12,11 +13,9 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 @WebServlet("/register")
-public class RegisterController extends HttpServlet {
+public class RegisterController extends BaseController {
 
     private final UserDao userDao = new UserDao();
-    private static final String VIEW_BASE = "/WEB-INF/views/";
-
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -90,10 +89,4 @@ public class RegisterController extends HttpServlet {
         }
     }
 
-    private void forward(HttpServletRequest req, HttpServletResponse resp, String view)
-            throws ServletException, IOException {
-
-        req.getRequestDispatcher(VIEW_BASE + view)
-                .forward(req, resp);
-    }
 }
