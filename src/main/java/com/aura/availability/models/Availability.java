@@ -8,14 +8,12 @@ import java.time.LocalTime;
 import com.aura.shared.BaseEntity;
 import com.aura.user.models.CommercialUser;
 
-
-
 public class Availability extends BaseEntity{
 	private CommercialUser user;
 	private DayOfWeek dayWeek;
 	private LocalTime hourStart;
 	private LocalTime hourEnd;
-	private boolean active;
+	private boolean active = true;
 	
 	public Availability(CommercialUser user, DayOfWeek dayWeek, LocalTime hourStart, LocalTime hourEnd) {
 		this.user = user;

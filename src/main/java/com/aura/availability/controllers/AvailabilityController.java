@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-import com.aura.availability.Dao.AvailabilityDao;
+import com.aura.availability.dao.AvailabilityDao;
 import com.aura.availability.models.Availability;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.CommercialUser;
