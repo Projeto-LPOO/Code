@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/autenticado/availability")
-public class AvailabilityServlet extends BaseController {
+public class AvailabilityController extends BaseController {
     private static final long serialVersionUID = 1L;
     private AvailabilityDao availabilityDao = new AvailabilityDao();
 
