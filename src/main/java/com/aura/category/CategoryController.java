@@ -3,12 +3,11 @@ package com.aura.category;
 import java.util.List;
 
     public class CategoryController {
-        private CategoryDAO dao = new CategoryDAO();
+        private CategoryDao dao = new CategoryDao();
 
-        public void salvar(String nome) {
-            // O Controller cria o Model e manda pro DAO
+        public void register(String nome) {
             Category nova = new Category(nome);
-            dao.save(nova);
+            dao.register(nova);
         }
 
         public List<Category> listar() {
