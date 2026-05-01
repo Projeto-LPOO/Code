@@ -6,8 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Teste de login</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/shared/style.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/home.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/home.css">
 </head>
 <body>
 <% User user = (User) session.getAttribute("user"); %>
