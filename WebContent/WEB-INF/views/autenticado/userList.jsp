@@ -11,8 +11,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Usuários</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/shared/style.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/userList/userList.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/userList.css">
 </head>
 
 <body
@@ -37,7 +37,7 @@
     <div class="cards" id="result"></div>
 </main>
 
-<script src="${pageContext.request.contextPath}/assets/userList/userList.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/userList.js"></script>
 
 </body>
 </html>

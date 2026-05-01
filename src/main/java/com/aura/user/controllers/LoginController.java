@@ -36,13 +36,13 @@ public class LoginController extends HttpServlet{
         }
         else{
             request.setAttribute("erro", "Email ou senha inválidos");
-            request.getRequestDispatcher("login/login.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
         }
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.getRequestDispatcher("login/login.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
     }
 }

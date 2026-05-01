@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Teste de login</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/login/login.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/login.css">
 </head>
 <body>
 <h1>Login</h1>

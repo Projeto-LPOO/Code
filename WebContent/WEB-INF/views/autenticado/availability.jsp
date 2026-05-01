@@ -7,8 +7,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Aura - Disponibilidade</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/shared/style.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/home.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/home.css">
 
     <script>
         function showNewForm() {
