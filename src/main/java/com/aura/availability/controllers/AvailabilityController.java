@@ -33,11 +33,7 @@ public class AvailabilityController extends BaseController {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
-
-        // O ID deve vir do objeto User que já está na sua sessão
         findAllAvailability(request, user.getId());
-        
-        // Caminho da view usando o padrão da sua líder
         forward(request, response, "autenticado/availability.jsp");
     }
 
