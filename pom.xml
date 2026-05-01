@@ -94,7 +94,16 @@
                 <version>3.3.2</version>
                 <configuration>
                     <warSourceDirectory>WebContent</warSourceDirectory>
+                    <webXml>WebContent/WEB-INF/web.xml</webXml>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <packagingExcludes>
+                        .smarttomcat/**,
+                        src/**,
+                        .idea/**,
+                        *.iml,
+                        *.md,
+                        *.zip
+                    </packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>
