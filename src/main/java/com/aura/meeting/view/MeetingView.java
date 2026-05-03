@@ -47,9 +47,9 @@ public class MeetingView {
                 case 1:
                     registerMeeting();
                     break;
-                case 2:
-                    listMeetings();
-                    break;
+//                case 2:
+//                    listMeetings();
+//                    break;
                 case 3:
                     getMeetingById();
                     break;
@@ -149,21 +149,21 @@ public class MeetingView {
         }
     }
 
-    private void listMeetings() {
-        System.out.println("\n--- LISTA DE MEETINGS ---");
-        try {
-            List<String> meetings = meetingController.getMeetings();
-            if (meetings.isEmpty()) {
-                System.out.println("Nenhum meeting encontrado.");
-                return;
-            }
-            for (String m : meetings) {
-                System.out.println(m);
-            }
-        } catch (RuntimeException e) {
-            System.out.println("Erro ao buscar meetings." + e.getMessage());
-        }
-    }
+//    private void listMeetings() {
+//        System.out.println("\n--- LISTA DE MEETINGS ---");
+//        try {
+//            List<String> meetings = meetingController.getMeetings();
+//            if (meetings.isEmpty()) {
+//                System.out.println("Nenhum meeting encontrado.");
+//                return;
+//            }
+//            for (String m : meetings) {
+//                System.out.println(m);
+//            }
+//        } catch (RuntimeException e) {
+//            System.out.println("Erro ao buscar meetings." + e.getMessage());
+//        }
+//    }
 
     private void getMeetingById() {
         System.out.println("\n--- BUSCAR MEETING POR ID ---");

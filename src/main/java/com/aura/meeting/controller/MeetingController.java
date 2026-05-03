@@ -45,9 +45,9 @@ public class MeetingController {
         meetingDao.registerMeeting(meeting);
     }
 
-    public List<String> getMeetings() {
-        return meetingDao.getMeetings();
-    }
+//    public List<String> getMeetings() {
+//        return meetingDao.getMeetings();
+//    }
 
     public Meeting getById(int meetingId) {
         if (meetingId <= 0) {

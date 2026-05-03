@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.aura.user.models.User" %>
+<%@ page import="com.aura.meeting.model.FaceToFaceMeeting" %>
+<%@ page import="com.aura.meeting.model.OnlineMeeting" %>
+<%@ page import="com.aura.meeting.model.Meeting" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
@@ -13,7 +16,8 @@
   <title>Meetings</title>
   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
-<body>
+
+<body data-context="${pageContext.request.contextPath}">
 
 <aside>
   <nav>
@@ -31,44 +35,14 @@
   <h1>Meetings</h1>
 
   <c:if test="${not empty error}">
-    <p style="color:red;">${error}</p>
+    <p id="server-error" style="color:red;">${error}</p>
   </c:if>
 
-  <!-- ===== CADASTRAR MEETING ===== -->
-  <section>
-    <h2>Cadastrar Meeting</h2>
-    <form action="${pageContext.request.contextPath}/autenticado/meeting/save" method="post">
-
-      <label>Tipo:
-        <select name="tipo" id="tipoSelectCadastro" onchange="toggleCadastro()">
-          <option value="online">Online</option>
-          <option value="presencial">Presencial</option>
-        </select>
-      </label><br>
-
-      <label>Descrição: <input type="text" name="descricao" required></label><br>
-      <label>Data/Hora (dd/MM/yyyy HH:mm): <input type="text" name="dataHora" required placeholder="25/12/2025 14:00"></label><br>
-
-      <div id="cadastroOnline">
-        <label>Link/Plataforma: <input type="text" name="link"></label><br>
-      </div>
-
-      <div id="cadastroPresencial" style="display:none;">
-        <label>Cidade: <input type="text" name="cidade"></label><br>
-        <label>Bairro: <input type="text" name="bairro"></label><br>
-        <label>Rua: <input type="text" name="rua"></label><br>
-        <label>Número: <input type="number" name="numero"></label><br>
-        <label>Ponto de referência: <input type="text" name="referencia"></label><br>
-        <label>Instruções (opcional): <input type="text" name="instrucoes"></label><br>
-      </div>
-
-      <button type="submit">Cadastrar</button>
-    </form>
-  </section>
+  <a href="${pageContext.request.contextPath}/autenticado/meeting/register">+ Novo Meeting</a>
 
   <hr>
 
-  <!-- ===== LISTA DE MEETINGS ===== -->
+  <!-- lista de meets -->
   <section>
     <h2>Lista de Meetings</h2>
     <c:choose>
@@ -77,100 +51,76 @@
       </c:when>
       <c:otherwise>
         <c:forEach var="m" items="${meetings}">
-          <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-            <p>${m}</p>
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
 
-            <!-- Buscar detalhes para editar/deletar exige o ID.
-                 O DAO retorna strings no formato: MEETING[N] | id | status | tipo | category_id
-                 Extraímos o id via JS ao expandir o painel de edição. -->
+          <p><strong>Descrição:</strong> ${m.description}</p>
+          <p><strong>Data/Hora:</strong> ${m.dayTime}</p>
+          <p><strong>Status:</strong> ${m.status}</p>
+          <p><strong>Tipo:</strong> ${tipoMap[m.id]}</p>
 
-            <button onclick="toggleEdit(this, '${m}')">Editar</button>
+          <button type="button"
+                  onclick="toggleEdit(this, '${m.id}', '${m.status}', '${tipoMap[m.id]}')">
+            Editar
+          </button>
 
-            <form action="${pageContext.request.contextPath}/autenticado/meeting/delete"
-                  method="post" style="display:inline;"
-                  onsubmit="return confirm('Confirma exclusão?')">
-              <input type="hidden" name="id" value="" class="deleteId">
-              <button type="submit">Deletar</button>
+          <form action="${pageContext.request.contextPath}/autenticado/meeting/delete"
+                method="post" style="display:inline;"
+                onsubmit="return confirm('Confirma exclusão?')">
+            <input type="hidden" name="id" value="${m.id}">
+            <button type="submit">Deletar</button>
+          </form>
+
+          <div class="editPanel" style="display:none; margin-top:10px;">
+            <form action="${pageContext.request.contextPath}/autenticado/meeting/update"
+                  method="post"
+                  onsubmit="return validarEdicao(this, event)">
+              <input type="hidden" name="id" class="editId">
+
+              <label>Descrição: <input type="text" name="descricao" class="edit-descricao" required></label>
+              <span class="erro-campo edit-erro-descricao"></span><br>
+
+              <label>Data/Hora (dd/MM/yyyy HH:mm):
+                <input type="text" name="dataHora" class="edit-dataHora" placeholder="25/12/2025 14:00">
+              </label>
+              <span class="erro-campo edit-erro-dataHora"></span><br>
+
+              <label>Status:
+                <select name="status">
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </label><br>
+
+              <div class="camposLocalizacao" style="display:none;">
+                <label>Cidade: <input type="text" name="cidade" class="edit-cidade"></label>
+                <span class="erro-campo edit-erro-cidade"></span><br>
+                <label>Bairro: <input type="text" name="bairro"></label><br>
+                <label>Rua: <input type="text" name="rua" class="edit-rua"></label>
+                <span class="erro-campo edit-erro-rua"></span><br>
+                <label>Número: <input type="number" name="numero" class="edit-numero"></label>
+                <span class="erro-campo edit-erro-numero"></span><br>
+                <label>Referência: <input type="text" name="referencia"></label><br>
+              </div>
+
+              <button type="submit">Salvar</button>
+              <button type="button"
+                      onclick="this.closest('.editPanel').style.display='none'">Cancelar</button>
             </form>
-
-            <!-- Painel de edição (oculto por padrão) -->
-            <div class="editPanel" style="display:none; margin-top:10px;">
-              <form action="${pageContext.request.contextPath}/autenticado/meeting/update" method="post">
-                <input type="hidden" name="id" class="editId">
-
-                <label>Descrição: <input type="text" name="descricao" required></label><br>
-                <label>Data/Hora (dd/MM/yyyy HH:mm): <input type="text" name="dataHora" required placeholder="25/12/2025 14:00"></label><br>
-                <label>Status:
-                  <select name="status">
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </label><br>
-
-                <!-- Campos de localização aparecem só se for presencial -->
-                <div class="camposLocalizacao" style="display:none;">
-                  <label>Cidade: <input type="text" name="cidade"></label><br>
-                  <label>Bairro: <input type="text" name="bairro"></label><br>
-                  <label>Rua: <input type="text" name="rua"></label><br>
-                  <label>Número: <input type="number" name="numero"></label><br>
-                  <label>Referência: <input type="text" name="referencia"></label><br>
-                </div>
-
-                <button type="submit">Salvar alterações</button>
-                <button type="button" onclick="this.closest('.editPanel').style.display='none'">Cancelar</button>
-              </form>
-            </div>
           </div>
-        </c:forEach>
+        </div>
+      </c:forEach>
       </c:otherwise>
     </c:choose>
   </section>
 </main>
 
-<script>
-  // Cadastro: alterna campos online/presencial
-  function toggleCadastro() {
-    const tipo = document.getElementById('tipoSelectCadastro').value;
-    document.getElementById('cadastroOnline').style.display    = tipo === 'online'     ? 'block' : 'none';
-    document.getElementById('cadastroPresencial').style.display = tipo === 'presencial' ? 'block' : 'none';
-  }
+<style>
+  .erro-campo { color: red; font-size: 0.85em; }
+</style>
 
-  // Edição: extrai o ID da string do DAO e abre o painel
-  // Formato esperado: "MEETING[N] | id | status | tipo | category_id"
-  function toggleEdit(btn, meetingStr) {
-    const card  = btn.closest('div');
-    const panel = card.querySelector('.editPanel');
-
-    if (panel.style.display === 'block') {
-      panel.style.display = 'none';
-      return;
-    }
-
-    // Extrai partes da string
-    const parts  = meetingStr.split('|').map(s => s.trim());
-    // parts[0] = "MEETING[N] ", parts[1] = id, parts[2] = status, parts[3] = tipo
-    const id     = parts[1];
-    const status = parts[2];
-    const tipo   = parts[3]; // "PRESENCIAL" ou "ONLINE"
-
-    // Preenche campos ocultos e selects
-    panel.querySelector('.editId').value = id;
-    card.querySelector('.deleteId').value = id;
-
-    const statusSelect = panel.querySelector('select[name="status"]');
-    for (let opt of statusSelect.options) {
-      if (opt.value === status) opt.selected = true;
-    }
-
-    // Mostra campos de localização se presencial
-    const locDiv = panel.querySelector('.camposLocalizacao');
-    locDiv.style.display = tipo.toUpperCase() === 'PRESENCIAL' ? 'block' : 'none';
-
-    panel.style.display = 'block';
-  }
-</script>
+<script src="${pageContext.request.contextPath}/assets/js/meeting.js"></script>
 
 </body>
 </html>
