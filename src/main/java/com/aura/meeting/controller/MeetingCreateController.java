@@ -29,9 +29,9 @@ public class MeetingCreateController extends BaseController {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String tipo      = request.getParameter("tipo");
+        String tipo = request.getParameter("tipo");
         String descricao = request.getParameter("descricao");
-        String dataStr   = request.getParameter("dataHora");
+        String dataStr = request.getParameter("dataHora");
 
         try {
             // Validações de campos comuns
@@ -53,7 +53,7 @@ public class MeetingCreateController extends BaseController {
 
             if ("presencial".equalsIgnoreCase(tipo)) {
                 String cidade = request.getParameter("cidade");
-                String rua    = request.getParameter("rua");
+                String rua = request.getParameter("rua");
                 String bairro = request.getParameter("bairro");
                 String numStr = request.getParameter("numero");
 

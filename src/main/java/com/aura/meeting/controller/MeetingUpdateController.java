@@ -22,10 +22,10 @@ public class MeetingUpdateController extends BaseController {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String idParam   = request.getParameter("id");
+        String idParam = request.getParameter("id");
         String descricao = request.getParameter("descricao");
-        String dataStr   = request.getParameter("dataHora");
-        String status    = request.getParameter("status");
+        String dataStr = request.getParameter("dataHora");
+        String status = request.getParameter("status");
 
         try {
             if (idParam == null || idParam.trim().isEmpty()) {
@@ -55,7 +55,7 @@ public class MeetingUpdateController extends BaseController {
 
             if (meeting instanceof FaceToFaceMeeting ftf) {
                 String cidade = request.getParameter("cidade");
-                String rua    = request.getParameter("rua");
+                String rua = request.getParameter("rua");
                 String numStr = request.getParameter("numero");
 
                 if (cidade == null || cidade.trim().isEmpty()) {
