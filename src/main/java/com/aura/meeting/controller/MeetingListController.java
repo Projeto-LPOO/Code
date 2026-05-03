@@ -23,8 +23,7 @@ public class MeetingListController extends BaseController {
 
         List<Meeting> meetings = meetingDao.findAll();
 
-        // EL não suporta instanceof — resolvemos aqui no controller
-        // Mapa de id -> "PRESENCIAL" ou "ONLINE" para o JSP consumir
+
         Map<Integer, String> tipoMap = new LinkedHashMap<>();
         for (Meeting m : meetings) {
             tipoMap.put(m.getId(), m instanceof FaceToFaceMeeting ? "PRESENCIAL" : "ONLINE");
