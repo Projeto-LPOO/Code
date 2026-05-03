@@ -110,30 +110,64 @@ public class MeetingDao {
         }
     }
 
-    public List<String> getMeetings()
-    {
-        List<String> meetings = new ArrayList<>();
-        String sql = "SELECT id, status, meeting_type, category_id FROM meetings";
-        try(Connection conn = dbFactory.getConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            ResultSet rs = pstm.executeQuery())
-        {
-            int i = 0;
-            while(rs.next()) {
-                i++;
-                String register = "MEETING[" + i + "] | " +
-                        rs.getString("id") + "| " +
-                        rs.getString("status") + "| " +
-                        rs.getString("meeting_type") + "| " +
-                        rs.getString("category_id");
+//    public List<String> getMeetings()
+//    {
+//        List<String> meetings = new ArrayList<>();
+//        String sql = "SELECT id, status, meeting_type, category_id FROM meetings";
+//        try(Connection conn = dbFactory.getConnection();
+//            PreparedStatement pstm = conn.prepareStatement(sql);
+//            ResultSet rs = pstm.executeQuery())
+//        {
+//            int i = 0;
+//            while(rs.next()) {
+//                i++;
+//                String register = "MEETING[" + i + "] | " +
+//                        rs.getString("id") + "| " +
+//                        rs.getString("status") + "| " +
+//                        rs.getString("meeting_type") + "| " +
+//                        rs.getString("category_id");
+//
+//                meetings.add(register);
+//            }
+//
+//        } catch (SQLException e) {
+//            System.out.println("falha na conexao");
+//            throw new RuntimeException(e);
+//        }
+//        return meetings;
+//    }
 
-                meetings.add(register);
+    public List<Meeting> findAll() {
+        List<Meeting> meetings = new ArrayList<>();
+        String sql = "SELECT id, description, scheduled_at, status, meeting_type FROM meetings";
+
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                String tipo = rs.getString("meeting_type");
+                Meeting meeting;
+
+                if ("PRESENCIAL".equalsIgnoreCase(tipo)) {
+                    meeting = new FaceToFaceMeeting();
+                } else {
+                    meeting = new OnlineMeeting();
+                }
+
+                meeting.setId(rs.getInt("id"));
+                meeting.setDescription(rs.getString("description"));
+                meeting.setStatus(rs.getString("status"));
+                meeting.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
+
+                meetings.add(meeting);
             }
 
         } catch (SQLException e) {
-            System.out.println("falha na conexao");
+            System.out.println("Erro ao listar meetings: " + e.getMessage());
             throw new RuntimeException(e);
         }
+
         return meetings;
     }
 
