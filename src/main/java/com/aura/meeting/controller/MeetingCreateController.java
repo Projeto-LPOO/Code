@@ -107,11 +107,11 @@ public class MeetingCreateController extends BaseController {
             }
 
             meetingController.registerMeeting(meeting);
-            response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
+            response.sendRedirect(request.getContextPath() + "/autenticado/meeting/register");
 
         } catch (IllegalArgumentException e) {
             request.setAttribute("error", e.getMessage());
-            request.setAttribute("tipo",      tipo);
+            request.setAttribute("tipo", tipo);
             request.setAttribute("descricao", descricao);
             request.setAttribute("dataHora",  dataStr);
             forward(request, response, "autenticado/meetingRegister.jsp");
