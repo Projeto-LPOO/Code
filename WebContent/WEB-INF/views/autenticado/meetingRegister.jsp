@@ -36,7 +36,7 @@
     </c:if>
 
     <form id="formCadastro"
-          action="${pageContext.request.contextPath}/autenticado/meeting/save"
+          action="${pageContext.request.contextPath}/autenticado/meeting/register"
           method="post"
           onsubmit="return validarCadastro(event)">
 
