@@ -1,6 +1,7 @@
 package com.aura.shared.controllers;
 
 import com.aura.availability.controllers.AvailabilityController;
+import com.aura.feedback.controller.FeedbackController;
 import com.aura.interest.controllers.InterestController;
 import com.aura.user.controllers.UsersController;
 import jakarta.servlet.ServletException;
@@ -26,6 +27,7 @@ public class FrontController extends HttpServlet {
         routes.put("/users", new UsersController());
         routes.put("/interest", new InterestController());
         routes.put("/availability", new AvailabilityController());
+        routes.put("/feedback", new FeedbackController());
 
         for (HttpServlet controller : routes.values()) {
             controller.init(getServletConfig()); //inicia manualmente cada controller

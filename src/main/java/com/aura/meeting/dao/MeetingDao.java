@@ -163,6 +163,19 @@ public class MeetingDao {
             if (rs.next()) {
                 String tipo = rs.getString("meeting_type");
                 Meeting meeting;
+                
+             // criei um learner e teacher bem besta so pra rodar -Erick
+                Learner learner = null;
+                if (ls.next()) {
+                    learner = new Learner();
+                    learner.setId(ls.getInt("user_id"));
+                }
+
+                Teacher teacher = null;
+                if (ts.next()) {
+                    teacher = new Teacher();
+                    teacher.setId(ts.getInt("user_id"));
+                }
 
                 if (tipo.equalsIgnoreCase("PRESENCIAL")) {
                     FaceToFaceMeeting ftf = new FaceToFaceMeeting(); // nasce como FaceToFaceMeeting
@@ -170,8 +183,8 @@ public class MeetingDao {
                     ftf.setDescription(rs.getString("description"));
                     ftf.setStatus(rs.getString("status"));
                     ftf.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
-                    ftf.setLearner(null); // será preenchido futuramente
-                    ftf.setTeacher(null); // será preenchido futuramente
+                    ftf.setLearner(learner); // criei um learner bem besta so pra rodar -Erick
+                    ftf.setTeacher(teacher); // criei um learner bem besta so pra rodar -Erick
                     ftf.setCategory(null); // será preenchido futuramente
 
                     ResultSet locs = locps.executeQuery();
@@ -193,8 +206,8 @@ public class MeetingDao {
                     om.setDescription(rs.getString("description"));
                     om.setStatus(rs.getString("status"));
                     om.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
-                    om.setLearner(null);
-                    om.setTeacher(null);
+                    om.setLearner(learner);
+                    om.setTeacher(teacher);
                     om.setCategory(null);
 
                     meeting = om;
