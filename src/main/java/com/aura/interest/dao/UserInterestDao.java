@@ -13,7 +13,7 @@ public class UserInterestDao {
 
     public void registerUserLearn(int idUSer, List<Integer> idsInterest, InterestType interestType)
     {
-        String sql = "INSERT INTO user_interests(user_id, interest_id, interest_type) VALUES (?, ?, ?::interest_type_enum)";
+        String sql = "INSERT INTO user_interests(user_id, interest_id, interest_type) VALUES (?, ?, ?::interest_type)";
         try (Connection conn = dbFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
         {
