@@ -59,7 +59,7 @@
             </div>
         </c:if>
         <div>
-            <h1 class="text-2xl font-bold">Sua Carteira de Créditos</h1>
+            <h1 class="text-3xl font-bold">Sua Carteira de Créditos</h1>
             <p class="text-gray-500 text-sm">
                 Gerencie seus créditos e acompanhe seus ganhos
             </p>
@@ -67,13 +67,13 @@
 
         <div class="grid grid-cols-3 gap-6">
 
-            <div class="bg-gray-40 p-6 rounded-xl shadow-sm">
+            <div class="bg-[#ededed] p-6 rounded-xl shadow-sm">
                 <p class="text-sm text-gray-500">Saldo</p>
                 <h2 class="text-3xl font-bold text-[#8324a8] mt-2">
                     ${credits.balance} cs
                 </h2>
                 <p class="text-xs text-gray-400 mt-2">
-                    Créditos disponíveis para uso
+                    Seus créditos estão prontos para serem usados no agendamento de sessões ou podem ser resgatados.
                 </p>
             </div>
 
@@ -92,7 +92,7 @@
             </div>
 
         </div>
-        <section class="max-w-6xl mx-auto py-12">
+        <section class="py-4 mx-auto py-12">
 
             <div class="mb-8">
                 <h2 class="text-2xl font-semibold text-gray-800">Comprar créditos</h2>
@@ -109,7 +109,7 @@
 
                     <div class="
         rounded-2xl p-6 text-center relative transition
-        ${isPopular ? 'border-2 border-purple-600 bg-purple-50 shadow-md scale-105' : 'border shadow-sm'}
+        ${isPopular ? 'border-2 border-purple-600 bg-[#d9c7df] shadow-md scale-105' : 'border shadow-sm'}
       ">
                         <c:if test="${isPopular}">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full">
@@ -177,6 +177,21 @@
             <a href="${pageContext.request.contextPath}/autenticado/financial/registerAccount"
                class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">
                 Registrar
+            </a>
+        </div>
+
+        <div class="bg-gray-40 border rounded-xl p-6 flex justify-between items-center">
+            <div>
+                <p class="font-medium">Registrar conta bancária</p>
+                <p class="text-sm text-gray-500">
+                    Necessário para saques
+                </p>
+            </div>
+
+
+            <a href="${pageContext.request.contextPath}/autenticado/financial/withdraw"
+               class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">
+                Sacar
             </a>
         </div>
 
