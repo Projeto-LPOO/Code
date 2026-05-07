@@ -14,14 +14,13 @@ import java.util.List;
 
 public class UserDao {
 
-    public CommercialUser registerUser(CommercialUser usuario)
-    {
+    public CommercialUser registerUser(CommercialUser usuario) {
         String sql = "INSERT INTO users(name, age, address, phone, cpf, email, password, type, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, 'COMMERCIAL'::user_type, ?) RETURNING id";
 
         try (Connection connection = dbFactory.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql))
-        {
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
             stmt.setString(1, usuario.getName());
             stmt.setInt(2, usuario.getAge());
             stmt.setString(3, usuario.getAddress());
@@ -44,9 +43,7 @@ public class UserDao {
         }
     }
 
-
-    public List<CommercialUser> findAll()
-    {
+    public List<CommercialUser> findAll() {
         List<CommercialUser> commercialUsers = new ArrayList<>();
 
         String sql = "SELECT " +
@@ -65,41 +62,13 @@ public class UserDao {
                 "LEFT JOIN interests i ON i.id = ui.interest_id " +
                 "WHERE u.type = 'COMMERCIAL'::user_type";
 
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery())
-        {
-            while (rs.next())
-            {
-                int userId = rs.getInt("user_id");
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-                CommercialUser user = null;
-                for (CommercialUser u : commercialUsers) {
-                    if (u.getId() == userId) {
-                        user = u;
-                        break;
-                    }
-                }
-
-                if (user == null) {
-                    user = new CommercialUser();
-                    user.setId(userId);
-                    user.setName(rs.getString("user_name"));
-                    user.setAge(rs.getInt("age"));
-                    user.setAddress(rs.getString("address"));
-                    user.setPhone(rs.getString("phone"));
-                    user.setCpf(rs.getString("cpf"));
-                    user.setEmail(rs.getString("email"));
-                    user.setHashPassword(rs.getString("password"));
-                    commercialUsers.add(user);
-                }
-
-                if (rs.getString("interest_name") != null) {
-                    Interest interest = new Interest();
-                    interest.setId(rs.getInt("interest_id"));
-                    interest.setName(rs.getString("interest_name"));
-                    user.getInterests().add(interest);
-                }
+            while (rs.next()) {
+                // Chamada do método auxiliar para evitar repetição de código
+                mapResultSetToCommercialUser(rs, commercialUsers);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -107,8 +76,7 @@ public class UserDao {
         return commercialUsers;
     }
 
-    public List<CommercialUser> findByName(String name)
-    {
+    public List<CommercialUser> findByName(String name) {
         List<CommercialUser> users = new ArrayList<>();
         String sql = "SELECT " +
                 "u.id AS user_id, " +
@@ -127,45 +95,16 @@ public class UserDao {
                 "WHERE (LOWER(u.name) LIKE LOWER(?) OR LOWER(i.name) LIKE LOWER(?)) " +
                 "AND u.type = 'COMMERCIAL'::user_type";
 
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
-        {
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
             stmt.setString(1, "%" + name + "%");
             stmt.setString(2, "%" + name + "%");
 
             ResultSet rs = stmt.executeQuery();
 
-            while (rs.next())
-            {
-                int userId = rs.getInt("user_id");
-
-                CommercialUser user = null;
-                for (CommercialUser u : users) {
-                    if (u.getId() == userId) {
-                        user = u;
-                        break;
-                    }
-                }
-
-                if (user == null) {
-                    user = new CommercialUser();
-                    user.setId(userId);
-                    user.setName(rs.getString("user_name"));
-                    user.setAge(rs.getInt("age"));
-                    user.setAddress(rs.getString("address"));
-                    user.setPhone(rs.getString("phone"));
-                    user.setCpf(rs.getString("cpf"));
-                    user.setEmail(rs.getString("email"));
-                    user.setHashPassword(rs.getString("password"));
-                    users.add(user);
-                }
-
-                if (rs.getString("interest_name") != null) {
-                    Interest interest = new Interest();
-                    interest.setId(rs.getInt("interest_id"));
-                    interest.setName(rs.getString("interest_name"));
-                    user.getInterests().add(interest);
-                }
+            while (rs.next()) {
+                mapResultSetToCommercialUser(rs, users);
             }
 
         } catch (Exception e) {
@@ -175,42 +114,47 @@ public class UserDao {
         return users;
     }
 
+    /*
+       ADICIONADO/MODIFICADO: findById atualizado para buscar interesses.
+       Utiliza o mesmo padrão de JOIN para que a página de perfil exiba as tags de interesse.
+    */
+    public CommercialUser findById(int id) {
+        List<CommercialUser> users = new ArrayList<>();
+        String sql = "SELECT " +
+                "u.id AS user_id, " +
+                "u.name AS user_name, " +
+                "u.age, " +
+                "u.address, " +
+                "u.phone, " +
+                "u.cpf, " +
+                "u.email, " +
+                "u.password, " +
+                "i.id AS interest_id, " +
+                "i.name AS interest_name " +
+                "FROM users u " +
+                "LEFT JOIN user_interests ui ON ui.user_id = u.id " +
+                "LEFT JOIN interests i ON i.id = ui.interest_id " +
+                "WHERE u.id = ? AND u.type = 'COMMERCIAL'::user_type";
 
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-
-
-    public CommercialUser findById(int id)
-    {
-        CommercialUser commercialUser = null;
-        String sql = "select * from users where id = ? and type = 'COMMERCIAL'::user_type";
-
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
-        {
             stmt.setInt(1, id);
-
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next())
-            {
-                commercialUser = new CommercialUser();
-                commercialUser.setId(id);
-                commercialUser.setName(rs.getString("name"));
-                commercialUser.setAge(rs.getInt("age"));
-                commercialUser.setAddress(rs.getString("address"));
-                commercialUser.setPhone(rs.getString("phone"));
-                commercialUser.setCpf(rs.getString("cpf"));
-                commercialUser.setEmail(rs.getString("email"));
-                commercialUser.setHashPassword(rs.getString("password"));
-
-                stmt.execute();
+            while (rs.next()) {
+                // Reaproveita a lógica de mapeamento para preencher o objeto e a lista de interesses
+                mapResultSetToCommercialUser(rs, users);
             }
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return commercialUser;
+
+        // Retorna o usuário encontrado ou null caso a lista esteja vazia
+        return users.isEmpty() ? null : users.get(0);
     }
+
     public User findByEmail(String email) {
         User user = null;
         String sql = "SELECT * FROM users WHERE email = ?";
@@ -224,7 +168,7 @@ public class UserDao {
             if (rs.next()) {
                 String type = rs.getString("type");
 
-                if (type.equals("ADMIN")) {
+                if ("ADMIN".equals(type)) {
                     user = new Admin();
                 } else {
                     user = new CommercialUser();
@@ -237,7 +181,7 @@ public class UserDao {
                 user.setPhone(rs.getString("phone"));
                 user.setCpf(rs.getString("cpf"));
                 user.setEmail(rs.getString("email"));
-                user.setHashPassword(rs.getString("password")); // hash do banco
+                user.setHashPassword(rs.getString("password"));
             }
 
         } catch (Exception e) {
@@ -247,49 +191,68 @@ public class UserDao {
         return user;
     }
 
+    public void deleteUser(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
 
-    public void deleteUser(int id)
-    {
-        String sql = "Delete from users where id = ?";
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
-        {
             stmt.setInt(1, id);
-
-            int rowsAffects = stmt.executeUpdate();
-
-            if (rowsAffects > 0)
-            {
-                System.out.println("Usuario deletado com sucesso!");
-            }
-            else {
-                System.out.println("Não foi encontrado nenhum usuario com esse id");
-            }
+            stmt.executeUpdate();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateUser(CommercialUser commercialUser)
-    {
+    public void updateUser(CommercialUser commercialUser) {
         String sql = "UPDATE users SET name = ?, address = ?, phone = ? WHERE id = ?";
 
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
-        {
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
             stmt.setString(1, commercialUser.getName());
             stmt.setString(2, commercialUser.getAddress());
             stmt.setString(3, commercialUser.getPhone());
             stmt.setInt(4, commercialUser.getId());
 
             stmt.executeUpdate();
-            System.out.println("Sucesso");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    private void mapResultSetToCommercialUser(ResultSet rs, List<CommercialUser> list) throws Exception {
+        int userId = rs.getInt("user_id");
+        // Verifica se o usuário já foi adicionado à lista (importante para o LEFT JOIN de interesses)
+        CommercialUser user = null;
+        for (CommercialUser u : list) {
+            if (u.getId() == userId) {
+                user = u;
+                break;
+            }
+        }
 
+        // Se o usuário ainda não está na lista, cria um novo objeto
+        if (user == null) {
+            user = new CommercialUser();
+            user.setId(userId);
+            user.setName(rs.getString("user_name"));
+            user.setAge(rs.getInt("age"));
+            user.setAddress(rs.getString("address"));
+            user.setPhone(rs.getString("phone"));
+            user.setCpf(rs.getString("cpf"));
+            user.setEmail(rs.getString("email"));
+            user.setHashPassword(rs.getString("password"));
+            list.add(user);
+        }
+
+        // Adiciona o interesse ao usuário se ele existir nesta linha
+        if (rs.getString("interest_name") != null) {
+            Interest interest = new Interest();
+            interest.setId(rs.getInt("interest_id"));
+            interest.setName(rs.getString("interest_name"));
+            user.getInterests().add(interest);
+        }
     }
 }
