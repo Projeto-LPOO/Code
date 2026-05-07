@@ -39,6 +39,7 @@ public class CategoryDao {
                 Category cat = new Category();
                 cat.setId(rs.getInt("id"));
                 cat.setName(rs.getString("name"));
+                cat.setImgUrl(rs.getString("img_url"));
                 categoryList.add(cat);
             }
 

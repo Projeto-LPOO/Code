@@ -1,5 +1,6 @@
 <%@ page import="com.aura.user.models.User" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -35,7 +36,7 @@
         <p class="loading-msg">Buscando usuários...</p>
     </div>
 </main>
-
+</div>
 <script src="${pageContext.request.contextPath}/assets/js/userList.js"></script>
 
 </body>
