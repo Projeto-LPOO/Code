@@ -18,24 +18,20 @@ public class MeetingDeleteController extends BaseController {
         String idParam = request.getParameter("id");
 
         try {
-            if (idParam == null || idParam.trim().isEmpty()) {
+            if (idParam == null || idParam.trim().isEmpty())
                 throw new IllegalArgumentException("ID do meeting é obrigatório.");
-            }
 
             int id = Integer.parseInt(idParam);
 
-            if (meetingController.getById(id) == null) {
+            if (meetingController.findById(id) == null)
                 throw new IllegalArgumentException("Meeting não encontrado.");
-            }
 
-            meetingController.deleteMeeting(id);
+            meetingController.delete(id);
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
 
         } catch (NumberFormatException e) {
-            request.setAttribute("error", "ID inválido.");
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
         } catch (IllegalArgumentException e) {
-            request.setAttribute("error", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
         }
     }

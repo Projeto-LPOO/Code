@@ -28,29 +28,21 @@ public class MeetingUpdateController extends BaseController {
         String status = request.getParameter("status");
 
         try {
-            if (idParam == null || idParam.trim().isEmpty()) {
+            if (idParam == null || idParam.trim().isEmpty())
                 throw new IllegalArgumentException("ID do meeting é obrigatório.");
-            }
 
             int id = Integer.parseInt(idParam);
-            Meeting meeting = meetingController.getById(id);
+            Meeting meeting = meetingController.findById(id);
 
-            if (meeting == null) {
+            if (meeting == null)
                 throw new IllegalArgumentException("Meeting não encontrado.");
-            }
-
-            if (descricao == null || descricao.trim().isEmpty()) {
+            if (descricao == null || descricao.trim().isEmpty())
                 throw new IllegalArgumentException("Descrição é obrigatória.");
-            }
-
-            if (dataStr == null || dataStr.trim().isEmpty()) {
+            if (dataStr == null || dataStr.trim().isEmpty())
                 throw new IllegalArgumentException("Data e hora são obrigatórias.");
-            }
-
-            LocalDateTime dataHora = parseDateTime(dataStr);
 
             meeting.setDescription(descricao.trim());
-            meeting.setDayTime(dataHora);
+            meeting.setDayTime(parseDateTime(dataStr));
             meeting.setStatus(status);
 
             if (meeting instanceof FaceToFaceMeeting ftf) {
@@ -58,12 +50,10 @@ public class MeetingUpdateController extends BaseController {
                 String rua = request.getParameter("rua");
                 String numStr = request.getParameter("numero");
 
-                if (cidade == null || cidade.trim().isEmpty()) {
+                if (cidade == null || cidade.trim().isEmpty())
                     throw new IllegalArgumentException("Cidade é obrigatória.");
-                }
-                if (rua == null || rua.trim().isEmpty()) {
+                if (rua == null || rua.trim().isEmpty())
                     throw new IllegalArgumentException("Rua é obrigatória.");
-                }
 
                 int numero;
                 try {
@@ -83,7 +73,7 @@ public class MeetingUpdateController extends BaseController {
                 ftf.setLocation(loc);
             }
 
-            meetingController.updateMeeting(meeting);
+            meetingController.update(meeting);
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
 
         } catch (IllegalArgumentException e) {
