@@ -1,6 +1,7 @@
 package com.aura.shared.controllers;
 
 import com.aura.availability.controllers.AvailabilityController;
+import com.aura.financial.controllers.FinancialController;
 import com.aura.interest.controllers.InterestController;
 import com.aura.meeting.controller.*;
 import com.aura.user.controllers.UsersController;
@@ -18,7 +19,7 @@ import java.util.Map;
 @WebServlet("/autenticado/*")
 public class FrontController extends HttpServlet {
 
-    private final Map<String, HttpServlet> routes = new HashMap<>(); // cria uma lista chave-valor(map)
+    private final Map<String, HttpServlet> routes = new HashMap<>();
 
     @Override
     public void init() throws ServletException {

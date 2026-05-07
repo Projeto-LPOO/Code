@@ -1,14 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.aura.availability.models.Availability" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Aura - Disponibilidade</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/home.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <script>
         function showNewForm() {
@@ -37,19 +38,11 @@
         }
     </script>
 </head>
-<body>
-<aside>
-    <nav>
-        <ul>
-            <li><a href="${pageContext.request.contextPath}/autenticado/home">Dashboard</a></li>
-            <li><a href="${pageContext.request.contextPath}/autenticado/users">Lista de Usuários</a></li>
-            <li><a href="${pageContext.request.contextPath}/autenticado/availability">Agenda</a></li>
-            <li><a href="${pageContext.request.contextPath}/logout">Sair</a></li>
-        </ul>
-    </nav>
-</aside>
-
-<main>
+<body class="bg-white min-h-screen text-gray-800 flex flex-col">
+<t:header paginaAtiva="financial" />
+    <div class="flex flex-1">
+        <t:menu paginaAtiva="agenda" />
+    <main class="flex-1 p-10 space-y-8">
     <section>
         <h2>Meus Horários</h2>
 
@@ -129,5 +122,6 @@
         </table>
     </section>
 </main>
+    <div/>
 </body>
 </html>

@@ -20,15 +20,13 @@ function search() {
 
             data.forEach(user_ => {
                 if (user_.id != loggedUserId) {
-
                     let interestsList = "";
-
                     if (user_.interests && user_.interests.length > 0) {
                         user_.interests.forEach(interest => {
-                            interestsList += "<span>" + interest.name + "</span> ";
+                            interestsList += "<span class='interest-tag' style='background: #f1f5f9; padding: 2px 8px; border-radius: 4px; margin-right: 4px; font-size: 12px; color: #475569;'>" + interest.name + "</span> ";
                         });
                     } else {
-                        interestsList = "Nenhum interesse cadastrado";
+                        interestsList = "<span style='color: #94a3b8; font-style: italic;'>Nenhum interesse cadastrado</span>";
                     }
 
                     result.innerHTML +=
