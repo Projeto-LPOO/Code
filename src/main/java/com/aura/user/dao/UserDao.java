@@ -1,5 +1,6 @@
 package com.aura.user.dao;
 
+import com.aura.category.Category;
 import com.aura.dbConfig.dbFactory;
 import com.aura.financial.models.Credits;
 import com.aura.interest.model.Interest;
@@ -115,31 +116,14 @@ public class UserDao {
         return users;
     }
 
-    /*
-       ADICIONADO/MODIFICADO: findById atualizado para buscar interesses.
-       Utiliza o mesmo padrão de JOIN para que a página de perfil exiba as tags de interesse.
-    */
-    public CommercialUser findById(int id) {
-        List<CommercialUser> users = new ArrayList<>();
-        String sql = "SELECT " +
-                "u.id AS user_id, " +
-                "u.name AS user_name, " +
-                "u.age, " +
-                "u.address, " +
-                "u.phone, " +
-                "u.cpf, " +
-                "u.email, " +
-                "u.password, " +
-                "i.id AS interest_id, " +
-                "i.name AS interest_name " +
-                "FROM users u " +
-                "LEFT JOIN user_interests ui ON ui.user_id = u.id " +
-                "LEFT JOIN interests i ON i.id = ui.interest_id " +
-                "WHERE u.id = ? AND u.type = 'COMMERCIAL'::user_type";
+    public CommercialUser findById(int id)
+    {
+        CommercialUser commercialUser = null;
+        String sql = "select * from users where id = ? and type = 'COMMERCIAL'::user_type";
 
-        try (Connection connection = dbFactory.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-
+        try(Connection connection = dbFactory.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql))
+        {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
@@ -255,5 +239,75 @@ public class UserDao {
             interest.setName(rs.getString("interest_name"));
             user.getInterests().add(interest);
         }
+    }
+
+
+    public CommercialUser findByIdWithInterests(int id) {
+        CommercialUser user = null;
+
+        String sql = "SELECT " +
+                "u.id AS user_id, u.name AS user_name, u.age, u.address, u.phone, u.cpf, u.email, u.password, " +
+                "i.id AS interest_id, i.name AS interest_name, " +
+                "c.id AS category_id, c.name AS category_name " +
+                "FROM users u " +
+                "LEFT JOIN user_interests ui ON ui.user_id = u.id " +
+                "LEFT JOIN interests i ON i.id = ui.interest_id " +
+                "LEFT JOIN categories c ON c.id = i.category_id " +
+                "WHERE u.id = ? AND u.type = 'COMMERCIAL'::user_type";
+
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                if (user == null) {
+                    user = buildCommercialUser(rs, id);
+                }
+                appendInterest(rs, user);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return user;
+    }
+
+    private CommercialUser findInList(List<CommercialUser> list, int userId) {
+        for (CommercialUser u : list) {
+            if (u.getId() == userId) return u;
+        }
+        return null;
+    }
+
+    private CommercialUser buildCommercialUser(ResultSet rs, int userId) throws Exception {
+        CommercialUser user = new CommercialUser();
+        user.setId(userId);
+        user.setName(rs.getString("user_name"));
+        user.setAge(rs.getInt("age"));
+        user.setAddress(rs.getString("address"));
+        user.setPhone(rs.getString("phone"));
+        user.setCpf(rs.getString("cpf"));
+        user.setEmail(rs.getString("email"));
+        user.setHashPassword(rs.getString("password"));
+        return user;
+    }
+
+    private void appendInterest(ResultSet rs, CommercialUser user) throws Exception {
+        String interestName = rs.getString("interest_name");
+        if (interestName == null) return;
+
+        Interest interest = new Interest();
+        interest.setId(rs.getInt("interest_id"));
+        interest.setName(interestName);
+
+        int categoryId = rs.getInt("category_id");
+        if (!rs.wasNull()) {
+            Category category = new Category();
+            category.setId(categoryId);
+            category.setName(rs.getString("category_name"));
+            interest.setCategory(category);
+        }
+
+        user.getInterests().add(interest);
     }
 }

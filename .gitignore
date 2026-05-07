@@ -60,3 +60,7 @@ release.properties
 # OS
 .DS_Store
 Thumbs.db
+
+#libs
+node_modules/
+*.json

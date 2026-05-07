@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Layout */
+body {
+    @apply bg-gray-100 flex min-h-screen font-sans;
+}
+
+/* Sidebar */
+aside {
+    @apply w-64 bg-gray-900 text-white p-6;
+}
+
+aside h2 {
+    @apply text-xl font-bold mb-6;
+}
+
+aside ul {
+    @apply space-y-3;
+}
+
+aside a {
+    @apply block p-2 rounded hover:bg-gray-700 transition;
+}
+
+aside a.active {
+    @apply bg-gray-700;
+}
+
+aside a.logout:hover {
+    @apply bg-red-600;
+}
+
+/* Main */
+main {
+    @apply flex-1 p-8;
+}
+
+h1 {
+    @apply text-3xl font-bold mb-6;
+}
+
+h2 {
+    @apply text-lg font-semibold mb-4;
+}
+
+/* Card */
+.card {
+    @apply bg-white p-6 rounded-xl shadow mb-6;
+}
+
+/* Botão */
+.btn {
+    @apply inline-block px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700 transition;
+}
+
+.btn-danger {
+    @apply bg-red-500 hover:bg-red-600;
+}
+
+.btn-secondary {
+    @apply bg-gray-500 hover:bg-gray-600;
+}
+
+/* Lista de meetings */
+.meeting-card {
+    @apply bg-white p-5 rounded-xl shadow mb-4;
+}
+
+/* Inputs */
+input, select {
+    @apply border border-gray-300 rounded px-2 py-1 mt-1 mb-2 w-full;
+}
+
+/* Labels */
+label {
+    @apply block text-sm font-medium text-gray-700;
+}
+
+/* Erros */
+.erro-campo {
+    @apply text-red-500 text-sm;
+}
+
+/* Calendário */
+#calendario table {
+    @apply w-full text-sm;
+}
+
+#calendario caption {
+    @apply font-bold mb-2;
+}
+
+#calendario th {
+    @apply text-center text-xs text-gray-500;
+}
+
+#calendario td {
+    @apply text-center p-1;
+}
+
+.dia {
+    @apply w-7 h-7 flex items-center justify-center rounded-full;
+}
+
+.dia-hoje {
+    @apply bg-gray-300;
+}
+
+.dia-meeting {
+    @apply bg-blue-500 text-white font-bold;
+}
+
+/* Lista de datas */
+.lista-datas {
+    @apply mt-3 list-disc pl-5 text-sm text-gray-700;
+}
