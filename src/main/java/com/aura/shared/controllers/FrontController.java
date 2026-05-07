@@ -22,11 +22,15 @@ public class FrontController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
+        System.out.println(">>> FrontController init - new version");
 
         // adiciona os controller com suas chaves que é a url
         routes.put("/home", new HomeController());
         routes.put("/users", new UsersController());
+        routes.put("/users/search", new UsersController());
         routes.put("/interest", new InterestController());
+        routes.put("/interest/learn", new InterestController());
+        routes.put("/interest/skills", new InterestController());
         routes.put("/availability", new AvailabilityController());
         routes.put("/meeting", new MeetingListController());
         routes.put("/meeting/register", new MeetingCreateController());

@@ -20,7 +20,7 @@ import java.util.ArrayList;
                  PreparedStatement stmt = connection.prepareStatement(sql)) {
 
                 stmt.setString(1, interest.getName());
-                stmt.setInt(4, interest.getCategory().getId());
+                stmt.setInt(2, interest.getCategory().getId());
                 stmt.executeUpdate();
                 System.out.println(" Interesse salvo com sucesso!");
 
@@ -108,9 +108,9 @@ import java.util.ArrayList;
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setString(1, interest.getName());
-                stmt.setInt(4, interest.getCategory().getId());
+                stmt.setInt(2, interest.getCategory().getId());
 
-                stmt.setInt(5, interest.getId());
+                stmt.setInt(3, interest.getId());
 
                 int rowsAffected = stmt.executeUpdate();
 

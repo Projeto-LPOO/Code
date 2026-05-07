@@ -12,6 +12,7 @@
     <meta charset="UTF-8">
     <title>Cadastrar Meeting</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/meeting.css">
 </head>
 
 <body data-context="${pageContext.request.contextPath}">
@@ -32,16 +33,19 @@
     <h1>Cadastrar Meeting</h1>
 
     <c:if test="${not empty error}">
-        <p style="color:red;">${error}</p>
+        <p class="erro-campo server-error">${error}</p>
     </c:if>
+
+    <span id="preselected-teacher-id"
+          data-value="${not empty preselectedTeacherId ? preselectedTeacherId : ''}"
+          style="display:none;"></span>
 
     <form id="formCadastro"
           action="${pageContext.request.contextPath}/autenticado/meeting/register"
-          method="post"
-          onsubmit="return validarCadastro(event)">
+          method="post">
 
         <label>Tipo:
-            <select name="tipo" id="tipoSelectCadastro" onchange="toggleCadastro()">
+            <select name="tipo" id="tipoSelectCadastro">
                 <option value="online"     ${tipo == 'online'     ? 'selected' : ''}>Online</option>
                 <option value="presencial" ${tipo == 'presencial' ? 'selected' : ''}>Presencial</option>
             </select>
@@ -57,7 +61,6 @@
         </label>
         <span class="erro-campo" id="erro-dataHora"></span><br>
 
-        <!-- Campos Online -->
         <div id="cadastroOnline">
             <label>Link/Plataforma:
                 <input type="text" name="link" id="link">
@@ -65,44 +68,61 @@
             <span class="erro-campo" id="erro-link"></span><br>
         </div>
 
-        <!-- Campos Presencial -->
         <div id="cadastroPresencial" style="display:none;">
             <label>Cidade: <input type="text" name="cidade" id="cidade"></label>
             <span class="erro-campo" id="erro-cidade"></span><br>
-
             <label>Bairro: <input type="text" name="bairro" id="bairro"></label><br>
-
             <label>Rua: <input type="text" name="rua" id="rua"></label>
             <span class="erro-campo" id="erro-rua"></span><br>
-
             <label>Número: <input type="number" name="numero" id="numero"></label>
             <span class="erro-campo" id="erro-numero"></span><br>
-
             <label>Ponto de referência: <input type="text" name="referencia" id="referencia"></label><br>
             <label>Instruções (opcional): <input type="text" name="instrucoes" id="instrucoes"></label><br>
         </div>
 
-        <!-- Seletor de Usuário -->
-        <fieldset style="margin-top:12px;">
-            <legend>Selecionar Usuário (opcional por ora)</legend>
+        <fieldset id="mentorSection" style="margin-top:12px;">
+            <legend>Professor</legend>
 
-            <input type="text" id="buscaUsuario"
-                   placeholder="Digite o nome do usuário..."
-                   autocomplete="off">
+            <c:choose>
+                <c:when test="${not empty mentor}">
+                    <p id="mentorName">
+                        <strong>${mentor.name}</strong>
+                        <a href="${pageContext.request.contextPath}/autenticado/users"
+                           style="font-size:0.85em; margin-left:8px;">Trocar</a>
+                    </p>
+                    <input type="hidden" name="teacherId" id="teacherId" value="${mentor.id}">
+                </c:when>
+                <c:otherwise>
+                    <p class="erro-campo">
+                        Nenhum professor selecionado.
+                        <a href="${pageContext.request.contextPath}/autenticado/users">Selecionar na lista de usuários</a>
+                    </p>
+                    <input type="hidden" name="teacherId" id="teacherId" value="">
+                </c:otherwise>
+            </c:choose>
+            <span class="erro-campo" id="erro-professor"></span>
+        </fieldset>
 
-            <div id="resultadoUsuarios"
-                 style="border:1px solid #ccc; max-height:180px; overflow-y:auto; display:none;"></div>
+        <fieldset id="categorySection" style="margin-top:12px;">
+            <legend>Habilidade do Professor</legend>
 
-            <p id="usuarioSelecionadoLabel" style="display:none;">
-                Selecionado: <strong id="usuarioSelecionadoNome"></strong>
-                <button type="button" onclick="limparUsuario()">✕</button>
-            </p>
+            <label>Categoria:
+                <select id="selectCategoria" name="categoriaId">
+                    <option value="">-- Selecione --</option>
+                </select>
+            </label><br>
 
-            <input type="hidden" name="usuarioId" id="usuarioId">
+            <label>Conhecimento (Interesse):
+                <select id="selectInteresse" name="interestId" disabled>
+                    <option value="">-- Selecione a categoria primeiro --</option>
+                </select>
+            </label>
+            <input type="hidden" name="interestId" id="interestIdHidden">
+            <br>
         </fieldset>
 
         <br>
-        <button type="submit">Cadastrar</button>
+        <button type="submit" id="submitBtn">Cadastrar</button>
         <a href="${pageContext.request.contextPath}/autenticado/meeting">← Voltar</a>
         <p class="erro-campo" id="erro-geral"></p>
     </form>
@@ -110,9 +130,10 @@
 
 <style>
     .erro-campo { color: red; font-size: 0.85em; }
+    .server-error { font-weight: bold; margin-bottom: 10px; }
 </style>
 
-<script src="${pageContext.request.contextPath}/assets/js/meeting.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/meetingRegister.js"></script>
 
 </body>
 </html>

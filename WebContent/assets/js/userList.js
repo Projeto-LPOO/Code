@@ -6,10 +6,7 @@ const contextPath = document.body.dataset.context;
 
 function search() {
     const term = searchInput.value;
-
-    const url = term
-        ? contextPath + "/autenticado/users/search?name=" + term
-        : contextPath + "/autenticado/users/search?name=";
+    const url = contextPath + "/autenticado/users/search?name=" + encodeURIComponent(term);
 
     fetch(url)
         .then(response => response.json())
@@ -35,7 +32,8 @@ function search() {
                     }
 
                     result.innerHTML +=
-                        "<div class='user-card'>" +
+                        "<div class='user-card' style='cursor:pointer;' onclick=\"window.location='" +
+                        contextPath + "/autenticado/meeting/register?teacherId=" + user_.id + "'\">" +
                         "<p>Name: " + user_.name + "</p>" +
                         "<p>Age: " + user_.age + "</p>" +
                         "<p>Address: " + user_.address + "</p>" +

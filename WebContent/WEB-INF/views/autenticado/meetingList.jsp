@@ -15,6 +15,7 @@
   <meta charset="UTF-8">
   <title>Meetings</title>
   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+  <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/meeting.css">
 </head>
 
 <body data-context="${pageContext.request.contextPath}">
@@ -32,85 +33,90 @@
 </aside>
 
 <main>
-  <h1>Meetings</h1>
+  <h1>Meus Meetings</h1>
 
   <c:if test="${not empty error}">
     <p id="server-error" style="color:red;">${error}</p>
   </c:if>
 
-  <a href="${pageContext.request.contextPath}/autenticado/meeting/register">+ Novo Meeting</a>
+  <a href="${pageContext.request.contextPath}/autenticado/users" class="btn-novo">+ Novo Meeting</a>
 
   <hr>
 
-  <!-- lista de meets -->
   <section>
-    <h2>Lista de Meetings</h2>
     <c:choose>
       <c:when test="${empty meetings}">
-        <p>Nenhum meeting cadastrado.</p>
+        <p>Nenhum meeting cadastrado.
+          <a href="${pageContext.request.contextPath}/autenticado/users">Escolha um professor</a>
+          para começar.
+        </p>
       </c:when>
       <c:otherwise>
         <c:forEach var="m" items="${meetings}">
-        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+          <div class="meeting-card">
 
-          <p><strong>Descrição:</strong> ${m.description}</p>
-          <p><strong>Data/Hora:</strong> ${m.dayTime}</p>
-          <p><strong>Status:</strong> ${m.status}</p>
-          <p><strong>Tipo:</strong> ${tipoMap[m.id]}</p>
+            <p><strong>Descrição:</strong> ${m.description}</p>
+            <p><strong>Data/Hora:</strong> ${m.dayTime}</p>
+            <p><strong>Status:</strong> ${m.status}</p>
+            <p><strong>Tipo:</strong> ${tipoMap[m.id]}</p>
+            <c:if test="${not empty m.category}">
+              <p><strong>Categoria:</strong> ${m.category.name}</p>
+            </c:if>
 
-          <button type="button"
-                  onclick="toggleEdit(this, '${m.id}', '${m.status}', '${tipoMap[m.id]}')">
-            Editar
-          </button>
+            <button type="button"
+                    class="btn-editar"
+                    onclick="toggleEdit(this, '${m.id}', '${m.status}', '${tipoMap[m.id]}')">
+              Editar
+            </button>
 
-          <form action="${pageContext.request.contextPath}/autenticado/meeting/delete"
-                method="post" style="display:inline;"
-                onsubmit="return confirm('Confirma exclusão?')">
-            <input type="hidden" name="id" value="${m.id}">
-            <button type="submit">Deletar</button>
-          </form>
-
-          <div class="editPanel" style="display:none; margin-top:10px;">
-            <form action="${pageContext.request.contextPath}/autenticado/meeting/update"
-                  method="post"
-                  onsubmit="return validarEdicao(this, event)">
-              <input type="hidden" name="id" class="editId">
-
-              <label>Descrição: <input type="text" name="descricao" class="edit-descricao" required></label>
-              <span class="erro-campo edit-erro-descricao"></span><br>
-
-              <label>Data/Hora (dd/MM/yyyy HH:mm):
-                <input type="text" name="dataHora" class="edit-dataHora" placeholder="25/12/2025 14:00">
-              </label>
-              <span class="erro-campo edit-erro-dataHora"></span><br>
-
-              <label>Status:
-                <select name="status">
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </label><br>
-
-              <div class="camposLocalizacao" style="display:none;">
-                <label>Cidade: <input type="text" name="cidade" class="edit-cidade"></label>
-                <span class="erro-campo edit-erro-cidade"></span><br>
-                <label>Bairro: <input type="text" name="bairro"></label><br>
-                <label>Rua: <input type="text" name="rua" class="edit-rua"></label>
-                <span class="erro-campo edit-erro-rua"></span><br>
-                <label>Número: <input type="number" name="numero" class="edit-numero"></label>
-                <span class="erro-campo edit-erro-numero"></span><br>
-                <label>Referência: <input type="text" name="referencia"></label><br>
-              </div>
-
-              <button type="submit">Salvar</button>
-              <button type="button"
-                      onclick="this.closest('.editPanel').style.display='none'">Cancelar</button>
+            <form action="${pageContext.request.contextPath}/autenticado/meeting/delete"
+                  method="post" style="display:inline;"
+                  onsubmit="return confirm('Confirma exclusão?')">
+              <input type="hidden" name="id" value="${m.id}">
+              <button type="submit" class="btn-deletar">Deletar</button>
             </form>
+
+            <div class="editPanel" style="display:none; margin-top:10px;">
+              <form action="${pageContext.request.contextPath}/autenticado/meeting/update"
+                    method="post"
+                    onsubmit="return validateEditForm(this, event)">
+                <input type="hidden" name="id" class="editId">
+
+                <label>Descrição: <input type="text" name="descricao" class="edit-descricao" required></label>
+                <span class="erro-campo edit-erro-descricao"></span><br>
+
+                <label>Data/Hora (dd/MM/yyyy HH:mm):
+                  <input type="text" name="dataHora" class="edit-dataHora" placeholder="25/12/2025 14:00">
+                </label>
+                <span class="erro-campo edit-erro-dataHora"></span><br>
+
+                <label>Status:
+                  <select name="status">
+                    <option value="pending">Pendente</option>
+                    <option value="confirmed">Confirmado</option>
+                    <option value="cancelled">Cancelado</option>
+                    <option value="done">Concluído</option>
+                  </select>
+                </label><br>
+
+                <div class="camposLocalizacao" style="display:none;">
+                  <label>Cidade: <input type="text" name="cidade" class="edit-cidade"></label>
+                  <span class="erro-campo edit-erro-cidade"></span><br>
+                  <label>Bairro: <input type="text" name="bairro"></label><br>
+                  <label>Rua: <input type="text" name="rua" class="edit-rua"></label>
+                  <span class="erro-campo edit-erro-rua"></span><br>
+                  <label>Número: <input type="number" name="numero" class="edit-numero"></label>
+                  <span class="erro-campo edit-erro-numero"></span><br>
+                  <label>Referência: <input type="text" name="referencia"></label><br>
+                </div>
+
+                <button type="submit">Salvar</button>
+                <button type="button"
+                        onclick="this.closest('.editPanel').style.display='none'">Cancelar</button>
+              </form>
+            </div>
           </div>
-        </div>
-      </c:forEach>
+        </c:forEach>
       </c:otherwise>
     </c:choose>
   </section>
@@ -118,9 +124,11 @@
 
 <style>
   .erro-campo { color: red; font-size: 0.85em; }
+  .meeting-card { border: 1px solid #ccc; padding: 12px; margin-bottom: 12px; border-radius: 6px; }
+  .btn-novo { display: inline-block; margin-bottom: 10px; }
 </style>
 
-<script src="${pageContext.request.contextPath}/assets/js/meeting.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/meetingList.js"></script>
 
 </body>
 </html>
