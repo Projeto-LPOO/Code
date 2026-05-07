@@ -43,6 +43,7 @@ h1 {
     flex-direction: column;
     justify-content: space-between;
     min-height: 180px;
+    cursor: pointer;
 }
 
 .user-card:hover {
@@ -62,7 +63,6 @@ h1 {
     color: #1e293b;
 }
 
-
 .interest-tag {
     display: inline-block;
     background: #f1f5f9;
@@ -74,7 +74,26 @@ h1 {
     border: 1px solid #e2e8f0;
 }
 
-/* Responsividade simples: se a tela diminuir, vira 2 colunas */
+/* ADICIONADO: estilo do botão Perfil */
+.btn-perfil {
+    background-color: #6366f1;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background-color 0.2s ease;
+}
+
+.btn-perfil:hover {
+    background-color: #4f46e5;
+}
+
 @media (max-width: 1024px) {
     .cards {
         grid-template-columns: repeat(2, 1fr);

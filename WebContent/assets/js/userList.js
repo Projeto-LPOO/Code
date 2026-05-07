@@ -7,8 +7,8 @@ const contextPath = document.body.dataset.context;
 function search() {
     const term = searchInput.value;
     const url = term
-        ? contextPath + "/users/search?name=" + term
-        : contextPath + "/users/search?name=";
+        ? contextPath + "/autenticado/users/search?name=" + term
+        : contextPath + "/autenticado/users/search?name=";
 
     fetch(url)
         .then(response => response.json())
@@ -38,8 +38,7 @@ function search() {
 
                     // AÇÃO: AO CLICAR NO CARD, REDIRECIONA PARA O PERFIL
                     card.onclick = function() {
-                        window.location.href = contextPath + "/users?action=profile&id=" + user_.id;
-                    };
+                        window.location.href = contextPath + "/autenticado/users/profile?id=" + user_.id;                    };
 
                     // CONTEÚDO DO CARD
                     card.innerHTML = `
