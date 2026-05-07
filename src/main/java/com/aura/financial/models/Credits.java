@@ -2,6 +2,8 @@ package com.aura.financial.models;
 
 import com.aura.shared.BaseEntity;
 import com.aura.user.models.CommercialUser;
+import com.aura.user.models.Learner;
+import com.aura.user.models.Teacher;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -39,4 +41,34 @@ public class Credits extends BaseEntity {
 
     public List<Transaction> getTransactions() { return transactions; }
     public void setTransactions(Transaction transactions) { this.transactions.add(transactions);}
+
+
+    public void buy(int amount) {
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Valor inválido");
+        }
+
+        BigDecimal value = BigDecimal.valueOf(amount);
+
+        this.balance = this.balance.add(value);
+        this.totalEarned = this.totalEarned.add(value);
+    }
+
+    public void withdraw(int amount) {
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Valor inválido");
+        }
+
+        BigDecimal value = BigDecimal.valueOf(amount);
+
+        if (this.balance.compareTo(value) < 0) {
+            throw new IllegalArgumentException("Saldo insuficiente");
+        }
+
+        this.balance = this.balance.subtract(value);
+        this.totalSpent = this.totalSpent.add(value);
+    }
+
 }

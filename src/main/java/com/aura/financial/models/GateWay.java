@@ -15,12 +15,8 @@ public class GateWay {
         GateWayResponse response = new GateWayResponse();
         response.setId(longUnique);
 
-        int chanceApproval = 100 - transaction.getAmount().intValue();
 
-        if (chanceApproval < 10) chanceApproval = 10;
-        if (chanceApproval > 90) chanceApproval = 90;
-
-        if(randomNumber > chanceApproval)
+        if(randomNumber < 0.20)
         {
             response.setResult(false);
             response.setMsg("Transação negada");

@@ -62,4 +62,22 @@ public class Transaction extends BaseEntity {
     {
         this.externalId = externalId;
     }
+
+    public void process(Credits credits, int amountCredits) {
+
+        switch (type) {
+
+            case BUY -> {
+                credits.buy(amountCredits);
+            }
+
+            case WITHDRAW -> {
+                credits.withdraw(amountCredits);
+            }
+
+            default ->
+                    throw new IllegalArgumentException("Tipo inválido");
+        }
+    }
+
 }

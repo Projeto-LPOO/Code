@@ -50,7 +50,8 @@ public class FinancialDao {
 
     public void registerTransaction(Transaction transaction)
     {
-        String sql = "INSERT INTO transactions bank_account_id, amount, type, status, external_id) VALUES (?, ?, ?::transaction_type, ?::transaction_status, ?)";
+        String sql = "INSERT INTO transactions (bank_account_id, amount, type, status, external_id) " +
+                "VALUES (?, ?, ?::transaction_type, ?::transaction_status, ?)";
 
         try(Connection conn = dbFactory.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql))
@@ -68,16 +69,24 @@ public class FinancialDao {
         }
     }
 
-    public void updateCredits(CommercialUser user, int credits)
+    public void updateCredits(Credits credits)
     {
-        String sql = "UPDATE credits SET balance = balance + ?, total_earned = total_earned + ?, updated_at = NOW() WHERE user_id = ?";
+        String sql = """
+        UPDATE credits
+        SET balance = ?,
+            total_earned = ?,
+            total_spent = ?,
+            updated_at = NOW()
+        WHERE user_id = ?
+    """;
 
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql))
         {
-            stmt.setInt(1, credits);
-            stmt.setInt(2, credits);
-            stmt.setInt(3, user.getId());
+            stmt.setBigDecimal(1, credits.getBalance());
+            stmt.setBigDecimal(2, credits.getTotalEarned());
+            stmt.setBigDecimal(3, credits.getTotalSpent());
+            stmt.setInt(4, credits.getUser().getId());
 
             stmt.executeUpdate();
 
@@ -101,6 +110,12 @@ public class FinancialDao {
                 credits.setBalance(rs.getBigDecimal("balance"));
                 credits.setTotalEarned(rs.getBigDecimal("total_earned"));
                 credits.setTotalSpent(rs.getBigDecimal("total_spent"));
+
+                CommercialUser user = new CommercialUser();
+
+                user.setId(iduser);
+
+                credits.setUser(user);
             }
             return credits;
         } catch (Exception e) {
@@ -123,6 +138,7 @@ public class FinancialDao {
                 account.setId(rs.getInt("id"));
                 account.setBankName(rs.getString("bank_name"));
                 account.setIsbp(rs.getString("ispb"));
+                account.setAgency(rs.getString("agency"));
                 account.setAccountNumber(rs.getString("account_number"));
                 account.setPixKey(rs.getString("pix_key"));
                 account.setHolderName(rs.getString("holder_name"));
@@ -185,7 +201,6 @@ public class FinancialDao {
             throw new RuntimeException(e);
         }
     }
-
 
 
 
