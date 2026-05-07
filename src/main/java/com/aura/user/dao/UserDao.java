@@ -1,6 +1,7 @@
 package com.aura.user.dao;
 
 import com.aura.dbConfig.dbFactory;
+import com.aura.financial.models.Credits;
 import com.aura.interest.model.Interest;
 import com.aura.user.models.Admin;
 import com.aura.user.models.CommercialUser;
@@ -238,6 +239,7 @@ public class UserDao {
                 user.setCpf(rs.getString("cpf"));
                 user.setEmail(rs.getString("email"));
                 user.setHashPassword(rs.getString("password")); // hash do banco
+
             }
 
         } catch (Exception e) {

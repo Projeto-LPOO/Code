@@ -54,6 +54,7 @@ import java.util.ArrayList;
                     Category category = new Category();
                     category.setId(rs.getInt("id"));
                     category.setName(rs.getString("name"));
+                    category.setImgUrl(rs.getString("img_url"));
                     interest.setCategory(category);
 
                     stmt.execute();
@@ -69,10 +70,10 @@ import java.util.ArrayList;
 
             List<Interest> interests = new ArrayList<>();
 
-            String sql = "SELECT i.*, c.id as \"id_category\", c.name as \"name_category\" \n" +
-                         "FROM interests i \n" +
-                         "JOIN categories c \n" +
-                         "ON i.category_id = c.id";
+            String sql = "SELECT i.*, c.id as \"id_category\", c.name as \"name_category\", c.img_url as \"img_url_category\" \n" +
+                    "FROM interests i \n" +
+                    "JOIN categories c \n" +
+                    "ON i.category_id = c.id";
 
             try (Connection connection = dbFactory.getConnection();
                  PreparedStatement stmt = connection.prepareStatement(sql);
@@ -87,6 +88,7 @@ import java.util.ArrayList;
                     Category category = new Category();
                     category.setId(rs.getInt("id_category"));
                     category.setName(rs.getString("name_category"));
+                    category.setImgUrl(rs.getString("img_url_category"));
                     interest.setCategory(category);
 
                     interests.add(interest);
