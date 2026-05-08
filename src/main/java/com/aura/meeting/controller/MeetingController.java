@@ -24,6 +24,11 @@ public class MeetingController {
         if (meeting.getTeacher() == null)
             throw new IllegalArgumentException("O meeting precisa de um professor.");
 
+
+        if (meetingDao.hasConflict(meeting.getTeacher().getId(), meeting.getDayTime()))
+            throw new IllegalArgumentException("O professor já possui um meeting agendado neste horário.");
+
+
         if (meeting instanceof FaceToFaceMeeting ftf) {
             if (ftf.getLocation() == null)
                 throw new IllegalArgumentException("Meeting presencial precisa de uma localização.");

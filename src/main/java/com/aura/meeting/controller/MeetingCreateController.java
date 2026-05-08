@@ -15,6 +15,8 @@ import com.aura.user.models.Learner;
 import com.aura.user.models.Teacher;
 import com.aura.user.models.User;
 import com.google.gson.Gson;
+import com.aura.availability.dao.AvailabilityDao;
+import com.aura.availability.models.Availability;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +27,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 public class MeetingCreateController extends BaseController {
 
@@ -47,6 +51,7 @@ public class MeetingCreateController extends BaseController {
         switch (action) {
             case "mentorCategories" -> fetchCategoriesOfMentor(request, response);
             case "mentorInterests"  -> fetchInterestsOfMentorByCategory(request, response);
+            case "mentorSlots" -> fetchAvailableSlotsOfMentor(request, response);
             default                 -> showForm(request, response);
         }
     }
@@ -260,6 +265,50 @@ public class MeetingCreateController extends BaseController {
             return LocalDateTime.parse(str, FORMATTER);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Formato de data inválido. Use dd/MM/yyyy HH:mm.");
+        }
+    }
+
+    private final AvailabilityDao availabilityDao = new AvailabilityDao();
+
+    private void fetchAvailableSlotsOfMentor(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        String teacherIdParam = request.getParameter("teacherId");
+        try {
+            int teacherId = Integer.parseInt(teacherIdParam);
+
+            List<Availability> slots = availabilityDao.findActiveByUser(teacherId);
+
+            // Convert to simple map for JSON serialization
+            List<Map<String, String>> result = new ArrayList<>();
+            for (Availability slot : slots) {
+                Map<String, String> map = new java.util.LinkedHashMap<>();
+                map.put("day", slot.getDayWeek().name());
+                map.put("dayLabel", translateDayToLabel(slot.getDayWeek()));
+                map.put("start", slot.getHourStart().toString());
+                map.put("end", slot.getHourEnd().toString());
+                result.add(map);
+            }
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(gson.toJson(result));
+
+        } catch (Exception e) {
+            response.setStatus(400);
+        }
+    }
+
+    private String translateDayToLabel(java.time.DayOfWeek day) {
+        switch (day) {
+            case MONDAY: return "Segunda-feira";
+            case TUESDAY: return "Terça-feira";
+            case WEDNESDAY: return "Quarta-feira";
+            case THURSDAY: return "Quinta-feira";
+            case FRIDAY: return "Sexta-feira";
+            case SATURDAY: return "Sábado";
+            case SUNDAY: return "Domingo";
+            default: return day.name();
         }
     }
 }

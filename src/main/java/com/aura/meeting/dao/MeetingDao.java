@@ -10,6 +10,7 @@ import com.aura.user.models.Learner;
 import com.aura.user.models.Teacher;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -341,5 +342,29 @@ public class MeetingDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean hasConflict(int teacherId, LocalDateTime scheduledAt) {
+        String sql = "SELECT COUNT(*) FROM meetings m " +
+                "JOIN meeting_participants mp ON mp.meeting_id = m.id " +
+                "WHERE mp.user_id = ? AND mp.role = 'TEACHER'::participant_role " +
+                "AND m.status NOT IN ('cancelled') " +
+                "AND DATE(m.scheduled_at) = DATE(?) " +
+                "AND m.scheduled_at = ?";
+
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, teacherId);
+            stmt.setTimestamp(2, Timestamp.valueOf(scheduledAt));
+            stmt.setTimestamp(3, Timestamp.valueOf(scheduledAt));
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking meeting conflict: " + e.getMessage(), e);
+        }
+        return false;
     }
 }
