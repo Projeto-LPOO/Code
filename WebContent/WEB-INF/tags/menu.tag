@@ -50,6 +50,20 @@
             </svg>
             Financeiro
         </a>
+        <a href="${pageContext.request.contextPath}/autenticado/meeting"
+           class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 ${paginaAtiva == 'meeting' ? 'bg-[#f2ecf5] font-medium text-[#7c3aed]' : 'text-gray-500'}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- círculo usuário direita (atrás) -->
+                <circle cx="14.5" cy="9.5" r="6" stroke="currentColor" stroke-width="1.8"/>
+                <circle cx="14.5" cy="7.5" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10.5 13.5C10.5 11.5 18.5 11.5 18.5 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- círculo usuário esquerda (frente) -->
+                <circle cx="9.5" cy="14.5" r="6" stroke="currentColor" stroke-width="1.8"/>
+                <circle cx="9.5" cy="12.5" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M5.5 18.5C5.5 16.5 13.5 16.5 13.5 18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Minhas Mettings
+        </a>
 
     </nav>
 

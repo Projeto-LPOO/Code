@@ -7,7 +7,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Usuários</title>
-
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 

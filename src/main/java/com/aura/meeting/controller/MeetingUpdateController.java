@@ -1,4 +1,4 @@
-package com.aura.meeting.controller;
+/*package com.aura.meeting.controller;
 
 import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Location;
@@ -89,4 +89,4 @@ public class MeetingUpdateController extends BaseController {
             throw new IllegalArgumentException("Formato de data inválido. Use dd/MM/yyyy HH:mm.");
         }
     }
-}
+}*/

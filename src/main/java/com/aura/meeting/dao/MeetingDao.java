@@ -314,31 +314,34 @@ public class MeetingDao {
     }
 
     public void delete(int meetingId) {
-        String deleteParticipants = "DELETE FROM meeting_participants WHERE meeting_id = ?";
-        String deleteLocation = "DELETE FROM locations WHERE id = (SELECT location_id FROM meetings WHERE id = ?)";
+
         String deleteMeeting = "DELETE FROM meetings WHERE id = ?";
 
         try (Connection conn = dbFactory.getConnection()) {
+
             conn.setAutoCommit(false);
+
             try {
-                try (PreparedStatement pstmt = conn.prepareStatement(deleteParticipants)) {
-                    pstmt.setInt(1, meetingId);
-                    pstmt.executeUpdate();
-                }
-                try (PreparedStatement pstmt = conn.prepareStatement(deleteLocation)) {
-                    pstmt.setInt(1, meetingId);
-                    pstmt.executeUpdate();
-                }
+
+                // apaga o meeting
+                // meeting_participants será apagado pelo ON DELETE CASCADE
+                // location será apagada pelo trigger
                 try (PreparedStatement pstmt = conn.prepareStatement(deleteMeeting)) {
+
                     pstmt.setInt(1, meetingId);
                     pstmt.executeUpdate();
                 }
+
                 conn.commit();
+
             } catch (SQLException e) {
+
                 conn.rollback();
                 throw new RuntimeException(e);
             }
+
         } catch (SQLException e) {
+
             throw new RuntimeException(e);
         }
     }

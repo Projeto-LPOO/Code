@@ -3,9 +3,8 @@ package com.aura.shared.controllers;
 import com.aura.availability.controllers.AvailabilityController;
 import com.aura.financial.controllers.FinancialController;
 import com.aura.interest.controllers.InterestController;
-import com.aura.meeting.controller.*;
+import com.aura.meeting.controller.MeetingController;
 import com.aura.user.controllers.UsersController;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,20 +22,14 @@ public class FrontController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        System.out.println(">>> FrontController init - new version");
 
         // adiciona os controller com suas chaves que é a url
         routes.put("/home", new HomeController());
         routes.put("/users", new UsersController());
-        routes.put("/users/search", new UsersController());
         routes.put("/interest", new InterestController());
-        routes.put("/interest/learn", new InterestController());
-        routes.put("/interest/skills", new InterestController());
         routes.put("/availability", new AvailabilityController());
-        routes.put("/meeting", new MeetingListController());
-        routes.put("/meeting/register", new MeetingCreateController());
-        routes.put("/meeting/update", new MeetingUpdateController());
-        routes.put("/meeting/delete", new MeetingDeleteController());
+        routes.put("/financial", new FinancialController());
+        routes.put("/meeting", new MeetingController());
 
         for (HttpServlet controller : routes.values()) {
             controller.init(getServletConfig()); //inicia manualmente cada controller
@@ -64,19 +57,14 @@ public class FrontController extends HttpServlet {
         controller.service(request, response);
     }
     private String extractPath(HttpServletRequest req) {
-        String pathInfo = req.getPathInfo();
+        String pathInfo = req.getPathInfo(); // ex: /interest/learn
 
         if (pathInfo == null || pathInfo.equals("/")) {
             return "/";
         }
 
-        pathInfo = pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo;
         String[] parts = pathInfo.split("/");
 
-        if (parts.length >= 2) {
-            return "/" + parts[0] + "/" + parts[1];
-        }
-
-        return "/" + parts[0];
+        return parts.length > 1 ? "/" + parts[1] : "/";
     }
 }

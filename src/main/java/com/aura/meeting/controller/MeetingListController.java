@@ -1,4 +1,4 @@
-package com.aura.meeting.controller;
+/*package com.aura.meeting.controller;
 
 import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Meeting;
@@ -41,4 +41,4 @@ public class MeetingListController extends BaseController {
         request.setAttribute("tipoMap", typeMap);
         forward(request, response, "autenticado/meetingList.jsp");
     }
-}
+}*/

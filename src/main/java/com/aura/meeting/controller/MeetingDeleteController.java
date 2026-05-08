@@ -1,4 +1,4 @@
-package com.aura.meeting.controller;
+/*package com.aura.meeting.controller;
 
 import com.aura.shared.controllers.BaseController;
 import jakarta.servlet.ServletException;
@@ -35,4 +35,4 @@ public class MeetingDeleteController extends BaseController {
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
         }
     }
-}
+}*/

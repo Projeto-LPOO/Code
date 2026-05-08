@@ -1,28 +1,29 @@
-function toggleEdit(button, meetingId, currentStatus, meetingType) {
-    const card      = button.closest(".meeting-card");
-    const panel     = card.querySelector(".editPanel");
-    const isVisible = panel.style.display !== "none";
+function toggleEdit(button, meetingId, currentStatus, description, dayTime) {
+
+    const card = button.closest(".meeting-card");
+
+    const panel = card.querySelector(".editPanel");
+
+    const isVisible = !panel.classList.contains("hidden");
 
     if (isVisible) {
-        panel.style.display = "none";
+        panel.classList.add("hidden");
         return;
     }
 
-    card.querySelector(".editId").value         = meetingId;
-    card.querySelector(".edit-descricao").value = "";
-    card.querySelector(".edit-dataHora").value  = "";
+    panel.querySelector(".editId").value = meetingId;
+
+    panel.querySelector(".edit-descricao").value = description;
+
+    panel.querySelector(".edit-dataHora").value = dayTime;
 
     const statusSelect = panel.querySelector("select[name='status']");
+
     if (statusSelect) {
         statusSelect.value = currentStatus;
     }
 
-    const locationFields = card.querySelector(".camposLocalizacao");
-    if (locationFields) {
-        locationFields.style.display = (meetingType === "PRESENCIAL") ? "block" : "none";
-    }
-
-    panel.style.display = "block";
+    panel.classList.remove("hidden");
 }
 
 function validateEditForm(form, event) {
