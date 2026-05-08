@@ -116,19 +116,33 @@ public class UserDao {
         return users;
     }
 
-    public CommercialUser findById(int id)
-    {
-        CommercialUser commercialUser = null;
-        String sql = "select * from users where id = ? and type = 'COMMERCIAL'::user_type";
+    public CommercialUser findById(int id) {
+        List<CommercialUser> users = new ArrayList<>();
 
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
-        {
+        String sql = "SELECT " +
+                "u.id AS user_id, " +
+                "u.name AS user_name, " +
+                "u.age, " +
+                "u.address, " +
+                "u.phone, " +
+                "u.cpf, " +
+                "u.email, " +
+                "u.password, " +
+                "i.id AS interest_id, " +
+                "i.name AS interest_name " +
+                "FROM users u " +
+                "LEFT JOIN user_interests ui ON ui.user_id = u.id " +
+                "LEFT JOIN interests i ON i.id = ui.interest_id " +
+                "WHERE u.id = ? AND u.type = 'COMMERCIAL'::user_type";
+
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
             stmt.setInt(1, id);
+
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                // Reaproveita a lógica de mapeamento para preencher o objeto e a lista de interesses
                 mapResultSetToCommercialUser(rs, users);
             }
 
@@ -136,7 +150,6 @@ public class UserDao {
             throw new RuntimeException(e);
         }
 
-        // Retorna o usuário encontrado ou null caso a lista esteja vazia
         return users.isEmpty() ? null : users.get(0);
     }
 
