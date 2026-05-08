@@ -3,31 +3,38 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<%
-    User user = (User) session.getAttribute("user");
-%>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Usuários</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/userList.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/userList.css">
 </head>
-<body class="bg-white min-h-screen text-gray-800 flex flex-col"
-      data-userid="<%= user.getId() %>"
-      data-context="${pageContext.request.contextPath}">
 
-<t:header paginaAtiva="financial" />
+<body
+        data-userid="${sessionScope.user.id}"
+        data-context="${pageContext.request.contextPath}">
 
-<div class="flex flex-1">
-<t:menu paginaAtiva="explore"/>
-<main class="flex-1 p-10 space-y-8">
-    <input type="text" id="search-input" name="search" placeholder="O que você quer aprender hoje? (ex: 'React', 'Culinária', 'Piano')">
+<aside>
+    <nav>
+        <ul>
+            <li><a href="${pageContext.request.contextPath}/autenticado/home">Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/users">Lista de usuários</a></li>
+            <li><a href="${pageContext.request.contextPath}/logout">Sair</a></li>
+        </ul>
+    </nav>
+</aside>
 
-    <div class="cards" id="result"></div>
+<main>
+    <header class="list-header">
+        <h1>Listagem de Usuários</h1>
+        <input type="text" id="search-input" placeholder="Encontre usuários">
+    </header>
+
+    <div class="cards" id="result">
+        <p class="loading-msg">Buscando usuários...</p>
+    </div>
 </main>
 </div>
 <script src="${pageContext.request.contextPath}/assets/js/userList.js"></script>
