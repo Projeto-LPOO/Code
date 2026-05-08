@@ -58,6 +58,14 @@ public class MeetingController {
         return meetingDao.findByUserId(userId);
     }
 
+    }
+
+    public List<Meeting> findByUserId(int userId) {
+        if (userId <= 0)
+            throw new IllegalArgumentException("ID de usuário inválido.");
+        return meetingDao.findByUserId(userId);
+    }
+
     public void update(Meeting meeting) {
         if (meeting.getId() <= 0)
             throw new IllegalArgumentException("ID do meeting inválido para atualização.");

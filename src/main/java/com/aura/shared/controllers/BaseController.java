@@ -18,10 +18,9 @@ public class BaseController extends HttpServlet {
             return "/";
         }
 
-        String cleanPath = pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo;
-        String[] parts = cleanPath.split("/");
+        String[] parts = pathInfo.split("/");
 
-        return parts.length > 1 ? parts[1].toLowerCase() : "/";
+        return parts.length > 2 ? parts[2].toLowerCase() : "/";
     }
 
     protected void forward(HttpServletRequest req, HttpServletResponse resp, String view)
