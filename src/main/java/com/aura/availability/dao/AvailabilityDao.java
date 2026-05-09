@@ -179,4 +179,33 @@ public class AvailabilityDao {
 	        default: return DayOfWeek.MONDAY;
 	    }
 	}
+
+	// by little daniel
+	public List<Availability> findActiveByUser(int userId) {
+		String sql = "SELECT * FROM availability WHERE user_commercial_id = ? AND is_available = true";
+		List<Availability> list = new ArrayList<>();
+
+		try (Connection connection = dbFactory.getConnection();
+			 PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+			stmt.setInt(1, userId);
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				Availability slot = new Availability();
+				slot.setId(rs.getInt("id"));
+				CommercialUser user = new CommercialUser();
+				user.setId(rs.getInt("user_commercial_id"));
+				slot.setUser(user);
+				slot.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
+				slot.setHourStart(rs.getTime("hour_start").toLocalTime());
+				slot.setHourEnd(rs.getTime("hour_end").toLocalTime());
+				slot.setActive(rs.getBoolean("is_available"));
+				list.add(slot);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching active slots: " + e.getMessage(), e);
+		}
+		return list;
+	}
 }

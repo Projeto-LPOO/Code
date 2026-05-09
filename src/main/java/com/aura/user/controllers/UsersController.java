@@ -85,7 +85,7 @@ public class UsersController extends BaseController {
                     request.setAttribute("user", user);
                     request.setAttribute("schedules", schedules);
 
-                    forward(request, response, "/autenticado/userProfile.jsp");
+                    forward(request, response, "autenticado/userProfile.jsp");
                     return;
                 }
             } catch (NumberFormatException e) {}

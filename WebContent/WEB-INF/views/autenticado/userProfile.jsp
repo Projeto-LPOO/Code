@@ -130,7 +130,7 @@
                                 </div>
 
                                 <!-- DIREITA -->
-                                <a href="${pageContext.request.contextPath}/autenticado/schedule"
+                                <a href="${pageContext.request.contextPath}/autenticado/meeting/register?teacherId=${user.id}"
                                    class="inline-flex items-center justify-center
                                           bg-gradient-to-br
                                           from-violet-600
