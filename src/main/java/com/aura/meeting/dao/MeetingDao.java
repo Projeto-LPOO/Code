@@ -17,8 +17,9 @@ import java.util.List;
 public class MeetingDao {
 
     public void register(Meeting meeting) {
-        String sqlMeeting = "INSERT INTO meetings(description, scheduled_at, meeting_type, status, category_id)" +
-                "VALUES(?, ?, ?::meeting_type_enum, ?::meeting_status, ?)";
+        // ALTERADO: adicionado duration_minutes na INSERT
+        String sqlMeeting = "INSERT INTO meetings(description, scheduled_at, meeting_type, status, category_id, duration_minutes)" +
+                "VALUES(?, ?, ?::meeting_type_enum, ?::meeting_status, ?, ?)";
         String sqlLocation = "INSERT INTO locations(city, neighborhood, street, house_number, reference_point)" +
                 "VALUES(?, ?, ?, ?, ?)";
         String sqlParticipantLearner = "INSERT INTO meeting_participants(meeting_id, user_id, role)" +
@@ -40,6 +41,9 @@ public class MeetingDao {
                         pstmt.setInt(5, meeting.getCategory().getId());
                     else
                         pstmt.setNull(5, Types.INTEGER);
+                    // NOVO: duração, padrão 60 se não informada
+                    int dur = meeting.getDurationMinutes() > 0 ? meeting.getDurationMinutes() : 60;
+                    pstmt.setInt(6, dur);
                     pstmt.executeUpdate();
 
                     ResultSet rs = pstmt.getGeneratedKeys();
@@ -102,7 +106,8 @@ public class MeetingDao {
     public List<Meeting> findByUserId(int userId) {
         List<Meeting> meetings = new ArrayList<>();
 
-        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, " +
+        // ALTERADO: inclui duration_minutes no SELECT
+        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
                 "c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
                 "JOIN meeting_participants mp ON mp.meeting_id = m.id " +
@@ -125,6 +130,7 @@ public class MeetingDao {
                 meeting.setDescription(rs.getString("description"));
                 meeting.setStatus(rs.getString("status"));
                 meeting.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
+                meeting.setDurationMinutes(rs.getInt("duration_minutes")); // NOVO
 
                 int categoryId = rs.getInt("category_id");
                 if (!rs.wasNull()) {
@@ -146,7 +152,8 @@ public class MeetingDao {
 
     public List<Meeting> findAll() {
         List<Meeting> meetings = new ArrayList<>();
-        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, " +
+        // ALTERADO: inclui duration_minutes
+        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
                 "c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
                 "LEFT JOIN categories c ON c.id = m.category_id " +
@@ -165,6 +172,7 @@ public class MeetingDao {
                 meeting.setDescription(rs.getString("description"));
                 meeting.setStatus(rs.getString("status"));
                 meeting.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
+                meeting.setDurationMinutes(rs.getInt("duration_minutes")); // NOVO
 
                 int categoryId = rs.getInt("category_id");
                 if (!rs.wasNull()) {
@@ -185,6 +193,7 @@ public class MeetingDao {
     }
 
     public Meeting findById(int meetingId) {
+        // ALTERADO: inclui duration_minutes
         String sql = "SELECT m.*, c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
                 "LEFT JOIN categories c ON c.id = m.category_id " +
@@ -210,6 +219,7 @@ public class MeetingDao {
                     ftf.setDescription(rs.getString("description"));
                     ftf.setStatus(rs.getString("status"));
                     ftf.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
+                    ftf.setDurationMinutes(rs.getInt("duration_minutes")); // NOVO
 
                     ResultSet locs = locps.executeQuery();
                     if (locs.next()) {
@@ -229,6 +239,7 @@ public class MeetingDao {
                     om.setDescription(rs.getString("description"));
                     om.setStatus(rs.getString("status"));
                     om.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
+                    om.setDurationMinutes(rs.getInt("duration_minutes")); // NOVO
                     meeting = om;
                 }
 

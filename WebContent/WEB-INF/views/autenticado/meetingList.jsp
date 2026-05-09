@@ -4,6 +4,7 @@
 <%@ page import="com.aura.meeting.model.OnlineMeeting" %>
 <%@ page import="com.aura.meeting.model.Meeting" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <%
     User loggedUser = (User) session.getAttribute("user");
@@ -14,151 +15,190 @@
 <head>
     <meta charset="UTF-8">
     <title>Meetings | Infinity Aura</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/meetingRegister.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body data-context="${pageContext.request.contextPath}">
+<body class="bg-gray-100 min-h-screen flex" data-context="${pageContext.request.contextPath}">
 
-<aside>
-    <nav>
-        <ul>
-            <li><a href="${pageContext.request.contextPath}/autenticado/home">Dashboard</a></li>
-            <li><a href="${pageContext.request.contextPath}/autenticado/users">Explorar</a></li>
-            <li><a href="${pageContext.request.contextPath}/autenticado/availability">Agenda</a></li>
-            <li><a href="${pageContext.request.contextPath}/autenticado/meeting" class="nav-active">Meetings</a></li>
-            <li><a href="${pageContext.request.contextPath}/logout">Sair</a></li>
-        </ul>
-    </nav>
-</aside>
+<t:menu paginaAtiva="meetings" />
 
-<main>
+<main class="flex-1 min-w-0 p-8">
 
-    <div class="mr-page-header">
+    <%-- Cabeçalho --%>
+    <div class="flex items-center justify-between mb-7">
         <div>
-            <h1 class="mr-page-title">Meus Meetings</h1>
-            <p class="mr-page-sub">Visualize, edite ou cancele suas sessões agendadas.</p>
+            <h1 class="text-2xl font-bold text-gray-900">Meus Meetings</h1>
+            <p class="text-sm text-gray-500 mt-1">Visualize, edite ou cancele suas sessões agendadas.</p>
         </div>
-        <a href="${pageContext.request.contextPath}/autenticado/users" class="mr-btn-primary">
+        <a href="${pageContext.request.contextPath}/autenticado/users"
+           class="inline-block bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
             + Novo Meeting
         </a>
     </div>
 
     <c:if test="${not empty error}">
-        <div class="mr-server-error">${error}</div>
+        <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-5">${error}</div>
     </c:if>
 
-    <section>
-        <c:choose>
-            <c:when test="${empty meetings}">
-                <div class="mr-empty-state">
-                    <p class="mr-empty-title">Nenhum meeting cadastrado.</p>
-                    <p class="mr-empty-text">Escolha um professor para começar.</p>
-                    <a href="${pageContext.request.contextPath}/autenticado/users" class="mr-btn-primary">
-                        Explorar Professores
-                    </a>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <c:forEach var="m" items="${meetings}">
-                    <div class="meeting-card">
+    <c:choose>
+        <c:when test="${empty meetings}">
+            <div class="bg-white border border-gray-200 rounded-2xl p-16 text-center">
+                <p class="text-base font-semibold text-gray-700 mb-2">Nenhum meeting cadastrado.</p>
+                <p class="text-sm text-gray-400 mb-6">Escolha um professor para começar.</p>
+                <a href="${pageContext.request.contextPath}/autenticado/users"
+                   class="inline-block bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm px-6 py-2.5 rounded-xl transition-colors">
+                    Explorar Professores
+                </a>
+            </div>
+        </c:when>
 
-                        <p><strong>Descrição:</strong> ${m.description}</p>
-                        <p><strong>Data/Hora:</strong> ${m.dayTime}</p>
-                        <p><strong>Status:</strong> ${m.status}</p>
-                        <p><strong>Tipo:</strong> ${tipoMap[m.id]}</p>
+        <c:otherwise>
+            <section class="flex flex-col gap-4">
+                <c:forEach var="m" items="${meetings}">
+                    <div class="bg-white border border-gray-200 rounded-2xl p-5 meeting-card">
+
+                            <%-- Info topo --%>
+                        <div class="flex items-start justify-between gap-4 mb-3">
+                            <div class="flex flex-col gap-1">
+                                <p class="text-sm font-semibold text-gray-900">${m.description}</p>
+                                <p class="text-xs text-gray-500">${m.dayTime}</p>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                    <%-- Badge tipo --%>
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full
+                                    ${tipoMap[m.id] == 'ONLINE'
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'bg-amber-50 text-amber-700'}">
+                                        ${tipoMap[m.id]}
+                                </span>
+                                    <%-- Badge status --%>
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full
+                                    ${m.status == 'pending'   ? 'bg-yellow-50 text-yellow-700' :
+                                      m.status == 'confirmed' ? 'bg-green-50  text-green-700'  :
+                                      m.status == 'cancelled' ? 'bg-red-50    text-red-600'    :
+                                      m.status == 'done'      ? 'bg-gray-100  text-gray-600'   :
+                                                                 'bg-gray-100  text-gray-600'}">
+                                        ${m.status}
+                                </span>
+                            </div>
+                        </div>
 
                         <c:if test="${not empty m.category}">
-                            <p><strong>Categoria:</strong> ${m.category.name}</p>
+                            <p class="text-xs text-gray-400 mb-3">
+                                Categoria: <span class="font-medium text-gray-600">${m.category.name}</span>
+                            </p>
                         </c:if>
 
-                        <button type="button"
-                                class="btn-editar"
-                                onclick="toggleEdit(this, '${m.id}', '${m.status}', '${tipoMap[m.id]}')">
-                            Editar
-                        </button>
+                            <%-- Duração --%>
+                        <c:if test="${m.durationMinutes > 0}">
+                            <p class="text-xs text-gray-400 mb-3">
+                                Duração: <span class="font-medium text-gray-600">
+                                    <c:choose>
+                                        <c:when test="${m.durationMinutes == 60}">1h (60 CS)</c:when>
+                                        <c:when test="${m.durationMinutes == 90}">1h30 (90 CS)</c:when>
+                                        <c:when test="${m.durationMinutes == 120}">2h (120 CS)</c:when>
+                                        <c:otherwise>${m.durationMinutes} min</c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </p>
+                        </c:if>
 
-                        <form action="${pageContext.request.contextPath}/autenticado/meeting/delete"
-                              method="post"
-                              style="display:inline;"
-                              onsubmit="return confirm('Confirma exclusão?')">
-                            <input type="hidden" name="id" value="${m.id}">
-                            <button type="submit" class="btn-deletar">Deletar</button>
-                        </form>
+                            <%-- Ações --%>
+                        <div class="flex items-center gap-2 mt-3">
+                            <button type="button"
+                                    class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors"
+                                    onclick="toggleEdit(this, '${m.id}', '${m.status}', '${tipoMap[m.id]}')">
+                                Editar
+                            </button>
+                            <form action="${pageContext.request.contextPath}/autenticado/meeting/delete"
+                                  method="post"
+                                  onsubmit="return confirm('Confirma exclusão?')"
+                                  class="inline">
+                                <input type="hidden" name="id" value="${m.id}">
+                                <button type="submit"
+                                        class="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
+                                    Deletar
+                                </button>
+                            </form>
+                        </div>
 
-                        <div class="editPanel" style="display:none; margin-top:10px;">
+                            <%-- Painel de edição --%>
+                        <div class="editPanel hidden mt-4 border-t border-gray-100 pt-4">
                             <form action="${pageContext.request.contextPath}/autenticado/meeting/update"
                                   method="post"
-                                  onsubmit="return validateEditForm(this, event)">
+                                  onsubmit="return validateEditForm(this, event)"
+                                  class="flex flex-col gap-3">
                                 <input type="hidden" name="id" class="editId">
 
-                                <label>Descrição:
-                                    <input type="text" name="descricao" class="edit-descricao" required>
-                                </label>
-                                <span class="erro-campo edit-erro-descricao"></span><br>
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Descrição</label>
+                                    <input type="text" name="descricao" class="edit-descricao px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full" required>
+                                    <span class="text-red-500 text-xs edit-erro-descricao"></span>
+                                </div>
 
-                                <label>Data/Hora (dd/MM/yyyy HH:mm):
-                                    <input type="text" name="dataHora" class="edit-dataHora"
-                                           placeholder="25/12/2025 14:00">
-                                </label>
-                                <span class="erro-campo edit-erro-dataHora"></span><br>
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Data/Hora (dd/MM/yyyy HH:mm)</label>
+                                    <input type="text" name="dataHora" class="edit-dataHora px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full" placeholder="25/12/2025 14:00">
+                                    <span class="text-red-500 text-xs edit-erro-dataHora"></span>
+                                </div>
 
-                                <label>Status:
-                                    <select name="status">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</label>
+                                    <select name="status" class="px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full bg-white">
                                         <option value="pending">Pendente</option>
                                         <option value="confirmed">Confirmado</option>
                                         <option value="cancelled">Cancelado</option>
                                         <option value="done">Concluído</option>
                                     </select>
-                                </label><br>
-
-                                <div class="camposLocalizacao" style="display:none;">
-                                    <label>Cidade:
-                                        <input type="text" name="cidade" class="edit-cidade">
-                                    </label>
-                                    <span class="erro-campo edit-erro-cidade"></span><br>
-
-                                    <label>Bairro:
-                                        <input type="text" name="bairro">
-                                    </label><br>
-
-                                    <label>Rua:
-                                        <input type="text" name="rua" class="edit-rua">
-                                    </label>
-                                    <span class="erro-campo edit-erro-rua"></span><br>
-
-                                    <label>Número:
-                                        <input type="number" name="numero" class="edit-numero">
-                                    </label>
-                                    <span class="erro-campo edit-erro-numero"></span><br>
-
-                                    <label>Referência:
-                                        <input type="text" name="referencia">
-                                    </label><br>
                                 </div>
 
-                                <button type="submit">Salvar</button>
-                                <button type="button"
-                                        onclick="this.closest('.editPanel').style.display='none'">
-                                    Cancelar
-                                </button>
+                                <div class="camposLocalizacao hidden flex flex-col gap-3">
+                                    <div class="flex flex-col gap-1">
+                                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Cidade</label>
+                                        <input type="text" name="cidade" class="edit-cidade px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full">
+                                        <span class="text-red-500 text-xs edit-erro-cidade"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bairro</label>
+                                        <input type="text" name="bairro" class="px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Rua</label>
+                                        <input type="text" name="rua" class="edit-rua px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full">
+                                        <span class="text-red-500 text-xs edit-erro-rua"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Número</label>
+                                        <input type="number" name="numero" class="edit-numero px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full">
+                                        <span class="text-red-500 text-xs edit-erro-numero"></span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Referência</label>
+                                        <input type="text" name="referencia" class="px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-violet-600 w-full">
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2 mt-1">
+                                    <button type="submit"
+                                            class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
+                                        Salvar
+                                    </button>
+                                    <button type="button"
+                                            onclick="this.closest('.editPanel').classList.add('hidden')"
+                                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
+                                        Cancelar
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
                     </div>
                 </c:forEach>
-            </c:otherwise>
-        </c:choose>
-    </section>
+            </section>
+        </c:otherwise>
+    </c:choose>
 
 </main>
-
-<style>
-    .erro-campo   { color: red; font-size: 0.85em; }
-    .meeting-card { border: 1px solid #E5E7EB; padding: 16px; margin-bottom: 16px; border-radius: 10px; background: #fff; }
-    .btn-editar   { background: #7C3AED; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 6px; }
-    .btn-deletar  { background: #DC2626; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-</style>
 
 <script src="${pageContext.request.contextPath}/assets/js/meetingList.js"></script>
 

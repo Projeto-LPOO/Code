@@ -40,6 +40,19 @@
             Agenda
         </a>
 
+        <%-- link temporario para listar meetings, dps vai para perfil ou qlqr outro place (by daniel) --%>
+        <a href="${pageContext.request.contextPath}/autenticado/meeting"
+           class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 ${paginaAtiva == 'meetings' ? 'bg-[#f2ecf5] font-medium text-[#7c3aed]' : 'text-gray-500'}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="5" width="18" height="15" rx="3" stroke="currentColor" stroke-width="1.8"/>
+                <circle cx="9" cy="12" r="2" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="15" cy="12" r="2" stroke="currentColor" stroke-width="1.6"/>
+                <line x1="11" y1="12" x2="13" y2="12" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="12" y1="3" x2="12" y2="5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Meetings
+        </a>
+
         <a href="${pageContext.request.contextPath}/autenticado/financial"
            class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 ${paginaAtiva == 'financial' ? 'bg-[#f2ecf5] font-medium text-[#7c3aed]' : 'text-gray-500'}">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

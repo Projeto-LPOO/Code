@@ -95,33 +95,33 @@ public class FinancialDao {
         }
     }
 
-    public Credits findById(int iduser)
-    {
-        String sql = "SELECT * FROM credits where id = ?";
-        Credits credits = new Credits();
-
-        try(Connection connection = dbFactory.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql))
-        {
-            stmt.setInt(1, iduser);
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()){
-                credits.setId(rs.getInt("id"));
-                credits.setBalance(rs.getBigDecimal("balance"));
-                credits.setTotalEarned(rs.getBigDecimal("total_earned"));
-                credits.setTotalSpent(rs.getBigDecimal("total_spent"));
-
-                CommercialUser user = new CommercialUser();
-
-                user.setId(iduser);
-
-                credits.setUser(user);
-            }
-            return credits;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public Credits findById(int iduser)
+//    {
+//        String sql = "SELECT * FROM credits where id = ?";
+//        Credits credits = new Credits();
+//
+//        try(Connection connection = dbFactory.getConnection();
+//            PreparedStatement stmt = connection.prepareStatement(sql))
+//        {
+//            stmt.setInt(1, iduser);
+//            ResultSet rs = stmt.executeQuery();
+//            if(rs.next()){
+//                credits.setId(rs.getInt("id"));
+//                credits.setBalance(rs.getBigDecimal("balance"));
+//                credits.setTotalEarned(rs.getBigDecimal("total_earned"));
+//                credits.setTotalSpent(rs.getBigDecimal("total_spent"));
+//
+//                CommercialUser user = new CommercialUser();
+//
+//                user.setId(iduser);
+//
+//                credits.setUser(user);
+//            }
+//            return credits;
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public BankAccount findAccountUser(int id)
     {
@@ -203,5 +203,31 @@ public class FinancialDao {
     }
 
 
+    // by little daniel
+    // do jeito que tava acima tem uma grande chance de dar erro se algum user for deletado ou algo do tipo e
+    // endereco dos ids mudar, tô só testando mesmo, qlqr coisa a gnt volta, só comentei seu método original.
+    public Credits findById(int userId) {
+        String sql = "SELECT * FROM credits WHERE user_id = ?";
+        Credits credits = new Credits();
+
+        try (Connection connection = dbFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                credits.setId(rs.getInt("id"));
+                credits.setBalance(rs.getBigDecimal("balance"));
+                credits.setTotalEarned(rs.getBigDecimal("total_earned"));
+                credits.setTotalSpent(rs.getBigDecimal("total_spent"));
+
+                CommercialUser user = new CommercialUser();
+                user.setId(userId);
+                credits.setUser(user);
+            }
+            return credits;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

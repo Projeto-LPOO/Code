@@ -1,6 +1,6 @@
 function toggleEdit(button, meetingId, currentStatus, meetingType) {
-    const card      = button.closest(".meeting-card");
-    const panel     = card.querySelector(".editPanel");
+    const card = button.closest(".meeting-card");
+    const panel = card.querySelector(".editPanel");
     const isVisible = panel.style.display !== "none";
 
     if (isVisible) {
@@ -8,9 +8,9 @@ function toggleEdit(button, meetingId, currentStatus, meetingType) {
         return;
     }
 
-    card.querySelector(".editId").value         = meetingId;
+    card.querySelector(".editId").value = meetingId;
     card.querySelector(".edit-descricao").value = "";
-    card.querySelector(".edit-dataHora").value  = "";
+    card.querySelector(".edit-dataHora").value = "";
 
     const statusSelect = panel.querySelector("select[name='status']");
     if (statusSelect) {
@@ -44,10 +44,10 @@ function validateEditForm(form, event) {
     const locationFields = form.querySelector(".camposLocalizacao");
     if (locationFields && locationFields.style.display !== "none") {
         const cidade = form.querySelector(".edit-cidade");
-        const rua    = form.querySelector(".edit-rua");
+        const rua = form.querySelector(".edit-rua");
         const numero = form.querySelector(".edit-numero");
         if (!cidade.value.trim()) { showEditError(form, ".edit-erro-cidade", "Cidade é obrigatória."); valid = false; }
-        if (!rua.value.trim())    { showEditError(form, ".edit-erro-rua",    "Rua é obrigatória.");    valid = false; }
+        if (!rua.value.trim()) { showEditError(form, ".edit-erro-rua", "Rua é obrigatória.");    valid = false; }
         if (!numero.value || numero.value <= 0) { showEditError(form, ".edit-erro-numero", "Número inválido."); valid = false; }
     }
 
