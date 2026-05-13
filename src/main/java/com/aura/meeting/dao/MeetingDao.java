@@ -110,7 +110,7 @@ public class MeetingDao {
         List<Meeting> meetings = new ArrayList<>();
 
         // ALTERADO: inclui duration_minutes no SELECT
-        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
+        String sql = "SELECT DISTINCT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
                 "c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
                 "JOIN meeting_participants mp ON mp.meeting_id = m.id " +
@@ -156,7 +156,7 @@ public class MeetingDao {
     public List<Meeting> findAll() {
         List<Meeting> meetings = new ArrayList<>();
         // ALTERADO: inclui duration_minutes
-        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
+        String sql = "SELECT DISTINCT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
                 "c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
                 "LEFT JOIN categories c ON c.id = m.category_id " +
@@ -197,7 +197,7 @@ public class MeetingDao {
 
     public Meeting findById(int meetingId) {
         // ALTERADO: inclui duration_minutes
-        String sql = "SELECT m.*, c.id AS category_id, c.name AS category_name " +
+        String sql = "SELECT DISTINCT m.*, c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
                 "LEFT JOIN categories c ON c.id = m.category_id " +
                 "WHERE m.id = ?";

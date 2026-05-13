@@ -29,7 +29,7 @@ public class CategoryDao {
 
     public List<Category> findAll() {
         List<Category> categoryList = new ArrayList<>();
-        String sql = "SELECT * FROM public.categories ORDER BY name";
+        String sql = "SELECT DISTINCT * FROM public.categories ORDER BY name";
 
         try (Connection conn = dbFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);

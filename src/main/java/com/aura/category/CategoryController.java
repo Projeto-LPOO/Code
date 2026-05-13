@@ -10,7 +10,5 @@ import java.util.List;
             dao.register(nova);
         }
 
-        public List<Category> listar() {
-            return dao.findAll();
-        }
+        public List<Category> listar() {return dao.findAll();}
     }

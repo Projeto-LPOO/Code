@@ -258,12 +258,14 @@ public class UserDao {
         }
     }
 
+    //========================================
     // by little daniel now
+    //========================================
 
     public CommercialUser findByIdWithInterests(int id) {
         CommercialUser user = null;
 
-        String sql = "SELECT " +
+        String sql = "SELECT DISTINCT " +
                 "u.id AS user_id, u.name AS user_name, u.age, u.address, u.phone, u.cpf, u.email, u.password, " +
                 "i.id AS interest_id, i.name AS interest_name, " +
                 "c.id AS category_id, c.name AS category_name " +

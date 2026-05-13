@@ -41,6 +41,7 @@ public class UsersController extends BaseController {
     private void listAll(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // by little daniel
         List<CommercialUser> users = userDao.findAll();
 
         request.setAttribute("commercialUsers", users);
