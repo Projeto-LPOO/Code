@@ -329,4 +329,131 @@ public class UserDao {
         user.getInterests().add(interest);
     }
 
+    public List<CommercialUser> holdMentor(CommercialUser user) {
+
+        List<CommercialUser> users = new ArrayList<>();
+
+        String sql = """
+        SELECT
+            u.id AS user_id,
+            u.name AS user_name,
+            u.age,
+            u.address,
+            u.phone,
+            u.cpf,
+            u.email,
+            u.password,
+
+            i.id AS interest_id,
+            i.name AS interest_name
+
+        FROM users u
+
+        INNER JOIN user_interests ui
+            ON ui.user_id = u.id
+
+        INNER JOIN interests i
+            ON i.id = ui.interest_id
+
+        WHERE
+            ui.interest_type = 'Skill'::interest_type
+            AND u.id <> ?
+
+            AND ui.interest_id IN (
+
+                SELECT ui2.interest_id
+                FROM user_interests ui2
+                WHERE ui2.user_id = ?
+
+            )
+
+        ORDER BY u.name
+    """;
+
+        try (
+                Connection connection = dbFactory.getConnection();
+                PreparedStatement stmt =
+                        connection.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, user.getId());
+            stmt.setInt(2, user.getId());
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                int mentorId = rs.getInt("user_id");
+
+                CommercialUser mentor = null;
+
+                // verifica se já adicionou esse mentor
+                for (CommercialUser u : users) {
+
+                    if (u.getId() == mentorId) {
+                        mentor = u;
+                        break;
+                    }
+                }
+
+                // cria o mentor apenas uma vez
+                if (mentor == null) {
+
+                    mentor = new CommercialUser();
+
+                    mentor.setId(
+                            mentorId
+                    );
+
+                    mentor.setName(
+                            rs.getString("user_name")
+                    );
+
+                    mentor.setAge(
+                            rs.getInt("age")
+                    );
+
+                    mentor.setAddress(
+                            rs.getString("address")
+                    );
+
+                    mentor.setPhone(
+                            rs.getString("phone")
+                    );
+
+                    mentor.setCpf(
+                            rs.getString("cpf")
+                    );
+
+                    mentor.setEmail(
+                            rs.getString("email")
+                    );
+
+                    mentor.setHashPassword(
+                            rs.getString("password")
+                    );
+
+                    users.add(mentor);
+                }
+
+                Interest interest = new Interest();
+
+                interest.setId(
+                        rs.getInt("interest_id")
+                );
+
+                interest.setName(
+                        rs.getString("interest_name")
+                );
+
+                mentor.getInterests().add(interest);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return users;
+    }
+
 }
