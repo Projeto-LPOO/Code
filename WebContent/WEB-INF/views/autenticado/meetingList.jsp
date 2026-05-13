@@ -17,12 +17,15 @@
     <title>Meetings | Infinity Aura</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
+<body class="bg-white min-h-screen" data-context="${pageContext.request.contextPath}">
 
-<body class="bg-gray-100 min-h-screen flex" data-context="${pageContext.request.contextPath}">
+<t:header paginaAtiva="meetings" />
+
+<div class="flex flex-1">
 
 <t:menu paginaAtiva="meetings" />
 
-<main class="flex-1 min-w-0 p-8">
+    <main class="flex-1 p-10">
 
     <%-- Cabeçalho --%>
     <div class="flex items-center justify-between mb-7">
@@ -199,7 +202,7 @@
     </c:choose>
 
 </main>
-
+</div>
 <script src="${pageContext.request.contextPath}/assets/js/meetingList.js"></script>
 
 </body>

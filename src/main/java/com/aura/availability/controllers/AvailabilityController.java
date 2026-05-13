@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/autenticado/availability")
 public class AvailabilityController extends BaseController {
     private static final long serialVersionUID = 1L;
     private AvailabilityDao availabilityDao = new AvailabilityDao();
@@ -120,7 +119,7 @@ public class AvailabilityController extends BaseController {
         int id = Integer.parseInt(request.getParameter("id"));
         Availability disp = availabilityDao.findById(id);
         if (disp != null) {
-            availabilityDao.changeStatus(id, !disp.isActive());
+            availabilityDao.changeStatus(id, !disp.isAvailable());
         }
     }
 

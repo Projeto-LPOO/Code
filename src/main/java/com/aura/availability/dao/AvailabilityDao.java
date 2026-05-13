@@ -17,7 +17,7 @@ import java.sql.Connection;
 public class AvailabilityDao {
 	public void registerAvailability(Availability myAvailability) {
 		String sql = "INSERT INTO availability (user_commercial_id, day_of_week, hour_start, hour_end, available) VALUES (?, ?::day_of_week, ?, ?, ?)";
-		
+
 		 try(Connection connection = dbFactory.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)){
 			 
@@ -25,7 +25,7 @@ public class AvailabilityDao {
 		            stmt.setString(2, translateDayToDb(myAvailability.getDayWeek()));
 		            stmt.setTime(3, java.sql.Time.valueOf(myAvailability.getHourStart()));
 		            stmt.setTime(4, java.sql.Time.valueOf(myAvailability.getHourEnd()));
-					stmt.setBoolean(5, myAvailability.isActive());
+					stmt.setBoolean(5, myAvailability.isAvailable());
 		            stmt.executeUpdate();
 
 		        }catch (Exception e) {
@@ -95,7 +95,7 @@ public class AvailabilityDao {
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("available"));
+				dispo.setAvailable(rs.getBoolean("available"));
 				
 				}
 			}catch(Exception e) {
@@ -124,7 +124,7 @@ public class AvailabilityDao {
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("available"));
+				dispo.setAvailable(rs.getBoolean("available"));
 				
 				lista.add(dispo);
 			}
@@ -200,7 +200,7 @@ public class AvailabilityDao {
 				slot.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				slot.setHourStart(rs.getTime("hour_start").toLocalTime());
 				slot.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				slot.setActive(rs.getBoolean("is_available"));
+				slot.setAvailable(rs.getBoolean("is_available"));
 				list.add(slot);
 			}
 		} catch (Exception e) {

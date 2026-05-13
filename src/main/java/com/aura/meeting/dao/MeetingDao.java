@@ -6,6 +6,7 @@ import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Location;
 import com.aura.meeting.model.Meeting;
 import com.aura.meeting.model.OnlineMeeting;
+import com.aura.user.models.CommercialUser;
 import com.aura.user.models.Learner;
 import com.aura.user.models.Teacher;
 
@@ -353,6 +354,110 @@ public class MeetingDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public Meeting findNextMeetingByUserId(int userId) {
+
+        Meeting meeting = null;
+
+        String sql = """
+            SELECT
+                m.id,
+                m.description,
+                m.scheduled_at,
+                m.duration_minutes,
+                m.status,
+        
+                teacher.id AS teacher_id,
+                teacher.name AS teacher_name,
+                teacher.email AS teacher_email,
+                teacher.phone AS teacher_phone,
+                teacher.address AS teacher_address
+        
+            FROM meetings m
+        
+            INNER JOIN meeting_participants student_mp
+                ON student_mp.meeting_id = m.id
+        
+            INNER JOIN meeting_participants teacher_mp
+                ON teacher_mp.meeting_id = m.id
+                AND teacher_mp.role = 'TEACHER'
+        
+            INNER JOIN users teacher
+                ON teacher.id = teacher_mp.user_id
+        
+            WHERE
+                student_mp.user_id = ?
+                AND m.scheduled_at >= NOW()
+        
+            ORDER BY m.scheduled_at
+            LIMIT 1
+        """;
+
+        try (
+                Connection connection = dbFactory.getConnection();
+                PreparedStatement stmt =
+                        connection.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, userId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+
+                meeting = new Meeting();
+
+                meeting.setId(
+                        rs.getInt("id")
+                );
+
+                meeting.setDescription(
+                        rs.getString("description")
+                );
+
+                meeting.setDayTime(
+                        rs.getTimestamp("scheduled_at")
+                                .toLocalDateTime()
+                );
+                meeting.setDurationMinutes(
+                        rs.getInt("duration_minutes")
+                );
+                meeting.setStatus(
+                        rs.getString("status")
+                );
+
+                // PROFESSOR
+                Teacher teacher =
+                        new Teacher();
+
+                teacher.setId(
+                        rs.getInt("teacher_id")
+                );
+
+                teacher.setName(
+                        rs.getString("teacher_name")
+                );
+
+                teacher.setEmail(
+                        rs.getString("teacher_email")
+                );
+
+                teacher.setPhone(
+                        rs.getString("teacher_phone")
+                );
+
+                teacher.setAddress(
+                        rs.getString("teacher_address")
+                );
+
+                meeting.setTeacher(teacher);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return meeting;
     }
 
     public boolean hasConflict(int teacherId, LocalDateTime scheduledAt) {

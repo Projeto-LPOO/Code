@@ -13,7 +13,7 @@ public class Availability extends BaseEntity{
 	private DayOfWeek dayWeek;
 	private LocalTime hourStart;
 	private LocalTime hourEnd;
-	private boolean active = true;
+	private boolean available = true;
 	
 	public Availability(CommercialUser user, DayOfWeek dayWeek, LocalTime hourStart, LocalTime hourEnd) {
 		this.user = user;
@@ -25,11 +25,11 @@ public class Availability extends BaseEntity{
 	public Availability() {
 		
 	}
-	public boolean isActive() {
-	    return active;
+	public boolean isAvailable() {
+	    return available;
 	}
-	public void setActive(boolean Available) {
-	    this.active = Available;
+	public void setAvailable(boolean Available) {
+	    this.available = Available;
 	}
 	
 
