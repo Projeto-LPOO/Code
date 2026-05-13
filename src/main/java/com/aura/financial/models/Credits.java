@@ -16,7 +16,12 @@ public class Credits extends BaseEntity {
     private BigDecimal totalSpent;
     private List<Transaction> transactions;
 
-    public Credits() {}
+    public Credits() {
+        this.transactions = new ArrayList<>();
+        this.balance = BigDecimal.ZERO;
+        this.totalEarned = BigDecimal.ZERO;
+        this.totalSpent = BigDecimal.ZERO;
+    }
 
     public Credits(CommercialUser user, BigDecimal balance, BigDecimal total_earned,
                    BigDecimal total_spent) {

@@ -11,7 +11,9 @@ import com.aura.user.models.Learner;
 import com.aura.user.models.Teacher;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -325,7 +327,179 @@ public class MeetingDao {
             throw new RuntimeException(e);
         }
     }
+    public List<Meeting> findByUserAndDateRange(
+            int userId,
+            LocalDate from,
+            LocalDate to
+    ) {
 
+        List<Meeting> meetings = new ArrayList<>();
+
+        String sql = """
+        SELECT
+            m.id,
+            m.description,
+            m.scheduled_at,
+            m.duration_minutes,
+            m.status,
+            m.meeting_type
+        FROM meetings m
+
+        INNER JOIN meeting_participants mp
+            ON mp.meeting_id = m.id
+
+        WHERE
+            mp.user_id = ?
+            AND DATE(m.scheduled_at)
+                BETWEEN ? AND ?
+
+        ORDER BY m.scheduled_at
+    """;
+
+        try (
+                Connection conn = dbFactory.getConnection();
+                PreparedStatement ps =
+                        conn.prepareStatement(sql)
+        ) {
+
+            ps.setInt(1, userId);
+
+            ps.setDate(
+                    2,
+                    Date.valueOf(from)
+            );
+
+            ps.setDate(
+                    3,
+                    Date.valueOf(to)
+            );
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Meeting meeting =
+                        "PRESENCIAL".equalsIgnoreCase(
+                                rs.getString("meeting_type")
+                        )
+                                ? new FaceToFaceMeeting()
+                                : new OnlineMeeting();
+
+                meeting.setId(
+                        rs.getInt("id")
+                );
+
+                meeting.setDescription(
+                        rs.getString("description")
+                );
+
+                meeting.setStatus(
+                        rs.getString("status")
+                );
+
+                meeting.setDayTime(
+                        rs.getTimestamp("scheduled_at")
+                                .toLocalDateTime()
+                );
+
+                meeting.setDurationMinutes(
+                        rs.getInt("duration_minutes")
+                );
+
+                meetings.add(meeting);
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(e);
+        }
+
+        return meetings;
+    }
+    public boolean teacherHasAvailability(
+            int teacherId,
+            LocalDateTime scheduledAt,
+            int durationMinutes
+    ) {
+
+        String sql = """
+    SELECT COUNT(*)
+
+    FROM availability a
+
+    WHERE
+        a.user_commercial_id = ?
+
+        AND a.available = true
+
+        AND a.day_of_week::text =
+            CASE EXTRACT(ISODOW FROM ?::timestamp)
+
+                WHEN 1 THEN 'SEGUNDA'
+                WHEN 2 THEN 'TERÇA'
+                WHEN 3 THEN 'QUARTA'
+                WHEN 4 THEN 'QUINTA'
+                WHEN 5 THEN 'SEXTA'
+                WHEN 6 THEN 'SABADO'
+                WHEN 7 THEN 'DOMINGO'
+
+            END
+
+        AND ?::time >= a.hour_start
+
+        AND (
+            ?::time
+            + (? * INTERVAL '1 minute')
+        ) <= a.hour_end
+""";
+
+        try (
+                Connection conn = dbFactory.getConnection();
+                PreparedStatement stmt =
+                        conn.prepareStatement(sql)
+        ) {
+
+            LocalTime startTime =
+                    scheduledAt.toLocalTime();
+
+            stmt.setInt(1, teacherId);
+
+            stmt.setTimestamp(
+                    2,
+                    Timestamp.valueOf(scheduledAt)
+            );
+
+            stmt.setTime(
+                    3,
+                    Time.valueOf(startTime)
+            );
+
+            stmt.setTime(
+                    4,
+                    Time.valueOf(startTime)
+            );
+
+            stmt.setInt(
+                    5,
+                    durationMinutes
+            );
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erro ao verificar disponibilidade do professor",
+                    e
+            );
+        }
+
+        return false;
+    }
     public void delete(int meetingId) {
         String deleteParticipants = "DELETE FROM meeting_participants WHERE meeting_id = ?";
         String deleteLocation = "DELETE FROM locations WHERE id = (SELECT location_id FROM meetings WHERE id = ?)";

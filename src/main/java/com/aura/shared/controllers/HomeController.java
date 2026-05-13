@@ -28,9 +28,12 @@ public class HomeController extends HttpServlet {
         CommercialUser commercialUser = (CommercialUser) user;
         Meeting upCommingMetting = meetingDao.findNextMeetingByUserId(commercialUser.getId());
         List<CommercialUser> mentors = userDao.holdMentor(commercialUser);
+        List<CommercialUser> localUsers = userDao.findUsersFromSameCity(commercialUser.getId());
 
         req.setAttribute("upCommingMetting", upCommingMetting);
         req.setAttribute("mentors", mentors);
+        req.setAttribute("localUsers", localUsers );
+
         req.getRequestDispatcher("/WEB-INF/views/autenticado/home.jsp")
                 .forward(req, resp);
     }

@@ -2,6 +2,7 @@ package com.aura.availability.controllers;
 
 import java.io.IOException;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -9,6 +10,8 @@ import java.util.List;
 
 import com.aura.availability.dao.AvailabilityDao;
 import com.aura.availability.models.Availability;
+import com.aura.meeting.dao.MeetingDao;
+import com.aura.meeting.model.Meeting;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.CommercialUser;
 import com.aura.user.models.User;
@@ -22,9 +25,11 @@ import jakarta.servlet.http.HttpSession;
 public class AvailabilityController extends BaseController {
     private static final long serialVersionUID = 1L;
     private AvailabilityDao availabilityDao = new AvailabilityDao();
+    private MeetingDao meetingDao = new MeetingDao();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
@@ -32,7 +37,18 @@ public class AvailabilityController extends BaseController {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+
+        // Calcular baseDate igual ao JSP faz
+        String weekParam = request.getParameter("week");
+        LocalDate baseDate = (weekParam != null)
+                ? LocalDate.parse(weekParam).with(DayOfWeek.MONDAY)
+                : LocalDate.now().with(DayOfWeek.MONDAY);
+
+        LocalDate weekEnd = baseDate.plusDays(6);
+
         findAllAvailability(request, user.getId());
+        findMeetingsOfWeek(request, user.getId(), baseDate, weekEnd); // <-- novo
+
         forward(request, response, "autenticado/availability.jsp");
     }
 
@@ -122,7 +138,11 @@ public class AvailabilityController extends BaseController {
             availabilityDao.changeStatus(id, !disp.isAvailable());
         }
     }
-
+    private void findMeetingsOfWeek(HttpServletRequest request, int userId,
+                                    LocalDate from, LocalDate to) {
+        List<Meeting> meetings = meetingDao.findByUserAndDateRange(userId, from, to);
+        request.setAttribute("meetings", meetings);
+    }
     // --- MÉTODOS DE APOIO E VALIDAÇÃO ---
 
     private void validateBusinessRules(int userId, DayOfWeek day, LocalTime start, LocalTime end, int currentId) {

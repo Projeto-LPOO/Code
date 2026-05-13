@@ -182,7 +182,7 @@ public class AvailabilityDao {
 
 	// by little daniel
 	public List<Availability> findActiveByUser(int userId) {
-		String sql = "SELECT * FROM availability WHERE user_commercial_id = ? AND is_available = true";
+		String sql = "SELECT * FROM availability WHERE user_commercial_id = ? AND available = true";
 		List<Availability> list = new ArrayList<>();
 
 		try (Connection connection = dbFactory.getConnection();
@@ -200,7 +200,7 @@ public class AvailabilityDao {
 				slot.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				slot.setHourStart(rs.getTime("hour_start").toLocalTime());
 				slot.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				slot.setAvailable(rs.getBoolean("is_available"));
+				slot.setAvailable(rs.getBoolean("available"));
 				list.add(slot);
 			}
 		} catch (Exception e) {

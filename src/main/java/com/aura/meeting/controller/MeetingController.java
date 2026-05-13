@@ -1,5 +1,7 @@
 package com.aura.meeting.controller;
 
+import com.aura.availability.dao.AvailabilityDao;
+import com.aura.availability.models.Availability;
 import com.aura.meeting.dao.MeetingDao;
 import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Location;
@@ -14,6 +16,8 @@ import java.util.List;
 public class MeetingController {
 
     private final MeetingDao meetingDao = new MeetingDao();
+    private AvailabilityDao availabilityDao = new AvailabilityDao();
+
 
     public void register(Meeting meeting) {
         if (meeting.getDescription() == null || meeting.getDescription().trim().isEmpty())
@@ -27,7 +31,23 @@ public class MeetingController {
         if (meeting.getTeacher() == null)
             throw new IllegalArgumentException("O meeting precisa de um professor.");
 
+        int duration = meeting.getDurationMinutes() > 0
+                        ? meeting.getDurationMinutes()
+                        : 60;
 
+        boolean teacherAvailable =
+                meetingDao.teacherHasAvailability(
+                        meeting.getTeacher().getId(),
+                        meeting.getDayTime(),
+                        duration
+                );
+
+        if (!teacherAvailable) {
+
+            throw new IllegalArgumentException(
+                    "O professor não possui disponibilidade nesse horário."
+            );
+        }
         if (meetingDao.hasConflict(meeting.getTeacher().getId(), meeting.getDayTime()))
             throw new IllegalArgumentException("O professor já possui um meeting agendado neste horário.");
 

@@ -97,7 +97,7 @@ public class FinancialDao {
 
     public Credits findById(int iduser)
     {
-        String sql = "SELECT * FROM credits where id = ?";
+        String sql = "SELECT * FROM credits where user_id = ?";
         Credits credits = new Credits();
 
         try(Connection connection = dbFactory.getConnection();
@@ -106,10 +106,19 @@ public class FinancialDao {
             stmt.setInt(1, iduser);
             ResultSet rs = stmt.executeQuery();
             if(rs.next()){
+
                 credits.setId(rs.getInt("id"));
-                credits.setBalance(rs.getBigDecimal("balance"));
-                credits.setTotalEarned(rs.getBigDecimal("total_earned"));
-                credits.setTotalSpent(rs.getBigDecimal("total_spent"));
+                credits.setBalance(rs.getBigDecimal("balance") != null
+                        ? rs.getBigDecimal("balance")
+                        : BigDecimal.ZERO);
+
+                credits.setTotalEarned(rs.getBigDecimal("total_earned") != null
+                        ? rs.getBigDecimal("total_earned")
+                        : BigDecimal.ZERO);
+
+                credits.setTotalSpent(rs.getBigDecimal("total_spent") != null
+                        ? rs.getBigDecimal("total_spent")
+                        : BigDecimal.ZERO);
 
                 CommercialUser user = new CommercialUser();
 

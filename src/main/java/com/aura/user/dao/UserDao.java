@@ -455,5 +455,74 @@ public class UserDao {
 
         return users;
     }
+    public List<CommercialUser> findUsersFromSameCity(int userId) {
 
+        List<CommercialUser> users = new ArrayList<>();
+
+        String sql = """
+    SELECT
+        u.id,
+        u.name,
+        u.email,
+        u.phone,
+        u.address
+    FROM users u
+
+    WHERE
+        u.id <> ?
+
+        AND LOWER(u.address) LIKE '%' || (
+            SELECT LOWER(TRIM(address))
+            FROM users
+            WHERE id = ?
+        ) || '%'
+
+    LIMIT 12
+""";
+
+        try (
+                Connection connection = dbFactory.getConnection();
+                PreparedStatement stmt =
+                        connection.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, userId);
+            stmt.setInt(2, userId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                CommercialUser user =
+                        new CommercialUser();
+
+                user.setId(
+                        rs.getInt("id")
+                );
+
+                user.setName(
+                        rs.getString("name")
+                );
+
+                user.setEmail(
+                        rs.getString("email")
+                );
+
+                user.setPhone(
+                        rs.getString("phone")
+                );
+
+                user.setAddress(
+                        rs.getString("address")
+                );
+
+                users.add(user);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return users;
+    }
 }

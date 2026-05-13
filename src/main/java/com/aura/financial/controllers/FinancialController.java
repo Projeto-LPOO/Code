@@ -37,6 +37,7 @@ public class FinancialController extends BaseController {
                             "autenticado/registerAccount.jsp");
 
             case "withdraw" ->
+
                     forward(request, response,
                             "autenticado/withDraw.jsp");
 
@@ -93,7 +94,7 @@ public class FinancialController extends BaseController {
         BankAccount account = financialDao.findAccountUser(user.getId());
 
         request.setAttribute("credits", credits);
-        request.setAttribute("account", credits);
+        request.setAttribute("account", account);
 
 
         forward(request, response, "autenticado/financial.jsp");

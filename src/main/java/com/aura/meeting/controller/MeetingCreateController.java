@@ -257,20 +257,44 @@ public class MeetingCreateController extends BaseController {
             teacherIdParam = (String) request.getAttribute("preselectedTeacherId");
 
         if (teacherIdParam != null && !teacherIdParam.trim().isEmpty()) {
-            try {
-                int teacherId = Integer.parseInt(teacherIdParam);
-                CommercialUser mentor = userDao.findByIdWithInterests(teacherId);
-                if (mentor != null) {
-                    request.setAttribute("mentor", mentor);
-                    request.setAttribute("preselectedTeacherId", teacherId);
 
-                    List<Category> mentorCategories = mentor.getInterests().stream()
-                            .map(Interest::getCategory)
-                            .filter(c -> c != null)
-                            .distinct()
-                            .collect(Collectors.toList());
-                    request.setAttribute("mentorCategories", mentorCategories);
+            try {
+
+                int teacherId = Integer.parseInt(teacherIdParam);
+
+                CommercialUser mentor =
+                        userDao.findByIdWithInterests(teacherId);
+
+                if (mentor != null) {
+
+                    request.setAttribute("mentor", mentor);
+
+                    request.setAttribute(
+                            "preselectedTeacherId",
+                            teacherId
+                    );
+
+                    List<Category> mentorCategories =
+                            mentor.getInterests().stream()
+                                    .map(Interest::getCategory)
+                                    .filter(c -> c != null)
+                                    .distinct()
+                                    .collect(Collectors.toList());
+
+                    request.setAttribute(
+                            "mentorCategories",
+                            mentorCategories
+                    );
+
+                    List<Availability> availabilities =
+                            availabilityDao.findActiveByUser(teacherId);
+
+                    request.setAttribute(
+                            "availabilities",
+                            availabilities
+                    );
                 }
+
             } catch (NumberFormatException ignored) {}
         }
 
