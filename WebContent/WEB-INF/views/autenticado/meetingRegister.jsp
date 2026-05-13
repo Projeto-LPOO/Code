@@ -3,8 +3,13 @@
 <%@ page import="com.aura.user.models.CommercialUser" %>
 <%@ page import="com.aura.category.Category" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.aura.availability.models.Availability" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ page import="java.time.DayOfWeek" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="java.util.ArrayList" %>
 
 <%
     User loggedUser        = (User) session.getAttribute("user");
@@ -14,6 +19,8 @@
     Integer userBalance    = (Integer) request.getAttribute("userBalance");
     if (userBalance == null) userBalance = 0;
     String duracaoError    = (String) request.getAttribute("duracao");
+    List<Availability> availabilities =
+            (List<Availability>) request.getAttribute("availabilities");
 %>
 
 <!DOCTYPE html>
@@ -128,10 +135,103 @@
                         </div>
 
                             <%-- Disponibilidade --%>
-                        <div class="bg-white border border-gray-200 rounded-2xl px-6 py-5">
-                            <h3 class="text-sm font-bold text-gray-900 mb-4">Disponibilidade do Professor</h3>
-                            <div id="availabilityInfo" class="text-sm text-gray-400 italic">Carregando disponibilidade...</div>
-                        </div>
+                                    <%-- Disponibilidade --%>
+                                <div class="bg-white border border-gray-200 rounded-2xl px-6 py-5">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h3 class="text-sm font-bold text-gray-900">
+                                                Disponibilidade do Professor
+                                            </h3>
+                                            <p class="text-xs text-gray-400 mt-1">
+                                                Horários recorrentes disponíveis para agendamento
+                                            </p>
+                                        </div>
+
+                                        <span class="text-[11px] font-semibold px-3 py-1 rounded-full bg-violet-50 text-violet-700">
+            ${availabilities.size()} horários
+        </span>
+                                    </div>
+
+                                    <c:choose>
+
+                                        <c:when test="${empty availabilities}">
+                                            <div class="border border-dashed border-gray-200 rounded-xl py-8 text-center">
+                                                <p class="text-sm text-gray-500">
+                                                    Nenhuma disponibilidade cadastrada.
+                                                </p>
+                                            </div>
+                                        </c:when>
+
+                                        <c:otherwise>
+
+                                            <div class="overflow-hidden border border-gray-200 rounded-xl">
+
+                                                <table class="w-full text-sm">
+
+                                                    <thead class="bg-gray-50 border-b border-gray-200">
+                                                    <tr>
+                                                        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase tracking-wide text-xs">
+                                                            Dia
+                                                        </th>
+
+                                                        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase tracking-wide text-xs">
+                                                            Início
+                                                        </th>
+
+                                                        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase tracking-wide text-xs">
+                                                            Fim
+                                                        </th>
+
+                                                        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase tracking-wide text-xs">
+                                                            Status
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+
+                                                    <tbody class="divide-y divide-gray-100">
+
+                                                    <c:forEach var="slot" items="${availabilities}">
+
+                                                        <tr class="hover:bg-gray-50 transition-colors">
+
+                                                            <td class="px-4 py-3 font-medium text-gray-900">
+                                                                <c:choose>
+                                                                    <c:when test="${slot.dayWeek == 'MONDAY'}">Segunda-feira</c:when>
+                                                                    <c:when test="${slot.dayWeek == 'TUESDAY'}">Terça-feira</c:when>
+                                                                    <c:when test="${slot.dayWeek == 'WEDNESDAY'}">Quarta-feira</c:when>
+                                                                    <c:when test="${slot.dayWeek == 'THURSDAY'}">Quinta-feira</c:when>
+                                                                    <c:when test="${slot.dayWeek == 'FRIDAY'}">Sexta-feira</c:when>
+                                                                    <c:when test="${slot.dayWeek == 'SATURDAY'}">Sábado</c:when>
+                                                                    <c:otherwise>Domingo</c:otherwise>
+                                                                </c:choose>
+                                                            </td>
+
+                                                            <td class="px-4 py-3 text-gray-600">
+                                                                    ${slot.hourStart}
+                                                            </td>
+
+                                                            <td class="px-4 py-3 text-gray-600">
+                                                                    ${slot.hourEnd}
+                                                            </td>
+
+                                                            <td class="px-4 py-3">
+
+                                                            </td>
+
+                                                        </tr>
+
+                                                    </c:forEach>
+
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+
+                                        </c:otherwise>
+
+                                    </c:choose>
+                                </div>
 
                             <%-- Data e Hora --%>
                         <div class="bg-white border border-gray-200 rounded-2xl px-6 py-5">

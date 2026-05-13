@@ -58,7 +58,7 @@
                     <div class="mb-8 space-y-1 text-gray-500">
                         <p>
                             Saldo disponível:
-                            <span class="font-semibold text-gray-900">${creditsBalance}</span>
+                            <span class="font-semibold text-gray-900">${account.getBalance()}</span>
                         </p>
                         <p class="text-sm">
                             Valor mínimo para saque: <span class="font-semibold">300 créditos</span>

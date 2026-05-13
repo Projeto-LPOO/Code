@@ -9,6 +9,10 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <%
+
+    List<CommercialUser> localUsers =
+            (List<CommercialUser>) request.getAttribute("localUsers");
+
     List<CommercialUser> mentors =
             (List<CommercialUser>) request.getAttribute("mentors");
 
@@ -126,7 +130,7 @@
                             border: 1px solid rgba(255,255,255,0.3);
                        ">
 
-                        ↑ Withdraw
+                        Withdraw
 
                     </a>
 
@@ -272,7 +276,7 @@
 
                 <% } %>
 
-                <a href="${pageContext.request.contextPath}/autenticado/meetings"
+                <a href="${pageContext.request.contextPath}/autenticado/meeting"
                    class="
                         flex items-center gap-1.5
                         text-sm font-semibold
@@ -313,7 +317,7 @@
                     </h2>
 
                     <p class="text-sm text-slate-500 mt-1">
-                        Usuários com habilidades parecidas com as suas.
+                        Usuários com habilidades parecidas com seus interesses.
                     </p>
 
                 </div>
@@ -429,7 +433,7 @@
                             </div>
 
                         </div>
-                        
+
 
                     </div>
 
@@ -545,12 +549,12 @@
             <% } else { %>
 
             <div class="
-                    rounded-3xl
-                    border border-dashed border-slate-300
-                    bg-white
-                    p-14
-                    text-center
-                 ">
+        rounded-3xl
+        border border-dashed border-slate-300
+        bg-white
+        p-14
+        text-center
+     ">
 
                 <p class="text-slate-500">
                     Nenhum mentor compatível encontrado.
@@ -559,6 +563,215 @@
             </div>
 
             <% } %>
+
+        </section>
+
+        <!-- LOCAL USERS -->
+        <section class="space-y-6 mt-14">
+
+                <div>
+
+                    <h2 class="text-2xl font-bold text-slate-800">
+                        Pessoas da sua cidade
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Conecte-se com usuários próximos de você.
+                    </p>
+
+                </div>
+
+                <% if (localUsers != null && !localUsers.isEmpty()) { %>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+
+                    <% for (CommercialUser localUser : localUsers) { %>
+
+                    <div class="
+                rounded-[28px]
+                border border-slate-200
+                bg-white
+                p-5
+                shadow-sm
+                hover:shadow-xl
+                hover:-translate-y-1
+                transition-all duration-300
+                flex flex-col
+             ">
+
+                        <!-- HEADER -->
+                        <div class="flex items-start justify-between mb-5">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="
+                            w-12 h-12
+                            rounded-2xl
+                            bg-[#e2a9f1]
+                            to-teal-500
+                            text-white
+                            text-base
+                            font-bold
+                            flex items-center justify-center
+                            shadow-md
+                            flex-shrink-0
+                         ">
+
+                                    <%= localUser.getName()
+                                            .substring(0,1)
+                                            .toUpperCase() %>
+
+                                </div>
+
+                                <div class="min-w-0">
+
+                                    <h3 class="text-sm font-bold text-slate-800 truncate">
+
+                                        <%= localUser.getName() %>
+
+                                    </h3>
+
+                                    <p class="text-xs text-slate-400 truncate">
+
+                                        <%= localUser.getEmail() %>
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- BODY -->
+                        <div class="space-y-3 mb-5 flex-1">
+
+                            <p class="text-xs leading-relaxed text-slate-500">
+
+                                Usuário disponível para networking,
+                                troca de experiências e aprendizado.
+
+                            </p>
+
+                            <div class="space-y-1 text-xs text-slate-600">
+
+                                <p class="truncate">
+                                    📍 <%= localUser.getAddress() %>
+                                </p>
+
+                                <p>
+                                    📞 <%= localUser.getPhone() %>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <!-- INTERESTS -->
+                        <div class="mb-5">
+
+                            <p class="
+                        text-xs
+                        font-semibold
+                        text-slate-400
+                        uppercase
+                        mb-2
+                   ">
+
+                                Interesses
+
+                            </p>
+
+                            <div class="flex flex-wrap gap-1.5">
+
+                                <%
+                                    if (localUser.getInterests() != null
+                                            && !localUser.getInterests().isEmpty()) {
+
+                                        for (Interest interest : localUser.getInterests()) {
+                                %>
+
+                                <span class="
+                            px-2.5 py-0.5
+                            rounded-full
+                            bg-[#e2a9f1]
+                            text-emerald-600
+                            text-xs
+                            font-semibold
+                         ">
+
+                        <%= interest.getName() %>
+
+                    </span>
+
+                                <%
+                                    }
+                                } else {
+                                %>
+
+                                <span class="
+                            px-2.5 py-0.5
+                            rounded-full
+                            bg-slate-100
+                            text-slate-500
+                            text-xs
+                            font-semibold
+                         ">
+
+                        Sem interesses cadastrados
+
+                    </span>
+
+                                <% } %>
+
+                            </div>
+
+                        </div>
+
+                        <!-- FOOTER -->
+                        <a href="${pageContext.request.contextPath}/autenticado/users/profile?id=<%= localUser.getId() %>"
+                           class="
+                    inline-flex items-center justify-center
+                    px-4 py-2
+                    rounded-xl
+                    bg-[#e2a9f1]
+                    hover:bg-[#e2a9f1]
+                    text-white
+                    text-xs
+                    font-semibold
+                    transition
+               ">
+
+                            Ver perfil
+
+                        </a>
+
+                    </div>
+
+                    <% } %>
+
+                </div>
+
+                <% } else { %>
+
+                <div class="
+            rounded-3xl
+            border border-dashed border-slate-300
+            bg-white
+            p-14
+            text-center
+         ">
+
+                    <p class="text-slate-500">
+                        Nenhum usuário da sua cidade encontrado.
+                    </p>
+
+                </div>
+
+                <% } %>
+
+            </section>
+
 
         </section>
 
