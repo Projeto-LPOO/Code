@@ -29,35 +29,30 @@ import java.util.ArrayList;
             }
         }
 
-        public Interest findById(int id)
-        {
+        public Interest findById(int id) {
             Interest interest = null;
-            String sql = "SELECT i.*, c.* " +
-                         "FROM interests i " +
-                         "INNER JOIN categories c " +
-                         "ON c.id = i.category_id " +
-                         "WHERE i.id = ?";
+            String sql = "SELECT i.id AS interest_id, i.name AS interest_name, " +
+                    "c.id AS category_id, c.name AS category_name, c.img_url AS category_img_url " +
+                    "FROM interests i " +
+                    "INNER JOIN categories c ON c.id = i.category_id " +
+                    "WHERE i.id = ?";
 
-            try(Connection connection = dbFactory.getConnection();
-                PreparedStatement stmt = connection.prepareStatement(sql);)
-            {
+            try (Connection connection = dbFactory.getConnection();
+                 PreparedStatement stmt = connection.prepareStatement(sql)) {
+
                 stmt.setInt(1, id);
-
                 ResultSet rs = stmt.executeQuery();
 
-                if (rs.next())
-                {
+                if (rs.next()) {
                     interest = new Interest();
-                    interest.setId(rs.getInt("id"));
-                    interest.setName(rs.getString("name"));
+                    interest.setId(rs.getInt("interest_id"));
+                    interest.setName(rs.getString("interest_name"));
 
                     Category category = new Category();
-                    category.setId(rs.getInt("id"));
-                    category.setName(rs.getString("name"));
-                    category.setImgUrl(rs.getString("img_url"));
+                    category.setId(rs.getInt("category_id"));
+                    category.setName(rs.getString("category_name"));
+                    category.setImgUrl(rs.getString("category_img_url"));
                     interest.setCategory(category);
-
-                    stmt.execute();
                 }
 
             } catch (Exception e) {
@@ -65,6 +60,43 @@ import java.util.ArrayList;
             }
             return interest;
         }
+
+//        public Interest findById(int id)
+//        {
+//            Interest interest = null;
+//            String sql = "SELECT i.*, c.* " +
+//                         "FROM interests i " +
+//                         "INNER JOIN categories c " +
+//                         "ON c.id = i.category_id " +
+//                         "WHERE i.id = ?";
+//
+//            try(Connection connection = dbFactory.getConnection();
+//                PreparedStatement stmt = connection.prepareStatement(sql);)
+//            {
+//                stmt.setInt(1, id);
+//
+//                ResultSet rs = stmt.executeQuery();
+//
+//                if (rs.next())
+//                {
+//                    interest = new Interest();
+//                    interest.setId(rs.getInt("id"));
+//                    interest.setName(rs.getString("name"));
+//
+//                    Category category = new Category();
+//                    category.setId(rs.getInt("id"));
+//                    category.setName(rs.getString("name"));
+//                    category.setImgUrl(rs.getString("img_url"));
+//                    interest.setCategory(category);
+//
+//                    stmt.execute();
+//                }
+//
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//            return interest;
+//        }
 
         public List<Interest> findAll() {
 

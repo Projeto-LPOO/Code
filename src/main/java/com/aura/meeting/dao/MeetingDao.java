@@ -293,7 +293,7 @@ public class MeetingDao {
         int meetingId = meeting.getId();
 
         String sql = "UPDATE meetings SET description = ?, scheduled_at = ?, status = ?::meeting_status," +
-                " meeting_type = ?::meeting_type_enum WHERE id = ?";
+                " meeting_type = ?::meeting_type_enum, duration_minutes = ? WHERE id = ?";
         String sqlLocation = "UPDATE locations SET city = ?, neighborhood = ?, street = ?," +
                 " house_number = ?, reference_point = ? WHERE id =" +
                 " (SELECT location_id FROM meetings WHERE id = ?)";
@@ -304,6 +304,9 @@ public class MeetingDao {
             pstmt.setString(1, meeting.getDescription());
             pstmt.setTimestamp(2, Timestamp.valueOf(meeting.getDayTime()));
             pstmt.setString(3, meeting.getStatus());
+            //id4 vai no if abaixo
+            pstmt.setInt(5, meeting.getDurationMinutes() > 0 ? meeting.getDurationMinutes() : 60);
+            pstmt.setInt(6, meetingId);
 
             if (meeting instanceof FaceToFaceMeeting ftf) {
                 pstmt.setString(4, "PRESENCIAL");
@@ -320,7 +323,6 @@ public class MeetingDao {
                 pstmt.setString(4, "ONLINE");
             }
 
-            pstmt.setInt(5, meetingId);
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -430,7 +432,7 @@ public class MeetingDao {
     WHERE
         a.user_commercial_id = ?
 
-        AND a.available = true
+        AND a.is_available = true
 
         AND a.day_of_week::text =
             CASE EXTRACT(ISODOW FROM ?::timestamp)
@@ -440,7 +442,7 @@ public class MeetingDao {
                 WHEN 3 THEN 'QUARTA'
                 WHEN 4 THEN 'QUINTA'
                 WHEN 5 THEN 'SEXTA'
-                WHEN 6 THEN 'SABADO'
+                WHEN 6 THEN 'SÁBADO'
                 WHEN 7 THEN 'DOMINGO'
 
             END
@@ -656,5 +658,82 @@ public class MeetingDao {
             throw new RuntimeException("Error checking meeting conflict: " + e.getMessage(), e);
         }
         return false;
+    }
+    public void updateStatus(int meetingId, String status) {
+        String sql = "UPDATE meetings SET status = ?::meeting_status WHERE id = ?";
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setInt(2, meetingId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // retorna meetings do usuário com o papel dele em cada meeting
+    public List<Meeting> findByUserIdWithRole(int userId) {
+        List<Meeting> meetings = new ArrayList<>();
+
+        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
+                "c.id AS category_id, c.name AS category_name, " +
+                "mp.role AS user_role, " +
+                "learner.id AS learner_id, learner.name AS learner_name, " +
+                "teacher.id AS teacher_id, teacher.name AS teacher_name " +
+                "FROM meetings m " +
+                "JOIN meeting_participants mp ON mp.meeting_id = m.id AND mp.user_id = ? " +
+                "LEFT JOIN categories c ON c.id = m.category_id " +
+                "LEFT JOIN meeting_participants lmp ON lmp.meeting_id = m.id AND lmp.role = 'LEARNER'::participant_role " +
+                "LEFT JOIN users learner ON learner.id = lmp.user_id " +
+                "LEFT JOIN meeting_participants tmp ON tmp.meeting_id = m.id AND tmp.role = 'TEACHER'::participant_role " +
+                "LEFT JOIN users teacher ON teacher.id = tmp.user_id " +
+                "ORDER BY mp.role DESC, m.scheduled_at DESC";
+
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Meeting meeting = "PRESENCIAL".equalsIgnoreCase(rs.getString("meeting_type"))
+                        ? new FaceToFaceMeeting()
+                        : new OnlineMeeting();
+
+                meeting.setId(rs.getInt("id"));
+                meeting.setDescription(rs.getString("description"));
+                meeting.setStatus(rs.getString("status"));
+                meeting.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
+                meeting.setDurationMinutes(rs.getInt("duration_minutes"));
+
+                int categoryId = rs.getInt("category_id");
+                if (!rs.wasNull()) {
+                    Category category = new Category();
+                    category.setId(categoryId);
+                    category.setName(rs.getString("category_name"));
+                    meeting.setCategory(category);
+                }
+
+                Learner learner = new Learner();
+                learner.setId(rs.getInt("learner_id"));
+                learner.setName(rs.getString("learner_name"));
+                meeting.setLearner(learner);
+
+                Teacher teacher = new Teacher();
+                teacher.setId(rs.getInt("teacher_id"));
+                teacher.setName(rs.getString("teacher_name"));
+                meeting.setTeacher(teacher);
+
+                // papel do usuário logado neste meeting
+                meeting.setUserRole(rs.getString("user_role"));
+
+                meetings.add(meeting);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return meetings;
     }
 }

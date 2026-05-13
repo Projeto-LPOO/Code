@@ -47,4 +47,10 @@ public class Meeting extends BaseEntity {
     public int getCostInCredits() {
         return durationMinutes;
     }
+
+    // papel do usuário logado neste meeting, preenchido pela query com join
+    private String userRole;
+
+    public String getUserRole() { return userRole; }
+    public void setUserRole(String userRole) { this.userRole = userRole; }
 }

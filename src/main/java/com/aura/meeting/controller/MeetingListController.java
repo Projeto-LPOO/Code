@@ -30,19 +30,22 @@ public class MeetingListController extends BaseController {
             return;
         }
 
-        List<Meeting> meetings = meetingController.findByUserId(getId(loggedUser));
+        List<Meeting> meetings = meetingController.findByUserIdWithRole(loggedUser.getId());
 
         Map<Integer, String> typeMap = new LinkedHashMap<>();
         for (Meeting m : meetings) {
             typeMap.put(m.getId(), m instanceof FaceToFaceMeeting ? "PRESENCIAL" : "ONLINE");
         }
 
+        String statusError = (String) session.getAttribute("statusError");
+        if (statusError != null) {
+            request.setAttribute("statusError", statusError);
+            session.removeAttribute("statusError");
+        }
+
         request.setAttribute("meetings", meetings);
         request.setAttribute("tipoMap", typeMap);
+        request.setAttribute("loggedUserId", loggedUser.getId());
         forward(request, response, "autenticado/meetingList.jsp");
-    }
-
-    private static int getId(User loggedUser) {
-        return loggedUser.getId();
     }
 }

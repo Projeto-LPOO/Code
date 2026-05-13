@@ -101,4 +101,41 @@ public class MeetingController {
         meetingDao.delete(meetingId);
     }
 
+    public void updateStatus(int meetingId, String status, int requestingUserId) {
+        Meeting meeting = meetingDao.findById(meetingId);
+        if (meeting == null)
+            throw new IllegalArgumentException("Meeting não encontrado.");
+
+        boolean isTeacher = meeting.getTeacher() != null && meeting.getTeacher().getId() == requestingUserId;
+        boolean isLearner = meeting.getLearner() != null && meeting.getLearner().getId() == requestingUserId;
+
+        if (!isTeacher && !isLearner)
+            throw new IllegalArgumentException("Usuário não é participante deste meeting.");
+
+        switch (status) {
+            case "confirmed", "cancelled_by_teacher" -> {
+                if (!isTeacher)
+                    throw new IllegalArgumentException("Apenas o professor pode confirmar ou recusar o meeting.");
+            }
+            case "done" -> {
+                if (!isTeacher)
+                    throw new IllegalArgumentException("Apenas o professor pode marcar o meeting como concluído.");
+                if (!"confirmed".equals(meeting.getStatus()))
+                    throw new IllegalArgumentException("Apenas meetings confirmados podem ser concluídos.");
+            }
+            case "cancelled" -> {
+                // aluno e professor podem cancelar
+            }
+            default -> throw new IllegalArgumentException("Status inválido.");
+        }
+
+        meetingDao.updateStatus(meetingId, status);
+    }
+
+    public List<Meeting> findByUserIdWithRole(int userId) {
+        if (userId <= 0)
+            throw new IllegalArgumentException("ID de usuário inválido.");
+        return meetingDao.findByUserIdWithRole(userId);
+    }
+
 }
