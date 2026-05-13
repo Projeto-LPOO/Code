@@ -1,0 +1,17 @@
+# Maven
+target/
+
+# Git
+.git/
+.gitignore
+
+# IntelliJ
+.idea/
+*.iml
+
+# Ambiente local
+.env
+
+# Logs
+*.log
+*.tmp
