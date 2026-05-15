@@ -432,7 +432,7 @@ public class MeetingDao {
     WHERE
         a.user_commercial_id = ?
 
-        AND a.is_available = true
+        AND a.available = true
 
         AND a.day_of_week::text =
             CASE EXTRACT(ISODOW FROM ?::timestamp)
