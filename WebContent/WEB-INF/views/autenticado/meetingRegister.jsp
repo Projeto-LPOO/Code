@@ -182,9 +182,9 @@
                                                             Fim
                                                         </th>
 
-                                                        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase tracking-wide text-xs">
-                                                            Status
-                                                        </th>
+<%--                                                        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase tracking-wide text-xs">--%>
+<%--                                                            Status--%>
+<%--                                                        </th>--%>
                                                     </tr>
                                                     </thead>
 
