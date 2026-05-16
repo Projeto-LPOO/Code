@@ -40,7 +40,7 @@ public class FeedbackController extends BaseController {
 
         try {
             int meetingId = Integer.parseInt(meetingIdStr);
-            Meeting meeting = meetingDao.getById(meetingId);
+            Meeting meeting = meetingDao.findById(meetingId);
             if (meeting == null || meeting.getLearner() == null || meeting.getLearner().getId() != user.getId()) {
             	response.sendRedirect(request.getContextPath() + "/autenticado/home");
                 return;
@@ -95,7 +95,7 @@ public class FeedbackController extends BaseController {
         }
 
 
-        Meeting meeting = meetingDao.getById(meetingId);
+        Meeting meeting = meetingDao.findById(meetingId);
         if (meeting == null) {
             throw new IllegalArgumentException("Reunião não encontrada.");
         }

@@ -215,19 +215,7 @@ public class MeetingDao {
             if (rs.next()) {
                 String tipo = rs.getString("meeting_type");
                 Meeting meeting;
-                
-             // criei um learner e teacher bem besta so pra rodar -Erick
-                Learner learner = null;
-                if (ls.next()) {
-                    learner = new Learner();
-                    learner.setId(ls.getInt("user_id"));
-                }
 
-                Teacher teacher = null;
-                if (ts.next()) {
-                    teacher = new Teacher();
-                    teacher.setId(ts.getInt("user_id"));
-                }
 
                 if ("PRESENCIAL".equalsIgnoreCase(tipo)) {
                     FaceToFaceMeeting ftf = new FaceToFaceMeeting();
