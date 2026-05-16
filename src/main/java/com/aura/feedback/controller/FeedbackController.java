@@ -11,124 +11,148 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
-//so vai funcionar se o meetingDao estiver funcional
+
 @WebServlet("/autenticado/feedback")
 public class FeedbackController extends BaseController {
+
     private static final long serialVersionUID = 1L;
-    private FeedbackDao feedbackDao = new FeedbackDao();
-    private MeetingDao meetingDao = new MeetingDao();
 
+    private final FeedbackDao feedbackDao = new FeedbackDao();
+    private final MeetingDao  meetingDao  = new MeetingDao();
+
+    // GET — exibe o formulário de feedback para aluno OU professor
+    // (TESTE) URL esperada: /autenticado/feedback?meetingId=X
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
 
         if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-     // pega o ID que veio na URL tipo: ?meetingId=1
         String meetingIdStr = request.getParameter("meetingId");
-        
-        if (meetingIdStr == null || meetingIdStr.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/autenticado/home");
+        if (meetingIdStr == null || meetingIdStr.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
             return;
         }
 
         try {
-            int meetingId = Integer.parseInt(meetingIdStr);
-            Meeting meeting = meetingDao.findById(meetingId);
-            if (meeting == null || meeting.getLearner() == null || meeting.getLearner().getId() != user.getId()) {
-            	response.sendRedirect(request.getContextPath() + "/autenticado/home");
+            int     meetingId = Integer.parseInt(meetingIdStr);
+            Meeting meeting   = meetingDao.findById(meetingId);
+
+            // meeting precisa existir e estar concluído
+            if (meeting == null || !"done".equalsIgnoreCase(meeting.getStatus())) {
+                session.setAttribute("erroMsg", "Apenas meetings concluídos podem ser avaliados.");
+                response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
                 return;
             }
-            if (feedbackDao.hasFeedback(meetingId)) {
-                request.getSession().setAttribute("erroMsg", "Esta aula já foi avaliada por você!");
-                response.sendRedirect(request.getContextPath() + "/autenticado/home");
+
+            boolean isLearner = meeting.getLearner() != null
+                    && meeting.getLearner().getId() == user.getId();
+            boolean isTeacher = meeting.getTeacher() != null
+                    && meeting.getTeacher().getId() == user.getId();
+
+            // usuário precisa ser participante
+            if (!isLearner && !isTeacher) {
+                session.setAttribute("erroMsg", "Você não é participante deste meeting.");
+                response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
                 return;
             }
+
+            // verifica se este usuário já avaliou
+            if (feedbackDao.hasFeedbackFromUser(meetingId, user.getId())) {
+                session.setAttribute("erroMsg", "Você já avaliou este meeting.");
+                response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
+                return;
+            }
+
+            // disponibiliza dados para a view
+            request.setAttribute("meeting",   meeting);
+            request.setAttribute("isTeacher", isTeacher);
+            // quem o usuário vai avaliar
+            request.setAttribute("targetName",
+                    isTeacher ? meeting.getLearner().getName()
+                            : meeting.getTeacher().getName());
+
             forward(request, response, "autenticado/feedback.jsp");
 
-        } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/autenticado/home");
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
         }
     }
-    
 
+
+    // POST — salva o feedback (aluno avalia professor ou vice-versa)
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = getAction(request);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        try {
-            switch (action) {
-                case "save" -> registerFeedback(request);
-                default -> response.sendError(404);
-            }
-            response.sendRedirect(request.getContextPath() + "/autenticado/home");
-            
-        } catch (Exception e) {
-            request.setAttribute("error", e.getMessage());
-            doGet(request, response); 
-        }
-    }
-
-
-    private void registerFeedback(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        User user =  (User) session.getAttribute("user");
-
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
 
         if (user == null) {
-            throw new RuntimeException("Sessão expirada. Por favor, faça login novamente.");
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
         }
 
-        int meetingId = Integer.parseInt(request.getParameter("meetingId"));
-        int rating = Integer.parseInt(request.getParameter("rating"));
-        String comment = request.getParameter("comment");
+        try {
+            registerFeedback(request, user);
+            session.setAttribute("successMsg", "Avaliação enviada com sucesso!");
+            response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
+
+        } catch (IllegalArgumentException e) {
+            // devolve ao formulário com a mensagem de erro
+            request.setAttribute("error", e.getMessage());
+            doGet(request, response);
+        }
+    }
 
 
-        if (rating < 1 || rating > 5) {
+    // Lógica de negócio — salva feedback respeitando papéis
+    private void registerFeedback(HttpServletRequest request, User user) {
+        String meetingIdStr = request.getParameter("meetingId");
+        String ratingStr    = request.getParameter("rating");
+        String comment      = request.getParameter("comment");
+
+        if (meetingIdStr == null || ratingStr == null)
+            throw new IllegalArgumentException("Parâmetros obrigatórios ausentes.");
+
+        int meetingId = Integer.parseInt(meetingIdStr);
+        int rating    = Integer.parseInt(ratingStr);
+
+        if (rating < 1 || rating > 5)
             throw new IllegalArgumentException("A nota deve ser entre 1 e 5 estrelas.");
-        }
-
 
         Meeting meeting = meetingDao.findById(meetingId);
-        if (meeting == null) {
-            throw new IllegalArgumentException("Reunião não encontrada.");
-        }
+        if (meeting == null)
+            throw new IllegalArgumentException("Meeting não encontrado.");
 
-        // validação de permissão se o user logado é o learne dessa meet
-        // nao deixa que um aluno avalie a aula do outro via URL
-        if (meeting.getLearner() != null && meeting.getLearner().getId() != user.getId()) {
-            throw new IllegalArgumentException("Você não tem permissão para avaliar esta reunião.");
-        }
+        if (!"done".equalsIgnoreCase(meeting.getStatus()))
+            throw new IllegalArgumentException("Apenas meetings finalizados podem ser avaliados.");
 
-        // Validação de duplicidade
-        if (feedbackDao.hasFeedback(meetingId)) {
-            throw new IllegalArgumentException("Esta reunião já foi avaliada anteriormente.");
-        }
+        boolean isLearner = meeting.getLearner() != null
+                && meeting.getLearner().getId() == user.getId();
+        boolean isTeacher = meeting.getTeacher() != null
+                && meeting.getTeacher().getId() == user.getId();
 
-        // apenas reunioes done
-        if (!"done".equalsIgnoreCase(meeting.getStatus())) {
-            throw new IllegalArgumentException("Apenas reuniões finalizadas podem ser avaliadas.");
-        }
+        if (!isLearner && !isTeacher)
+            throw new IllegalArgumentException("Você não tem permissão para avaliar este meeting.");
 
-        // verifica se o teacher existe
-        if (meeting.getTeacher() == null) {
-            throw new RuntimeException("Erro: Instrutor não identificado para esta reunião.");
-        }
+        if (feedbackDao.hasFeedbackFromUser(meetingId, user.getId()))
+            throw new IllegalArgumentException("Você já avaliou este meeting.");
 
-        Feedback feedback = new Feedback(
-            meetingId, 
-            user.getId(), 
-            meeting.getTeacher().getId(), 
-            rating, 
-            comment
-        );
-        
+        // quem recebe o feedback: se sou aluno, avalia professor — e vice-versa
+        int toUserId = isTeacher
+                ? meeting.getLearner().getId()
+                : meeting.getTeacher().getId();
+
+        Feedback feedback = new Feedback(meetingId, user.getId(), toUserId, rating, comment);
         feedbackDao.registerFeedback(feedback);
     }
 }

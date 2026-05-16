@@ -360,13 +360,13 @@
                                             <p class="text-xs text-gray-500">${m.dayTime}</p>
                                         </div>
                                         <div class="flex items-center gap-2 shrink-0">
-                                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full
-                                                ${tipoMap[m.id] == 'ONLINE' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">
-                                                    ${tipoMap[m.id]}
-                                            </span>
+                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full
+                                        ${tipoMap[m.id] == 'ONLINE' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">
+                                            ${tipoMap[m.id]}
+                                    </span>
                                             <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
-                                                Concluído
-                                            </span>
+                                        Concluído
+                                    </span>
                                         </div>
                                     </div>
 
@@ -382,11 +382,30 @@
                                     </p>
 
                                     <p class="text-xs mb-3">
-                                        <span class="font-semibold px-2 py-0.5 rounded-full
-                                            ${m.userRole == 'TEACHER' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">
-                                                ${m.userRole == 'TEACHER' ? 'Você foi o professor' : 'Você foi o aluno'}
-                                        </span>
+                                <span class="font-semibold px-2 py-0.5 rounded-full
+                                    ${m.userRole == 'TEACHER' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">
+                                        ${m.userRole == 'TEACHER' ? 'Você foi o professor' : 'Você foi o aluno'}
+                                </span>
                                     </p>
+
+                                        <%-- Botão de feedback: aparece para aluno E professor, desde que ainda não tenham avaliado --%>
+                                    <div class="flex items-center gap-2 mt-3 flex-wrap">
+                                        <c:choose>
+                                            <c:when test="${feedbackDoneMap[m.id]}">
+                                                <%-- usuário já avaliou este meeting --%>
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-lg">
+                                            ✓ Avaliação enviada
+                                        </span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <%-- ainda pode avaliar --%>
+                                                <a href="${pageContext.request.contextPath}/autenticado/feedback?meetingId=${m.id}"
+                                                   class="inline-block bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors">
+                                                        ${m.userRole == 'TEACHER' ? '⭐ Avaliar Aluno' : '⭐ Avaliar Professor'}
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
 
                                 </div>
                             </c:if>
