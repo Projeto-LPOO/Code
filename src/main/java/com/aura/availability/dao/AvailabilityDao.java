@@ -17,7 +17,7 @@ import java.sql.Connection;
 public class AvailabilityDao {
 	public void registerAvailability(Availability myAvailability) {
 		String sql = "INSERT INTO availability (user_commercial_id, day_of_week, hour_start, hour_end, available) VALUES (?, ?::day_of_week, ?, ?, ?)";
-		
+
 		 try(Connection connection = dbFactory.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)){
 			 
@@ -25,7 +25,7 @@ public class AvailabilityDao {
 		            stmt.setString(2, translateDayToDb(myAvailability.getDayWeek()));
 		            stmt.setTime(3, java.sql.Time.valueOf(myAvailability.getHourStart()));
 		            stmt.setTime(4, java.sql.Time.valueOf(myAvailability.getHourEnd()));
-					stmt.setBoolean(5, myAvailability.isActive());
+					stmt.setBoolean(5, myAvailability.isAvailable());
 		            stmt.executeUpdate();
 
 		        }catch (Exception e) {
@@ -95,7 +95,7 @@ public class AvailabilityDao {
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("available"));
+				dispo.setAvailable(rs.getBoolean("available"));
 				
 				}
 			}catch(Exception e) {
@@ -124,7 +124,7 @@ public class AvailabilityDao {
 				dispo.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
 				dispo.setHourStart(rs.getTime("hour_start").toLocalTime());
 				dispo.setHourEnd(rs.getTime("hour_end").toLocalTime());
-				dispo.setActive(rs.getBoolean("available"));
+				dispo.setAvailable(rs.getBoolean("available"));
 				
 				lista.add(dispo);
 			}
@@ -178,5 +178,34 @@ public class AvailabilityDao {
 	        case "DOMINGO": return DayOfWeek.SUNDAY;
 	        default: return DayOfWeek.MONDAY;
 	    }
+	}
+
+	// by little daniel
+	public List<Availability> findActiveByUser(int userId) {
+		String sql = "SELECT * FROM availability WHERE user_commercial_id = ? AND available = true";
+		List<Availability> list = new ArrayList<>();
+
+		try (Connection connection = dbFactory.getConnection();
+			 PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+			stmt.setInt(1, userId);
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				Availability slot = new Availability();
+				slot.setId(rs.getInt("id"));
+				CommercialUser user = new CommercialUser();
+				user.setId(rs.getInt("user_commercial_id"));
+				slot.setUser(user);
+				slot.setDayWeek(translateDayFromDb(rs.getString("day_of_week")));
+				slot.setHourStart(rs.getTime("hour_start").toLocalTime());
+				slot.setHourEnd(rs.getTime("hour_end").toLocalTime());
+				slot.setAvailable(rs.getBoolean("available"));
+				list.add(slot);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching active slots: " + e.getMessage(), e);
+		}
+		return list;
 	}
 }
