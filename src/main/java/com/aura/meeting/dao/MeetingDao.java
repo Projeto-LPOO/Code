@@ -565,6 +565,7 @@ public class MeetingDao {
             WHERE
                 student_mp.user_id = ?
                 AND m.scheduled_at >= NOW()
+                AND m.status = 'confirmed'
         
             ORDER BY m.scheduled_at
             LIMIT 1
