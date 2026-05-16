@@ -97,7 +97,7 @@ CREATE TABLE public.availability (
                                      day_of_week public.day_of_week NOT NULL,
                                      hour_start time without time zone,
                                      hour_end time without time zone,
-                                     is_available boolean NOT NULL,
+                                     available boolean NOT NULL,
                                      CONSTRAINT availability_check CHECK ((hour_end > hour_start))
 );
 
@@ -555,7 +555,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: availability; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.availability (id, user_commercial_id, day_of_week, hour_start, hour_end, is_available) FROM stdin;
+COPY public.availability (id, user_commercial_id, day_of_week, hour_start, hour_end, available) FROM stdin;
 \.
 
 
