@@ -1,6 +1,7 @@
 package com.aura.meeting.controller;
 
 import com.aura.feedback.dao.FeedbackDao;
+import com.aura.meeting.dao.MeetingDao;
 import com.aura.meeting.model.Meeting;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
@@ -20,6 +21,7 @@ public class MeetingListController extends BaseController {
 
     private final MeetingController meetingController = new MeetingController();
     private final FeedbackDao feedbackDao = new FeedbackDao();
+    private final MeetingDao reportDao = new MeetingDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -35,14 +37,22 @@ public class MeetingListController extends BaseController {
 
         List<Meeting> meetings = meetingController.findByUserIdWithRole(loggedUser.getId());
 
-        Map<Integer, String> tipoMap = new HashMap<>();
+        Map<Integer, String> typeMap = new HashMap<>();
         Map<Integer, Boolean> feedbackDoneMap = new HashMap<>();
+        Map<Integer, Boolean> reportDoneMap = new HashMap<>();
 
         for (Meeting m : meetings) {
-            tipoMap.put(m.getId(), m.getMeetingType());
+            boolean isDone     = "done".equalsIgnoreCase(m.getStatus());
+            boolean isReported = "reported".equalsIgnoreCase(m.getStatus());
+
+            typeMap.put(m.getId(), m.getMeetingType());
             feedbackDoneMap.put(m.getId(),
                     "done".equalsIgnoreCase(m.getStatus())
                             && feedbackDao.hasFeedbackFromUser(m.getId(), loggedUser.getId())
+            );
+
+            reportDoneMap.put(m.getId(),
+                    (isDone || isReported) && reportDao.hasReportFromUser(m.getId(), loggedUser.getId())
             );
         }
 
@@ -56,8 +66,9 @@ public class MeetingListController extends BaseController {
         }
 
         request.setAttribute("meetings", meetings);
-        request.setAttribute("tipoMap", tipoMap);
+        request.setAttribute("typeMap", typeMap);
         request.setAttribute("feedbackDoneMap", feedbackDoneMap);
+        request.setAttribute("reportDoneMap", reportDoneMap);
 
         forward(request, response, "autenticado/meetingList.jsp");
     }

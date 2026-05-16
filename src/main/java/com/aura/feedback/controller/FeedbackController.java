@@ -20,10 +20,8 @@ public class FeedbackController extends BaseController {
     private static final long serialVersionUID = 1L;
 
     private final FeedbackDao feedbackDao = new FeedbackDao();
-    private final MeetingDao  meetingDao  = new MeetingDao();
+    private final MeetingDao meetingDao = new MeetingDao();
 
-    // GET — exibe o formulário de feedback para aluno OU professor
-    // (TESTE) URL esperada: /autenticado/feedback?meetingId=X
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -43,42 +41,48 @@ public class FeedbackController extends BaseController {
         }
 
         try {
-            int     meetingId = Integer.parseInt(meetingIdStr);
-            Meeting meeting   = meetingDao.findById(meetingId);
+            int meetingId = Integer.parseInt(meetingIdStr);
+            Meeting meeting = meetingDao.findById(meetingId);
 
-            // meeting precisa existir e estar concluído
-            if (meeting == null || !"done".equalsIgnoreCase(meeting.getStatus())) {
+            if (meeting == null) {
+                session.setAttribute("erroMsg", "Meeting não encontrado.");
+                response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
+                return;
+            }
+
+            String status = meeting.getStatus();
+
+            if ("reported".equalsIgnoreCase(status)) {
+                session.setAttribute("erroMsg", "Este meeting foi reportado e não pode ser avaliado.");
+                response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
+                return;
+            }
+
+            if (!"done".equalsIgnoreCase(status)) {
                 session.setAttribute("erroMsg", "Apenas meetings concluídos podem ser avaliados.");
                 response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
                 return;
             }
 
-            boolean isLearner = meeting.getLearner() != null
-                    && meeting.getLearner().getId() == user.getId();
-            boolean isTeacher = meeting.getTeacher() != null
-                    && meeting.getTeacher().getId() == user.getId();
+            boolean isLearner = meeting.getLearner() != null && meeting.getLearner().getId() == user.getId();
+            boolean isTeacher = meeting.getTeacher() != null && meeting.getTeacher().getId() == user.getId();
 
-            // usuário precisa ser participante
             if (!isLearner && !isTeacher) {
                 session.setAttribute("erroMsg", "Você não é participante deste meeting.");
                 response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
                 return;
             }
 
-            // verifica se este usuário já avaliou
             if (feedbackDao.hasFeedbackFromUser(meetingId, user.getId())) {
                 session.setAttribute("erroMsg", "Você já avaliou este meeting.");
                 response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
                 return;
             }
 
-            // disponibiliza dados para a view
-            request.setAttribute("meeting",   meeting);
+            request.setAttribute("meeting", meeting);
             request.setAttribute("isTeacher", isTeacher);
-            // quem o usuário vai avaliar
-            request.setAttribute("targetName",
-                    isTeacher ? meeting.getLearner().getName()
-                            : meeting.getTeacher().getName());
+            request.setAttribute("targetName", isTeacher ? meeting.getLearner().getName()
+                    : meeting.getTeacher().getName());
 
             forward(request, response, "autenticado/feedback.jsp");
 
@@ -87,8 +91,6 @@ public class FeedbackController extends BaseController {
         }
     }
 
-
-    // POST — salva o feedback (aluno avalia professor ou vice-versa)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -107,18 +109,15 @@ public class FeedbackController extends BaseController {
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
 
         } catch (IllegalArgumentException e) {
-            // devolve ao formulário com a mensagem de erro
             request.setAttribute("error", e.getMessage());
             doGet(request, response);
         }
     }
 
-
-    // Lógica de negócio — salva feedback respeitando papéis
     private void registerFeedback(HttpServletRequest request, User user) {
         String meetingIdStr = request.getParameter("meetingId");
-        String ratingStr    = request.getParameter("rating");
-        String comment      = request.getParameter("comment");
+        String ratingStr = request.getParameter("rating");
+        String comment = request.getParameter("comment");
 
         if (meetingIdStr == null || ratingStr == null)
             throw new IllegalArgumentException("Parâmetros obrigatórios ausentes.");
@@ -133,13 +132,16 @@ public class FeedbackController extends BaseController {
         if (meeting == null)
             throw new IllegalArgumentException("Meeting não encontrado.");
 
-        if (!"done".equalsIgnoreCase(meeting.getStatus()))
+        String status = meeting.getStatus();
+
+        if ("reported".equalsIgnoreCase(status))
+            throw new IllegalArgumentException("Este meeting foi reportado e não pode ser avaliado.");
+
+        if (!"done".equalsIgnoreCase(status))
             throw new IllegalArgumentException("Apenas meetings finalizados podem ser avaliados.");
 
-        boolean isLearner = meeting.getLearner() != null
-                && meeting.getLearner().getId() == user.getId();
-        boolean isTeacher = meeting.getTeacher() != null
-                && meeting.getTeacher().getId() == user.getId();
+        boolean isLearner = meeting.getLearner() != null && meeting.getLearner().getId() == user.getId();
+        boolean isTeacher = meeting.getTeacher() != null && meeting.getTeacher().getId() == user.getId();
 
         if (!isLearner && !isTeacher)
             throw new IllegalArgumentException("Você não tem permissão para avaliar este meeting.");
@@ -147,12 +149,12 @@ public class FeedbackController extends BaseController {
         if (feedbackDao.hasFeedbackFromUser(meetingId, user.getId()))
             throw new IllegalArgumentException("Você já avaliou este meeting.");
 
-        // quem recebe o feedback: se sou aluno, avalia professor — e vice-versa
-        int toUserId = isTeacher
-                ? meeting.getLearner().getId()
+        if (meeting.getTeacher() == null)
+            throw new RuntimeException("Instrutor não identificado para este meeting.");
+
+        int toUserId = isTeacher ? meeting.getLearner().getId()
                 : meeting.getTeacher().getId();
 
-        Feedback feedback = new Feedback(meetingId, user.getId(), toUserId, rating, comment);
-        feedbackDao.registerFeedback(feedback);
+        feedbackDao.registerFeedback(new Feedback(meetingId, user.getId(), toUserId, rating, comment));
     }
 }

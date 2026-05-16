@@ -106,7 +106,6 @@
                                         <p class="text-xs text-gray-400 mb-1">Categoria: <span class="font-medium text-gray-600">${m.category.name}</span></p>
                                     </c:if>
 
-                                        <%-- participantes --%>
                                     <p class="text-xs text-gray-400 mb-1">
                                         Professor: <span class="font-medium text-gray-600">${m.teacher.name}</span>
                                     </p>
@@ -127,7 +126,6 @@
                                         </p>
                                     </c:if>
 
-                                        <%-- papel do usuário neste meeting --%>
                                     <p class="text-xs mb-3">
                                         <span class="font-semibold px-2 py-0.5 rounded-full
                                             ${m.userRole == 'TEACHER' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">
@@ -135,7 +133,6 @@
                                         </span>
                                     </p>
 
-                                        <%-- ações: apenas o professor pode confirmar ou recusar --%>
                                     <div class="flex items-center gap-2 mt-3 flex-wrap">
                                         <c:if test="${m.userRole == 'TEACHER'}">
                                             <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline">
@@ -238,7 +235,6 @@
                                     </p>
 
                                     <div class="flex items-center gap-2 mt-3 flex-wrap">
-                                            <%-- apenas o professor pode marcar como concluído --%>
                                         <c:if test="${m.userRole == 'TEACHER'}">
                                             <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
                                                   onsubmit="return confirm('Marcar este meeting como concluído?')" class="inline">
@@ -250,7 +246,6 @@
                                                 </button>
                                             </form>
                                         </c:if>
-                                            <%-- aluno e professor podem cancelar --%>
                                         <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
                                               onsubmit="return confirm('Cancelar este meeting?')" class="inline">
                                             <input type="hidden" name="id" value="${m.id}">
@@ -337,7 +332,7 @@
         <div id="pane-concluidos" class="tab-pane hidden">
             <c:set var="hasDone" value="false" />
             <c:forEach var="m" items="${meetings}">
-                <c:if test="${m.status == 'done'}">
+                <c:if test="${m.status == 'done' || m.status == 'reported'}">
                     <c:set var="hasDone" value="true" />
                 </c:if>
             </c:forEach>
@@ -351,7 +346,7 @@
                 <c:otherwise>
                     <section class="flex flex-col gap-4">
                         <c:forEach var="m" items="${meetings}">
-                            <c:if test="${m.status == 'done'}">
+                            <c:if test="${m.status == 'done' || m.status == 'reported'}">
                                 <div class="bg-white border border-gray-200 rounded-2xl p-5">
 
                                     <div class="flex items-start justify-between gap-4 mb-3">
@@ -360,13 +355,22 @@
                                             <p class="text-xs text-gray-500">${m.dayTime}</p>
                                         </div>
                                         <div class="flex items-center gap-2 shrink-0">
-                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full
-                                        ${tipoMap[m.id] == 'ONLINE' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">
-                                            ${tipoMap[m.id]}
-                                    </span>
-                                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
-                                        Concluído
-                                    </span>
+                                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full
+                                                ${tipoMap[m.id] == 'ONLINE' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">
+                                                    ${tipoMap[m.id]}
+                                            </span>
+                                            <c:choose>
+                                                <c:when test="${m.status == 'reported'}">
+                                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-50 text-orange-700">
+                                                        Reportado
+                                                    </span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+                                                        Concluído
+                                                    </span>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
 
@@ -382,29 +386,47 @@
                                     </p>
 
                                     <p class="text-xs mb-3">
-                                <span class="font-semibold px-2 py-0.5 rounded-full
-                                    ${m.userRole == 'TEACHER' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">
-                                        ${m.userRole == 'TEACHER' ? 'Você foi o professor' : 'Você foi o aluno'}
-                                </span>
+                                        <span class="font-semibold px-2 py-0.5 rounded-full
+                                            ${m.userRole == 'TEACHER' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">
+                                                ${m.userRole == 'TEACHER' ? 'Você foi o professor' : 'Você foi o aluno'}
+                                        </span>
                                     </p>
 
-                                        <%-- Botão de feedback: aparece para aluno E professor, desde que ainda não tenham avaliado --%>
                                     <div class="flex items-center gap-2 mt-3 flex-wrap">
+
                                         <c:choose>
+                                            <c:when test="${m.status == 'reported'}">
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-orange-700 bg-orange-50 px-3 py-1.5 rounded-lg">
+                                                    ⚠ Meeting reportado
+                                                </span>
+                                            </c:when>
                                             <c:when test="${feedbackDoneMap[m.id]}">
-                                                <%-- usuário já avaliou este meeting --%>
                                                 <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-lg">
-                                            ✓ Avaliação enviada
-                                        </span>
+                                                    ✓ Avaliação enviada
+                                                </span>
                                             </c:when>
                                             <c:otherwise>
-                                                <%-- ainda pode avaliar --%>
                                                 <a href="${pageContext.request.contextPath}/autenticado/feedback?meetingId=${m.id}"
                                                    class="inline-block bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors">
                                                         ${m.userRole == 'TEACHER' ? '⭐ Avaliar Aluno' : '⭐ Avaliar Professor'}
                                                 </a>
                                             </c:otherwise>
                                         </c:choose>
+
+                                        <c:choose>
+                                            <c:when test="${reportDoneMap[m.id]}">
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg">
+                                                    ✓ Report enviado
+                                                </span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="${pageContext.request.contextPath}/autenticado/meeting/report?meetingId=${m.id}"
+                                                   class="inline-block bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors">
+                                                    ⚑ Reportar
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
+
                                     </div>
 
                                 </div>
