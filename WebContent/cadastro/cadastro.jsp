@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title> Cadastro AURA</title>
+</head>
+<body>
+<h1> Cadastro do Usuário</h1>
+
+<form action="/CadastroServlet" method="POST">
+    <h3> É novo? Cadastre-se abaixo</h3>
+    <label>Nome:</label><br>
+    <input type="text" name="txtNome" required><br><br>
+
+    <label>E-mail:</label><br>
+    <input type="email" name="txtEmail" required><br><br>
+
+    <label>Senha:</label><br>
+    <input type="password" name="txtSenha" required><br><br>
+
+    <label>Idade:</label><br>
+    <input type="number" name="txtIdade" min="16" max="100" required><br><br>
+
+    <label>CPF (somente números):</label><br>
+    <input type="text" name="txtCpf" maxlength="14" required><br><br>
+
+    <label>Telefone:</label><br>
+    <input type="text" name="txtTelefone" placeholder="(00) 00000-0000"><br><br>
+
+    <label>Endereço:</label><br>
+    <input type="text" name="txtEndereco" required><br><br>
+
+    <hr>
+
+    <h3> Quais os seus interesses?</h3>
+    <input type="checkbox" name="interests_learn" value="1"> Java<br>
+    <input type="checkbox" name="iinterests_learn" value="2"> Redes<br>
+
+    <hr>
+
+    <h3>Suas Skills</h3>
+    <input type="checkbox" name="interests_skill" value="3"> Python<br>
+    <input type="checkbox" name="interests_skill" value="4"> Soft Skills<br>
+    <input type="checkbox" name="interests_skill" value="5"> Nenhuma das anteriores<br>
+
+    <hr>
+
+    <button type="submit"> Finalizar Cadastro</button>
+</form>
+</body>
+</html>

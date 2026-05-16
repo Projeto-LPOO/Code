@@ -1,5 +1,6 @@
 package com.aura.user.models;
 
+import com.aura.financial.models.Credits;
 import com.aura.interest.model.Interest;
 
 import java.sql.Timestamp;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class CommercialUser extends User{
 
-    protected int creditos;
+    protected Credits credits;
     protected List<Interest> interests;
 
     public CommercialUser(){
@@ -24,7 +25,7 @@ public class CommercialUser extends User{
         this.cpf = cpf;
         this.email = email;
         this.hashPassword = hashPassword;
-        this.creditos = 60;
+        this.credits = new Credits();
         this.updatedAt = Timestamp.valueOf(java.time.LocalDateTime.now());
         this.interests = new ArrayList<>();
     }
@@ -37,5 +38,8 @@ public class CommercialUser extends User{
         return this.interests;
     }
 
-
+    public Credits getCredits()
+    {
+        return credits;
+    }
 }

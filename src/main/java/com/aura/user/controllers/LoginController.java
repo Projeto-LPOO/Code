@@ -1,8 +1,11 @@
 package com.aura.user.controllers;
 
+import com.aura.financial.dao.FinancialDao;
+import com.aura.financial.models.Credits;
 import com.aura.shared.security.BCryptPasswordHasher;
 import com.aura.shared.security.PasswordHasher;
 import com.aura.user.dao.UserDao;
+import com.aura.user.models.CommercialUser;
 import com.aura.user.models.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,7 +20,7 @@ import java.io.IOException;
 public class LoginController extends HttpServlet{
 
     private final UserDao userDao = new UserDao();
-
+    private final FinancialDao financialDao = new FinancialDao();
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
@@ -26,12 +29,21 @@ public class LoginController extends HttpServlet{
         String password = request.getParameter("password");
 
         User user = userDao.findByEmail(email);
+        if(user == null)
+        {
+            request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
+
+        }
+        Credits creditsUser = financialDao.findById(user.getId());
+
+
         PasswordHasher hasher = new BCryptPasswordHasher();
 
         if(user != null && hasher.verify(password,user.getHashPassword()))
         {
             HttpSession session = request.getSession();
             session.setAttribute("user",user);
+            session.setAttribute("creditsBalance", creditsUser.getBalance());
             response.sendRedirect(request.getContextPath() + "/autenticado/home");
         }
         else{
