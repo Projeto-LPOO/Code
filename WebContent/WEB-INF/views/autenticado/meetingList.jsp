@@ -162,8 +162,8 @@
                                                     Confirmar
                                                 </button>
                                             </form>
-                                            <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
-                                                  onsubmit="return confirm('Recusar este meeting?')" class="inline">
+                                            <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline"
+                                                  onsubmit="return confirmarCancelamento(${cancelDeadlineMap[m.id]}, '${m.userRole}')">
                                                 <input type="hidden" name="id" value="${m.id}">
                                                 <input type="hidden" name="status" value="cancelled">
                                                 <button type="submit"
@@ -265,8 +265,8 @@
                                                 </button>
                                             </form>
                                         </c:if>
-                                        <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
-                                              onsubmit="return confirm('Cancelar este meeting?')" class="inline">
+                                        <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline"
+                                              onsubmit="return confirmarCancelamento(${cancelDeadlineMap[m.id]}, '${m.userRole}')">
                                             <input type="hidden" name="id" value="${m.id}">
                                             <input type="hidden" name="status" value="cancelled">
                                             <button type="submit"
@@ -460,6 +460,18 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/assets/js/meetingList.js"></script>
+<script>
+    function confirmarCancelamento(comReembolso, papel) {
+        if (comReembolso) {
+            return confirm('Cancelar este meeting? Os créditos serão devolvidos.');
+        }
+        // fora do prazo de 3 dias
+        if (papel === 'TEACHER') {
+            return confirm('Cancelar este meeting?\n\nAtenção: o meeting está a menos de 3 dias de acontecer. O cancelamento será realizado, mas os créditos do aluno não serão reembolsados.');
+        }
+        return confirm('Cancelar este meeting?\n\nAtenção: o meeting está a menos de 3 dias de acontecer. O cancelamento será realizado, mas seus créditos não serão reembolsados.');
+    }
+</script>
 
 </body>
 </html>

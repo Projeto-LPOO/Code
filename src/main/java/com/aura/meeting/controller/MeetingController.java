@@ -155,14 +155,17 @@ public class MeetingController {
                 // Credits were already transferred on confirmation — nothing to do here
             }
             case "cancelled" -> {
-                // Revert credits only if the meeting was already confirmed (credits were charged)
+                // só reverte créditos se estava confirmado e ainda está dentro do prazo de 3 dias
+                // fora do prazo: cancela sem reembolso — créditos não são revertidos
                 if ("confirmed".equals(previousStatus)) {
-                    financialDao.applyMeetingCredits(
-                            meeting.getLearner().getId(),
-                            meeting.getTeacher().getId(),
-                            meeting.getCostInCredits(),
-                            false
-                    );
+                    if (meeting.isCancellableWithRefund()) {
+                        financialDao.applyMeetingCredits(
+                                meeting.getLearner().getId(),
+                                meeting.getTeacher().getId(),
+                                meeting.getCostInCredits(),
+                                false
+                        );
+                    }
                 }
             }
             default -> throw new IllegalArgumentException("Status inválido.");
