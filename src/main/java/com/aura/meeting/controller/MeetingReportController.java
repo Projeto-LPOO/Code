@@ -3,6 +3,7 @@ package com.aura.meeting.controller;
 import com.aura.feedback.dao.FeedbackDao;
 import com.aura.meeting.dao.MeetingDao;
 import com.aura.meeting.dao.MeetingDao;
+import com.aura.meeting.dao.ReportDao;
 import com.aura.meeting.model.Meeting;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
@@ -20,7 +21,7 @@ public class MeetingReportController extends BaseController {
     private static final long serialVersionUID = 1L;
 
     private final MeetingDao meetingDao = new MeetingDao();
-    private final MeetingDao reportDao = new MeetingDao();
+    private final ReportDao reportDao = new ReportDao();
     private final FeedbackDao feedbackDao = new FeedbackDao();
 
     // GET — exibe formulário de report
@@ -56,7 +57,7 @@ public class MeetingReportController extends BaseController {
             if (reason == null || reason.isBlank())
                 throw new IllegalArgumentException("O motivo do report é obrigatório.");
 
-            meetingDao.registerReport(meeting.getId(), user.getId(), reason.trim());
+           reportDao.registerReport(meeting.getId(), user.getId(), reason.trim());
 
             // atualiza status para 'reported' para bloquear novas avaliações
             meetingDao.updateStatus(meeting.getId(), "reported");
@@ -110,7 +111,7 @@ public class MeetingReportController extends BaseController {
             return null;
         }
 
-        if (meetingDao.hasReportFromUser(meetingId, user.getId())) {
+        if (reportDao.hasReportFromUser(meetingId, user.getId())) {
             session.setAttribute("erroMsg", "Você já reportou este meeting.");
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
             return null;

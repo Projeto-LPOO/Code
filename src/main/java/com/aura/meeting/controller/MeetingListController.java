@@ -2,6 +2,7 @@ package com.aura.meeting.controller;
 
 import com.aura.feedback.dao.FeedbackDao;
 import com.aura.meeting.dao.MeetingDao;
+import com.aura.meeting.dao.ReportDao;
 import com.aura.meeting.model.Meeting;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
@@ -21,7 +22,7 @@ public class MeetingListController extends BaseController {
 
     private final MeetingController meetingController = new MeetingController();
     private final FeedbackDao feedbackDao = new FeedbackDao();
-    private final MeetingDao reportDao = new MeetingDao();
+    private final ReportDao reportDao = new ReportDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
