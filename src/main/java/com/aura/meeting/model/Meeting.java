@@ -57,4 +57,10 @@ public class Meeting extends BaseEntity {
     public String getMeetingType() {
         return this instanceof FaceToFaceMeeting ? "PRESENCIAL" : "ONLINE";
     }
+
+    // retorna true se ainda é possível cancelar com reembolso (mais de 3 dias antes)
+    public boolean isCancellableWithRefund() {
+        if (dayTime == null) return false;
+        return LocalDateTime.now().plusDays(3).isBefore(dayTime);
+    }
 }

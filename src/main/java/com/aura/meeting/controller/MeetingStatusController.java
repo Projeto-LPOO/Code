@@ -39,7 +39,7 @@ public class MeetingStatusController extends BaseController {
 
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             request.getSession().setAttribute("statusError", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
         }
