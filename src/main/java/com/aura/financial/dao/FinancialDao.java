@@ -212,4 +212,79 @@ public class FinancialDao {
     }
 
 
+    public void applyMeetingCredits(int learnerId, int teacherId, int amount, boolean isDone) {
+        try (Connection conn = dbFactory.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                Credits learnerCredits = findByIdForUpdate(conn, learnerId);
+                Credits teacherCredits = findByIdForUpdate(conn, teacherId);
+
+                if (isDone) {
+                    if (learnerCredits.getBalance().compareTo(BigDecimal.valueOf(amount)) < 0) {
+                        throw new IllegalStateException(
+                                "Saldo insuficiente. Você precisa de " + amount +
+                                        " CS mas possui apenas " + learnerCredits.getBalance().intValue() + " CS."
+                        );
+                    }
+                    learnerCredits.withdraw(amount);
+                    teacherCredits.buy(amount);
+                } else {
+                    // Revert: teacher returns credits to learner
+                    teacherCredits.withdraw(amount);
+                    learnerCredits.buy(amount);
+                }
+
+                updateCreditsInTransaction(conn, learnerCredits);
+                updateCreditsInTransaction(conn, teacherCredits);
+                conn.commit();
+
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
+            }
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Credits findByIdForUpdate(Connection conn, int userId) throws Exception {
+        String sql = "SELECT * FROM credits WHERE user_id = ? FOR UPDATE";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next())
+                throw new IllegalStateException("Credits record not found for user " + userId);
+
+            Credits credits = new Credits();
+            credits.setId(rs.getInt("id"));
+            credits.setBalance(rs.getBigDecimal("balance") != null ? rs.getBigDecimal("balance") : BigDecimal.ZERO);
+            credits.setTotalEarned(rs.getBigDecimal("total_earned") != null ? rs.getBigDecimal("total_earned") : BigDecimal.ZERO);
+            credits.setTotalSpent(rs.getBigDecimal("total_spent") != null ? rs.getBigDecimal("total_spent") : BigDecimal.ZERO);
+            CommercialUser user = new CommercialUser();
+            user.setId(userId);
+            credits.setUser(user);
+            return credits;
+        }
+    }
+
+    private void updateCreditsInTransaction(Connection conn, Credits credits) throws Exception {
+        String sql = """
+        UPDATE credits
+        SET balance = ?,
+            total_earned = ?,
+            total_spent = ?,
+            updated_at = NOW()
+        WHERE user_id = ?
+    """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBigDecimal(1, credits.getBalance());
+            stmt.setBigDecimal(2, credits.getTotalEarned());
+            stmt.setBigDecimal(3, credits.getTotalSpent());
+            stmt.setInt(4, credits.getUser().getId());
+            stmt.executeUpdate();
+        }
+    }
+
 }

@@ -2,11 +2,14 @@ package com.aura.meeting.controller;
 
 import com.aura.availability.dao.AvailabilityDao;
 import com.aura.availability.models.Availability;
+import com.aura.financial.dao.FinancialDao;
 import com.aura.meeting.dao.MeetingDao;
 import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Location;
 import com.aura.meeting.model.Meeting;
 import jakarta.servlet.annotation.WebServlet;
+import com.aura.financial.models.Credits;
+import java.math.BigDecimal;
 
 
 import java.time.LocalDateTime;
@@ -17,6 +20,7 @@ public class MeetingController {
 
     private final MeetingDao meetingDao = new MeetingDao();
     private AvailabilityDao availabilityDao = new AvailabilityDao();
+    private final FinancialDao financialDao = new FinancialDao();
 
 
     public void register(Meeting meeting) {
@@ -112,19 +116,54 @@ public class MeetingController {
         if (!isTeacher && !isLearner)
             throw new IllegalArgumentException("Usuário não é participante deste meeting.");
 
+        String previousStatus = meeting.getStatus();
+
         switch (status) {
-            case "confirmed", "cancelled_by_teacher" -> {
+            case "confirmed" -> {
                 if (!isTeacher)
-                    throw new IllegalArgumentException("Apenas o professor pode confirmar ou recusar o meeting.");
+                    throw new IllegalArgumentException("Apenas o professor pode confirmar o meeting.");
+
+                // Check learner balance before confirming
+                int cost = meeting.getCostInCredits();
+                Credits learnerCredits = financialDao.findById(meeting.getLearner().getId());
+                int currentBalance = (learnerCredits != null && learnerCredits.getBalance() != null)
+                        ? learnerCredits.getBalance().intValue() : 0;
+                if (currentBalance < cost) {
+                    throw new IllegalArgumentException(
+                            "O aluno não possui saldo suficiente para este meeting. " +
+                                    "Custo: " + cost + " CS | Saldo atual do aluno: " + currentBalance + " CS."
+                    );
+                }
+
+                // Debit learner and credit teacher atomically upon confirmation
+                financialDao.applyMeetingCredits(
+                        meeting.getLearner().getId(),
+                        meeting.getTeacher().getId(),
+                        cost,
+                        true
+                );
+            }
+            case "cancelled_by_teacher" -> {
+                if (!isTeacher)
+                    throw new IllegalArgumentException("Apenas o professor pode recusar o meeting.");
             }
             case "done" -> {
                 if (!isTeacher)
                     throw new IllegalArgumentException("Apenas o professor pode marcar o meeting como concluído.");
-                if (!"confirmed".equals(meeting.getStatus()))
+                if (!"confirmed".equals(previousStatus))
                     throw new IllegalArgumentException("Apenas meetings confirmados podem ser concluídos.");
+                // Credits were already transferred on confirmation — nothing to do here
             }
             case "cancelled" -> {
-                // aluno e professor podem cancelar
+                // Revert credits only if the meeting was already confirmed (credits were charged)
+                if ("confirmed".equals(previousStatus)) {
+                    financialDao.applyMeetingCredits(
+                            meeting.getLearner().getId(),
+                            meeting.getTeacher().getId(),
+                            meeting.getCostInCredits(),
+                            false
+                    );
+                }
             }
             default -> throw new IllegalArgumentException("Status inválido.");
         }

@@ -45,6 +45,25 @@
             <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-5">${error}</div>
         </c:if>
 
+        <%-- aviso de balanço --%>
+        <%
+            String balanceWarning = (String) session.getAttribute("balanceWarning");
+            if (balanceWarning != null) {
+                session.removeAttribute("balanceWarning");
+        %>
+        <div class="bg-amber-50 border border-amber-300 text-amber-800 rounded-xl px-4 py-3 text-sm mb-5 flex items-start gap-2">
+            <span class="text-lg leading-none">⚠</span>
+            <span><%= balanceWarning %></span>
+        </div>
+        <% } %>
+
+        <%-- display de balanço --%>
+        <c:if test="${not empty userCreditsBalance}">
+            <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 rounded-xl px-4 py-2 text-sm font-semibold mb-5">
+                 Seu saldo: <span class="font-bold">${userCreditsBalance} CS</span>
+            </div>
+        </c:if>
+
         <%-- abas de navegação --%>
         <div class="flex gap-0 border-b border-gray-200 mb-6">
             <button onclick="showTab('pendentes')" id="tab-pendentes"

@@ -10,6 +10,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.aura.financial.dao.FinancialDao;
+import com.aura.financial.models.Credits;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ public class MeetingListController extends BaseController {
     private final MeetingController meetingController = new MeetingController();
     private final FeedbackDao feedbackDao = new FeedbackDao();
     private final MeetingDao reportDao = new MeetingDao();
+    private final FinancialDao financialDao = new FinancialDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -63,6 +66,16 @@ public class MeetingListController extends BaseController {
                 request.setAttribute(key, val);
                 session.removeAttribute(key);
             }
+        }
+
+        // mostra balanço atual
+        try {
+            Credits credits = financialDao.findById(loggedUser.getId());
+            int balance = (credits != null && credits.getBalance() != null)
+                    ? credits.getBalance().intValue() : 0;
+            request.setAttribute("userCreditsBalance", balance);
+        } catch (Exception ignored) {
+            request.setAttribute("userCreditsBalance", 0);
         }
 
         request.setAttribute("meetings", meetings);
