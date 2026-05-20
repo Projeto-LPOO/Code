@@ -44,6 +44,7 @@ public class MeetingListController extends BaseController {
         Map<Integer, Boolean> feedbackDoneMap = new HashMap<>();
         Map<Integer, Boolean> reportDoneMap = new HashMap<>();
         Map<Integer, Boolean> cancelDeadlineMap = new HashMap<>();
+        Map<Integer, Boolean> confirmationExpiredMap = new HashMap<>();
 
         for (Meeting m : meetings) {
             boolean isDone     = "done".equalsIgnoreCase(m.getStatus());
@@ -59,6 +60,7 @@ public class MeetingListController extends BaseController {
                     (isDone || isReported) && reportDao.hasReportFromUser(m.getId(), loggedUser.getId())
             );
             cancelDeadlineMap.put(m.getId(), m.isCancellableWithRefund());
+            confirmationExpiredMap.put(m.getId(), m.isConfirmationExpired());
         }
 
         // move mensagens de sessão para o request (exibe uma única vez)
@@ -85,6 +87,7 @@ public class MeetingListController extends BaseController {
         request.setAttribute("feedbackDoneMap", feedbackDoneMap);
         request.setAttribute("reportDoneMap", reportDoneMap);
         request.setAttribute("cancelDeadlineMap", cancelDeadlineMap);
+        request.setAttribute("confirmationExpiredMap", confirmationExpiredMap);
 
         forward(request, response, "autenticado/meetingList.jsp");
     }

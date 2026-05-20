@@ -63,4 +63,15 @@ public class Meeting extends BaseEntity {
         if (dayTime == null) return false;
         return LocalDateTime.now().plusDays(3).isBefore(dayTime);
     }
+
+    // retorna true se o prazo de 7 dias para confirmação já expirou
+    public boolean isConfirmationExpired() {
+        if (createdAt == null) return false;
+        return LocalDateTime.now().isAfter(createdAt.toLocalDateTime().plusDays(7));
+    }
+
+    // retorna true se ainda está dentro do prazo de confirmação
+    public boolean isAwaitingConfirmation() {
+        return "pending".equals(status) && !isConfirmationExpired();
+    }
 }

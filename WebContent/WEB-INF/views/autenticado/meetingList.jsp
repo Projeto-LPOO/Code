@@ -153,28 +153,44 @@
                                     </p>
 
                                     <div class="flex items-center gap-2 mt-3 flex-wrap">
-                                        <c:if test="${m.userRole == 'TEACHER'}">
-                                            <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline">
-                                                <input type="hidden" name="id" value="${m.id}">
-                                                <input type="hidden" name="status" value="confirmed">
-                                                <button type="submit"
-                                                        class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
-                                                    Confirmar
-                                                </button>
-                                            </form>
-                                            <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline"
-                                                  onsubmit="return confirmarCancelamento(${cancelDeadlineMap[m.id]}, '${m.userRole}')">
-                                                <input type="hidden" name="id" value="${m.id}">
-                                                <input type="hidden" name="status" value="cancelled">
-                                                <button type="submit"
-                                                        class="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
-                                                    Recusar
-                                                </button>
-                                            </form>
-                                        </c:if>
-                                        <c:if test="${m.userRole == 'LEARNER'}">
-                                            <p class="text-xs text-gray-400 italic">Aguardando confirmação do professor.</p>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="${confirmationExpiredMap[m.id]}">
+                                                <%-- prazo de 7 dias expirado --%>
+                                                <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
+                                                      onsubmit="return confirm('O prazo de confirmação expirou. Deseja cancelar este meeting?')" class="inline">
+                                                    <input type="hidden" name="id" value="${m.id}">
+                                                    <input type="hidden" name="status" value="cancelled">
+                                                    <button type="submit"
+                                                            class="bg-gray-400 hover:bg-gray-500 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
+                                                        Prazo expirado — Cancelar
+                                                    </button>
+                                                </form>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:if test="${m.userRole == 'TEACHER'}">
+                                                    <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline">
+                                                        <input type="hidden" name="id" value="${m.id}">
+                                                        <input type="hidden" name="status" value="confirmed">
+                                                        <button type="submit"
+                                                                class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
+                                                            Confirmar
+                                                        </button>
+                                                    </form>
+                                                    <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
+                                                          onsubmit="return confirmarCancelamento(${cancelDeadlineMap[m.id]}, '${m.userRole}')" class="inline">
+                                                        <input type="hidden" name="id" value="${m.id}">
+                                                        <input type="hidden" name="status" value="cancelled">
+                                                        <button type="submit"
+                                                                class="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-pointer transition-colors">
+                                                            Recusar
+                                                        </button>
+                                                    </form>
+                                                </c:if>
+                                                <c:if test="${m.userRole == 'LEARNER'}">
+                                                    <p class="text-xs text-gray-400 italic">Aguardando confirmação do professor.</p>
+                                                </c:if>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
 
                                 </div>

@@ -123,7 +123,13 @@ public class MeetingController {
                 if (!isTeacher)
                     throw new IllegalArgumentException("Apenas o professor pode confirmar o meeting.");
 
-                // Check learner balance before confirming
+                // prazo de 7 dias para confirmar expirado
+                if (meeting.isConfirmationExpired())
+                    throw new IllegalArgumentException(
+                            "O prazo para confirmar este meeting expirou. O encontro será cancelado automaticamente."
+                    );
+
+                //verifica o balanço
                 int cost = meeting.getCostInCredits();
                 Credits learnerCredits = financialDao.findById(meeting.getLearner().getId());
                 int currentBalance = (learnerCredits != null && learnerCredits.getBalance() != null)

@@ -677,7 +677,7 @@ public class MeetingDao {
     public List<Meeting> findByUserIdWithRole(int userId) {
         List<Meeting> meetings = new ArrayList<>();
 
-        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
+        String sql = "SELECT m.id, m.description, m.scheduled_at, m.created_at, m.status, m.meeting_type, m.duration_minutes, " +
                 "c.id AS category_id, c.name AS category_name, " +
                 "mp.role AS user_role, " +
                 "learner.id AS learner_id, learner.name AS learner_name, " +
@@ -707,6 +707,7 @@ public class MeetingDao {
                 meeting.setStatus(rs.getString("status"));
                 meeting.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
                 meeting.setDurationMinutes(rs.getInt("duration_minutes"));
+                meeting.setCreatedAt(rs.getTimestamp("created_at"));
 
                 int categoryId = rs.getInt("category_id");
                 if (!rs.wasNull()) {
