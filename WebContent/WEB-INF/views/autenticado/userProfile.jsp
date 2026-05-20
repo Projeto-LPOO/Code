@@ -144,7 +144,7 @@
                                           hover:-translate-y-0.5
                                           transition">
 
-                                    Agendar Sessão
+                                    Solicitar Encontro
 
                                 </a>
 

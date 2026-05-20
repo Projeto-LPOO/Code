@@ -739,29 +739,5 @@ public class MeetingDao {
         return meetings;
     }
 
-    public void registerReport(int meetingId, int fromUserId, String reason) {
-        String sql = "INSERT INTO meeting_reports (meeting_id, from_user_id, reason) VALUES (?, ?, ?)";
-        try (Connection conn = dbFactory.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, meetingId);
-            pstmt.setInt(2, fromUserId);
-            pstmt.setString(3, reason);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao registrar report: " + e.getMessage(), e);
-        }
-    }
 
-    public boolean hasReportFromUser(int meetingId, int fromUserId) {
-        String sql = "SELECT COUNT(*) FROM meeting_reports WHERE meeting_id = ? AND from_user_id = ?";
-        try (Connection conn = dbFactory.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, meetingId);
-            pstmt.setInt(2, fromUserId);
-            ResultSet rs = pstmt.executeQuery();
-            return rs.next() && rs.getInt(1) > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao verificar report: " + e.getMessage(), e);
-        }
-    }
 }
