@@ -123,7 +123,7 @@ public class MeetingCreateController extends BaseController {
                 );
             }
 
-            //ta comentado pq nao consegui comprar creditos
+            //substituido para testes
 
 //            if (credits.getBalance().intValue() < costInCredits) {
 //                throw new IllegalArgumentException(
@@ -131,6 +131,17 @@ public class MeetingCreateController extends BaseController {
 //                                " CS mas possui apenas " + credits.getBalance().intValue() + " CS."
 //                );
 //            }
+
+
+            int currentBalance = (credits != null && credits.getBalance() != null)
+                    ? credits.getBalance().intValue() : 0;
+            if (currentBalance < costInCredits) {
+                request.getSession().setAttribute("balanceWarning",
+                        "Seu saldo atual (" + currentBalance + " CS) é insuficiente para este meeting (" +
+                                costInCredits + " CS). Você pode solicitar, mas o professor não poderá confirmar " +
+                                "enquanto você não recarregar seus créditos."
+                );
+            }
 
 
             int teacherId = Integer.parseInt(teacherIdParam);
@@ -210,6 +221,8 @@ public class MeetingCreateController extends BaseController {
                         meeting.setCategory(interest.getCategory());
                 } catch (NumberFormatException ignored) {}
             }
+
+            //substituido para testes
 
             // executa antes de salvar o meeting para garantir consistência
             //ta comentado pq nao consegui comprar creditos
