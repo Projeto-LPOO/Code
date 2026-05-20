@@ -57,12 +57,12 @@
         </div>
         <% } %>
 
-        <%-- display de balanço --%>
-        <c:if test="${not empty userCreditsBalance}">
-            <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 rounded-xl px-4 py-2 text-sm font-semibold mb-5">
-                 Seu saldo: <span class="font-bold">${userCreditsBalance} CS</span>
-            </div>
-        </c:if>
+<%--        &lt;%&ndash; display de balanço &ndash;%&gt;--%>
+<%--        <c:if test="${not empty userCreditsBalance}">--%>
+<%--            <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 rounded-xl px-4 py-2 text-sm font-semibold mb-5">--%>
+<%--                 Seu saldo: <span class="font-bold">${userCreditsBalance} CS</span>--%>
+<%--            </div>--%>
+<%--        </c:if>--%>
 
         <%-- abas de navegação --%>
         <div class="flex gap-0 border-b border-gray-200 mb-6">
