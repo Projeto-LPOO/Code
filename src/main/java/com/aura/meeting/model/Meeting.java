@@ -53,4 +53,8 @@ public class Meeting extends BaseEntity {
 
     public String getUserRole() { return userRole; }
     public void setUserRole(String userRole) { this.userRole = userRole; }
+
+    public String getMeetingType() {
+        return this instanceof FaceToFaceMeeting ? "PRESENCIAL" : "ONLINE";
+    }
 }
