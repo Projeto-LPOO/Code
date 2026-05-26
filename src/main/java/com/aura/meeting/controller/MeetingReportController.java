@@ -23,7 +23,7 @@ public class MeetingReportController extends BaseController {
     private final MeetingDao meetingDao = new MeetingDao();
     private final ReportDao reportDao = new ReportDao();
     private final FeedbackDao feedbackDao = new FeedbackDao();
-    private final NotificationWebController notificationController = new NotificationWebController();
+//    private final NotificationWebController notificationController = new NotificationWebController();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -59,12 +59,13 @@ public class MeetingReportController extends BaseController {
             reportDao.registerReport(meeting.getId(), user.getId(), reason.trim());
             meetingDao.updateStatus(meeting.getId(), "reported");
 
-            notificationController.onMeetingReported(
-                    meeting.getTeacher().getId(),
-                    user.getName(),
-                    meeting.getDescription(),
-                    request.getContextPath()
-            );
+            //por agr não
+//            notificationController.onMeetingReported(
+//                    meeting.getTeacher().getId(),
+//                    user.getName(),
+//                    meeting.getDescription(),
+//                    request.getContextPath()
+//            );
 
             session.setAttribute("successMsg", "Meeting reportado com sucesso. Nossa equipe irá analisá-lo.");
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");

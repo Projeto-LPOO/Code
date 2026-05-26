@@ -25,9 +25,9 @@ public class NotificationWebController extends BaseController {
         String action = getAction(req);
 
         switch (action) {
-            case "go"       -> handleGo(req, res, user);
+            case "go" -> handleGo(req, res, user);
             case "read-all" -> handleReadAll(res, user);
-            default         -> showList(req, res, user);
+            default -> showList(req, res, user);
         }
     }
 
@@ -140,7 +140,7 @@ public class NotificationWebController extends BaseController {
         dao.create(n);
     }
 
-    // chamado por MeetingReportController ao reportar
+    // chamado por MeetingReportController ao reportar (sem uso)
     public void onMeetingReported(int teacherId, String learnerName,
                                   String description, String contextPath) {
         Notification n = new Notification();
