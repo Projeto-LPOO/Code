@@ -24,7 +24,6 @@ public class MeetingListController extends BaseController {
 
     private final MeetingController meetingController = new MeetingController();
     private final FeedbackDao feedbackDao = new FeedbackDao();
-    private final MeetingDao reportDao = new MeetingDao();
     private final FinancialDao financialDao = new FinancialDao();
     private final ReportDao reportDao = new ReportDao();
 
