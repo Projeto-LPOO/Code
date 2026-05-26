@@ -10,6 +10,7 @@ import com.aura.meeting.model.FaceToFaceMeeting;
 import com.aura.meeting.model.Location;
 import com.aura.meeting.model.Meeting;
 import com.aura.meeting.model.OnlineMeeting;
+import com.aura.notification.controller.NotificationWebController;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.dao.UserDao;
 import com.aura.user.models.CommercialUser;
@@ -42,9 +43,9 @@ public class MeetingCreateController extends BaseController {
     private final FinancialDao financialDao = new FinancialDao();
     private final Gson gson = new Gson();
     private final AvailabilityDao availabilityDao = new AvailabilityDao();
+    private final NotificationWebController notificationController = new NotificationWebController();
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
     private static final int[] VALID_DURATIONS = {60, 90, 120};
 
     @Override
@@ -95,8 +96,7 @@ public class MeetingCreateController extends BaseController {
             if (teacherIdParam == null || teacherIdParam.trim().isEmpty())
                 throw new IllegalArgumentException("Selecione um professor.");
 
-
-            int durationMinutes = 60; // padrão
+            int durationMinutes = 60;
             if (durationParam != null && !durationParam.trim().isEmpty()) {
                 try {
                     durationMinutes = Integer.parseInt(durationParam.trim());
@@ -104,7 +104,7 @@ public class MeetingCreateController extends BaseController {
                     throw new IllegalArgumentException("Duração inválida.");
                 }
             }
-            // Valida que é um dos valores permitidos
+
             boolean validDuration = false;
             for (int d : VALID_DURATIONS) {
                 if (d == durationMinutes) { validDuration = true; break; }
@@ -112,37 +112,20 @@ public class MeetingCreateController extends BaseController {
             if (!validDuration)
                 throw new IllegalArgumentException("Duração inválida. Escolha 1h, 1h30 ou 2h.");
 
-            int costInCredits = durationMinutes; // 60, 90 ou 120 cs
-
+            int costInCredits = durationMinutes;
 
             Credits credits = financialDao.findById(loggedUser.getId());
 
-            if (credits == null || credits.getBalance() == null) {
-                throw new IllegalArgumentException(
-                        "Não foi possível verificar seu saldo. Contate o suporte."
-                );
-            }
+            if (credits == null || credits.getBalance() == null)
+                throw new IllegalArgumentException("Não foi possível verificar seu saldo. Contate o suporte.");
 
-            //substituido para testes
-
-//            if (credits.getBalance().intValue() < costInCredits) {
-//                throw new IllegalArgumentException(
-//                        "Saldo insuficiente. Você precisa de " + costInCredits +
-//                                " CS mas possui apenas " + credits.getBalance().intValue() + " CS."
-//                );
-//            }
-
-
-            int currentBalance = (credits != null && credits.getBalance() != null)
-                    ? credits.getBalance().intValue() : 0;
+            int currentBalance = credits.getBalance().intValue();
             if (currentBalance < costInCredits) {
                 request.getSession().setAttribute("balanceWarning",
-                        "Seu saldo atual (" + currentBalance + " CS) é insuficiente para este meeting (" +
-                                costInCredits + " CS). Você pode solicitar, mas o professor não poderá confirmar " +
-                                "enquanto você não recarregar seus créditos."
-                );
+                        "Seu saldo atual (" + currentBalance + " CS) é insuficiente para este meeting ("
+                                + costInCredits + " CS). Você pode solicitar, mas o professor não poderá confirmar "
+                                + "enquanto você não recarregar seus créditos.");
             }
-
 
             int teacherId = Integer.parseInt(teacherIdParam);
             CommercialUser teacherUser = userDao.findByIdWithInterests(teacherId);
@@ -222,16 +205,15 @@ public class MeetingCreateController extends BaseController {
                 } catch (NumberFormatException ignored) {}
             }
 
-            //substituido para testes
-
-            // executa antes de salvar o meeting para garantir consistência
-            //ta comentado pq nao consegui comprar creditos
-
-//            credits.withdraw(costInCredits);
-//            financialDao.updateCredits(credits);
-
-
             meetingController.register(meeting);
+
+            notificationController.onMeetingPending(
+                    teacher.getId(),
+                    teacher.getName(),
+                    loggedUser.getName(),
+                    meeting.getDescription(),
+                    request.getContextPath()
+            );
 
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
 
@@ -252,13 +234,11 @@ public class MeetingCreateController extends BaseController {
         HttpSession session = request.getSession(false);
         User loggedUser = session != null ? (User) session.getAttribute("user") : null;
 
-        // Carrega saldo do usuário logado para exibir
         if (loggedUser != null) {
             try {
                 Credits credits = financialDao.findById(loggedUser.getId());
                 int balance = (credits != null && credits.getBalance() != null)
-                        ? credits.getBalance().intValue()
-                        : 0;
+                        ? credits.getBalance().intValue() : 0;
                 request.setAttribute("userBalance", balance);
             } catch (Exception ignored) {
                 request.setAttribute("userBalance", 0);
@@ -270,44 +250,23 @@ public class MeetingCreateController extends BaseController {
             teacherIdParam = (String) request.getAttribute("preselectedTeacherId");
 
         if (teacherIdParam != null && !teacherIdParam.trim().isEmpty()) {
-
             try {
-
                 int teacherId = Integer.parseInt(teacherIdParam);
-
-                CommercialUser mentor =
-                        userDao.findByIdWithInterests(teacherId);
+                CommercialUser mentor = userDao.findByIdWithInterests(teacherId);
 
                 if (mentor != null) {
-
                     request.setAttribute("mentor", mentor);
+                    request.setAttribute("preselectedTeacherId", teacherId);
 
-                    request.setAttribute(
-                            "preselectedTeacherId",
-                            teacherId
-                    );
+                    List<Category> mentorCategories = mentor.getInterests().stream()
+                            .map(Interest::getCategory)
+                            .filter(c -> c != null)
+                            .distinct()
+                            .collect(Collectors.toList());
 
-                    List<Category> mentorCategories =
-                            mentor.getInterests().stream()
-                                    .map(Interest::getCategory)
-                                    .filter(c -> c != null)
-                                    .distinct()
-                                    .collect(Collectors.toList());
-
-                    request.setAttribute(
-                            "mentorCategories",
-                            mentorCategories
-                    );
-
-                    List<Availability> availabilities =
-                            availabilityDao.findActiveByUser(teacherId);
-
-                    request.setAttribute(
-                            "availabilities",
-                            availabilities
-                    );
+                    request.setAttribute("mentorCategories", mentorCategories);
+                    request.setAttribute("availabilities", availabilityDao.findActiveByUser(teacherId));
                 }
-
             } catch (NumberFormatException ignored) {}
         }
 
@@ -316,15 +275,11 @@ public class MeetingCreateController extends BaseController {
 
     private void fetchCategoriesOfMentor(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-
         String teacherIdParam = request.getParameter("teacherId");
         try {
             int teacherId = Integer.parseInt(teacherIdParam);
             CommercialUser mentor = userDao.findByIdWithInterests(teacherId);
-            if (mentor == null) {
-                response.setStatus(404);
-                return;
-            }
+            if (mentor == null) { response.setStatus(404); return; }
 
             List<Category> categories = mentor.getInterests().stream()
                     .map(Interest::getCategory)
@@ -335,7 +290,6 @@ public class MeetingCreateController extends BaseController {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(gson.toJson(categories));
-
         } catch (Exception e) {
             response.setStatus(400);
         }
@@ -343,18 +297,14 @@ public class MeetingCreateController extends BaseController {
 
     private void fetchInterestsOfMentorByCategory(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-
-        String teacherIdParam  = request.getParameter("teacherId");
+        String teacherIdParam = request.getParameter("teacherId");
         String categoryIdParam = request.getParameter("categoryId");
         try {
-            int teacherId  = Integer.parseInt(teacherIdParam);
+            int teacherId = Integer.parseInt(teacherIdParam);
             int categoryId = Integer.parseInt(categoryIdParam);
 
             CommercialUser mentor = userDao.findByIdWithInterests(teacherId);
-            if (mentor == null) {
-                response.setStatus(404);
-                return;
-            }
+            if (mentor == null) { response.setStatus(404); return; }
 
             List<Interest> filtered = mentor.getInterests().stream()
                     .filter(i -> i.getCategory() != null && i.getCategory().getId() == categoryId)
@@ -363,7 +313,6 @@ public class MeetingCreateController extends BaseController {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(gson.toJson(filtered));
-
         } catch (Exception e) {
             response.setStatus(400);
         }
@@ -371,11 +320,9 @@ public class MeetingCreateController extends BaseController {
 
     private void fetchAvailableSlotsOfMentor(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-
         String teacherIdParam = request.getParameter("teacherId");
         try {
             int teacherId = Integer.parseInt(teacherIdParam);
-
             List<Availability> slots = availabilityDao.findActiveByUser(teacherId);
 
             List<Map<String, String>> result = new ArrayList<>();
@@ -391,7 +338,6 @@ public class MeetingCreateController extends BaseController {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(gson.toJson(result));
-
         } catch (Exception e) {
             response.setStatus(400);
         }
@@ -406,15 +352,14 @@ public class MeetingCreateController extends BaseController {
     }
 
     private String translateDayToLabel(java.time.DayOfWeek day) {
-        switch (day) {
-            case MONDAY:    return "Segunda-feira";
-            case TUESDAY:   return "Terça-feira";
-            case WEDNESDAY: return "Quarta-feira";
-            case THURSDAY:  return "Quinta-feira";
-            case FRIDAY:    return "Sexta-feira";
-            case SATURDAY:  return "Sábado";
-            case SUNDAY:    return "Domingo";
-            default:        return day.name();
-        }
+        return switch (day) {
+            case MONDAY -> "Segunda-feira";
+            case TUESDAY -> "Terça-feira";
+            case WEDNESDAY -> "Quarta-feira";
+            case THURSDAY -> "Quinta-feira";
+            case FRIDAY -> "Sexta-feira";
+            case SATURDAY -> "Sábado";
+            case SUNDAY -> "Domingo";
+        };
     }
 }

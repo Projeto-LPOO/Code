@@ -1,6 +1,18 @@
 <%@ tag body-content="empty" pageEncoding="UTF-8" %>
 <%@ attribute name="paginaAtiva" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ tag import="com.aura.notification.dao.NotificationDao" %>
+<%@ tag import="com.aura.user.models.User" %>
+
+<%
+    NotificationDao notifDao = new NotificationDao();
+    User menuUser = (User) session.getAttribute("user");
+    int unreadCount = 0;
+    if (menuUser != null) {
+        unreadCount = notifDao.countUnread(menuUser.getId());
+    }
+    jspContext.setAttribute("unreadCount", unreadCount);
+%>
 
 <aside class="w-64 min-h-screen bg-[#FBFAF9] p-6 flex flex-col">
 
@@ -40,7 +52,6 @@
             Agenda
         </a>
 
-        <%-- link temporario para listar meetings, dps vai para perfil ou qlqr outro place (by daniel) --%>
         <a href="${pageContext.request.contextPath}/autenticado/meeting"
            class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 ${paginaAtiva == 'meetings' ? 'bg-[#f2ecf5] font-medium text-[#7c3aed]' : 'text-gray-500'}">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -62,6 +73,20 @@
                 <circle cx="17.5" cy="16" r="1.2" fill="currentColor"/>
             </svg>
             Financeiro
+        </a>
+
+        <a href="${pageContext.request.contextPath}/autenticado/notification"
+           class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 relative ${paginaAtiva == 'notification' ? 'bg-[#f2ecf5] font-medium text-[#7c3aed]' : 'text-gray-500'}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Notificações
+            <c:if test="${unreadCount > 0}">
+                <span class="ml-auto bg-violet-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                        ${unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+            </c:if>
         </a>
 
     </nav>
