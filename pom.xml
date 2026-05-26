@@ -57,7 +57,7 @@
             <version>2.0.7</version>
         </dependency>
 
-        <!-- HikariCP Gerencia conexões com o banco -->
+        <!-- pool HikariCP Gerencia conexões com o banco -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
