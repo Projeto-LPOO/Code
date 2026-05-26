@@ -254,7 +254,7 @@
 
                             <%-- Descrição --%>
                         <div class="bg-white border border-gray-200 rounded-2xl px-6 py-5">
-                            <h3 class="text-sm font-bold text-gray-900 mb-4">Descrição da Sessão</h3>
+                            <h3 class="text-sm font-bold text-gray-900 mb-4">Título da Sessão</h3>
                             <textarea name="descricao" id="descricao" rows="3"
                                       placeholder="Descreva o que será abordado na sessão..."
                                       class="px-3 py-2.5 border-2 border-gray-200 rounded-lg text-sm text-gray-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-100 transition-all w-full resize-y font-[inherit]"><c:out value="${descricao}"/></textarea>
