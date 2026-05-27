@@ -17,6 +17,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+
 -- Name: day_of_week; Type: TYPE; Schema: public; Owner: postgres
 --
 

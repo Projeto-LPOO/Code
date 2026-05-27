@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class FeedbackDao {
 
@@ -70,4 +71,8 @@ public class FeedbackDao {
 		}
 		return false;
 	}
+
+    public List<Feedback> findByToUserId(int id) {
+        return null;
+    }
 }

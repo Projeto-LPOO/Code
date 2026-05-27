@@ -1,6 +1,7 @@
 package com.aura.financial.dao;
 
 import com.aura.dbConfig.dbFactory;
+import com.aura.feedback.model.Feedback;
 import com.aura.financial.models.BankAccount;
 import com.aura.financial.models.CreditPackage;
 import com.aura.financial.models.Credits;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -285,6 +287,36 @@ public class FinancialDao {
             stmt.setInt(4, credits.getUser().getId());
             stmt.executeUpdate();
         }
+    }
+
+    public java.util.List<Feedback> findByToUserId(int toUserId) {
+        java.util.List<Feedback> list = new java.util.ArrayList<>();
+        String sql = "SELECT meeting_id, from_user_id, to_user_id, rating, comment, date FROM feedbacks WHERE to_user_id = ? ORDER BY date DESC";
+
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, toUserId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Feedback f = new Feedback(
+                            rs.getInt("meeting_id"),
+                            rs.getInt("from_user_id"),
+                            rs.getInt("to_user_id"),
+                            rs.getInt("rating"),
+                            rs.getString("comment")
+                    );
+                    // Se o seu modelo Feedback tiver o campo de data como LocalDateTime:
+                    if (rs.getTimestamp("date") != null) {
+                        f.setDate(rs.getTimestamp("date").toLocalDateTime());
+                    }
+                    list.add(f);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar feedbacks do usuário: " + e.getMessage(), e);
+        }
+        return list;
     }
 
 }
