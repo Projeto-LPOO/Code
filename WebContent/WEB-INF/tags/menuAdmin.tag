@@ -21,15 +21,15 @@
 
         </a>
 
-        <a href="${pageContext.request.contextPath}/autenticado/admin"
-           class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 ${paginaAtiva == 'financial' ? 'bg-[#f2ecf5] font-medium text-[#7c3aed]' : 'text-gray-500'}">
+        <a href="${pageContext.request.contextPath}/autenticado/admin/evidences"
+           class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 ${paginaAtiva == 'evidences' ? 'bg-[#f2ecf5] font-medium text-[#7c3aed]' : 'text-gray-500'}">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="2" y="6" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/>
                 <line x1="2" y1="11" x2="22" y2="11" stroke="currentColor" stroke-width="1.5"/>
                 <rect x="14" y="13.5" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
                 <circle cx="17.5" cy="16" r="1.2" fill="currentColor"/>
             </svg>
-            Reportações
+            Evidencias
         </a>
 
     </nav>
