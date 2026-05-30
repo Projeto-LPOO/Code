@@ -35,7 +35,14 @@ public class MeetingListController extends BaseController {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        String activeTab = request.getParameter("tab");
 
+        if (activeTab == null || activeTab.isBlank()) {
+            activeTab = "comprovacoesPendentes";
+        }
+
+        request.setAttribute("activeTab", activeTab);
+        
         List<Meeting> meetings = meetingController.findByUserIdWithRole(loggedUser.getId());
 
         Map<Integer, String> typeMap = new HashMap<>();
@@ -65,7 +72,7 @@ public class MeetingListController extends BaseController {
                 session.removeAttribute(key);
             }
         }
-
+        request.setAttribute("noShowReports", meetingController.noShowReports(loggedUser.getId()));
         request.setAttribute("meetings", meetings);
         request.setAttribute("typeMap", typeMap);
         request.setAttribute("feedbackDoneMap", feedbackDoneMap);

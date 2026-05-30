@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <title>Login</title>
 
-    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -17,7 +16,7 @@
 
 <body class="min-h-screen flex items-center justify-center">
 
-<div class="w-full max-w-lg"> <!-- 👈 AUMENTEI AQUI -->
+<div class="w-full max-w-lg">
 
     <!-- Card -->
     <div class="bg-white shadow-xl rounded-2xl p-10 border border-gray-100">
@@ -26,7 +25,7 @@
         <div class="flex flex-col items-center mb-6">
             <img
                     src="${pageContext.request.contextPath}/assets/img/logos/logo-horizontal.png"
-                    class="h-12 object-contain"
+                    class="h-12 object-contain">
             <p class="text-gray-500 text-sm mt-2">Bem-vindo de volta!</p>
         </div>
 

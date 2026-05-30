@@ -4,6 +4,8 @@
 <%@ page import="com.aura.user.models.CommercialUser" %>
 <%@ page import="com.aura.interest.model.Interest" %>
 <%@ page import="com.aura.meeting.model.Meeting" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
@@ -46,6 +48,27 @@
 
     <main class="flex-1 p-10 min-w-0">
 
+        <c:if test="${showReportAlert}">
+            <div class="fixed top-6 right-6 bg-yellow-100 border border-yellow-400
+                text-yellow-800 px-6 py-4 rounded-xl shadow-lg max-w-md z-50">
+
+                <h2 class="text-lg font-bold mb-2">
+                    Comprovação solicitada
+                </h2>
+
+                <p class="text-sm mb-4">
+                    Você recebeu uma denúncia de não comparecimento.
+                    Envie uma comprovação para análise da administração.
+                </p>
+
+                <a href="${pageContext.request.contextPath}/autenticado/meeting?tab=comprovaçõesPendentes"
+                   class="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-4 py-2 rounded-lg transition">
+                    Enviar comprovação
+                </a>
+
+            </div>
+
+        </c:if>
         <!-- HEADER -->
         <section class="mb-10">
 
