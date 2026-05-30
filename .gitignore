@@ -64,3 +64,4 @@ Thumbs.db
 #libs
 node_modules/
 *.json
+/evidenceuploads/
