@@ -7,24 +7,25 @@ import com.aura.user.models.CommercialUser;
 public class MeetingReport extends BaseEntity {
     private Meeting meeting;
     private CommercialUser fromUser;
-    private String reason;
-    private ReportStatus status;
+    private String description;
+    private ReportCategory category;
+    private Boolean status;
 
     public Meeting getMeetingReport()
     {
         return this.meeting;
     }
-    public String getReason()
+    public String getDescription()
     {
-        return this.reason;
+        return this.description;
     }
     public void setMeetingReport(Meeting meeting)
     {
         this.meeting = meeting;
     }
-    public  void setReason(String reason)
+    public  void setDescription(String description)
     {
-        this.reason = reason;
+        this.description = description;
     }
     public CommercialUser getFromUser() {
         return fromUser;
@@ -33,12 +34,20 @@ public class MeetingReport extends BaseEntity {
     public void setFromUser(CommercialUser fromUser) {
         this.fromUser = fromUser;
     }
-    public ReportStatus getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 
-    public void setStatus(ReportStatus status) {
+    public void setStatus(Boolean status) {
         this.status = status;
+    }
+    public void setCategory(ReportCategory category)
+    {
+        this.category = category;
+    }
+    public ReportCategory getCategory()
+    {
+        return category;
     }
 }
 

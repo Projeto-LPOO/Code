@@ -5,6 +5,7 @@ import com.aura.meeting.dao.MeetingDao;
 import com.aura.meeting.dao.MeetingDao;
 import com.aura.meeting.dao.ReportDao;
 import com.aura.meeting.model.Meeting;
+import com.aura.meeting.model.ReportCategory;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
 import jakarta.servlet.ServletException;
@@ -53,11 +54,12 @@ public class MeetingReportController extends BaseController {
             Meeting meeting = resolveMeeting(request, response, user);
             if (meeting == null) return;
 
-            String reason = request.getParameter("reason");
-            if (reason == null || reason.isBlank())
-                throw new IllegalArgumentException("O motivo do report é obrigatório.");
+            ReportCategory reportCategory = ReportCategory.valueOf(request.getParameter("category"));
+            if(reportCategory == null) return;
 
-           reportDao.registerReport(meeting.getId(), user.getId(), reason.trim());
+            String description = request.getParameter("description");
+
+           reportDao.registerReport(meeting.getId(), user.getId(), reportCategory, description);
 
             // atualiza status para 'reported' para bloquear novas avaliações
             meetingDao.updateStatus(meeting.getId(), "reported");
