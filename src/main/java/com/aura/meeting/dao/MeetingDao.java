@@ -38,7 +38,7 @@ public class MeetingDao {
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlMeeting, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, meeting.getDescription());
                     pstmt.setTimestamp(2, Timestamp.valueOf(meeting.getDayTime()));
-                    pstmt.setString(3, meeting instanceof FaceToFaceMeeting ? "PRESENCIAL" : "ONLINE");
+                    pstmt.setString(3, meeting.getMeetingType());
                     pstmt.setString(4, "pending");
                     if (meeting.getCategory() != null)
                         pstmt.setInt(5, meeting.getCategory().getId());
@@ -309,8 +309,8 @@ public class MeetingDao {
             pstmt.setInt(5, meeting.getDurationMinutes() > 0 ? meeting.getDurationMinutes() : 60);
             pstmt.setInt(6, meetingId);
 
+            pstmt.setString(4, meeting.getMeetingType());
             if (meeting instanceof FaceToFaceMeeting ftf) {
-                pstmt.setString(4, "PRESENCIAL");
                 try (PreparedStatement locps = conn.prepareStatement(sqlLocation)) {
                     locps.setString(1, ftf.getLocation().getCity());
                     locps.setString(2, ftf.getLocation().getNeighborhood());
@@ -320,8 +320,6 @@ public class MeetingDao {
                     locps.setInt(6, meetingId);
                     locps.executeUpdate();
                 }
-            } else {
-                pstmt.setString(4, "ONLINE");
             }
 
             pstmt.executeUpdate();

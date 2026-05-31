@@ -45,6 +45,25 @@
             <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-5">${error}</div>
         </c:if>
 
+        <%-- aviso de balanço --%>
+        <%
+            String balanceWarning = (String) session.getAttribute("balanceWarning");
+            if (balanceWarning != null) {
+                session.removeAttribute("balanceWarning");
+        %>
+        <div class="bg-amber-50 border border-amber-300 text-amber-800 rounded-xl px-4 py-3 text-sm mb-5 flex items-start gap-2">
+            <span class="text-lg leading-none">⚠</span>
+            <span><%= balanceWarning %></span>
+        </div>
+        <% } %>
+
+<%--        &lt;%&ndash; display de balanço &ndash;%&gt;--%>
+<%--        <c:if test="${not empty userCreditsBalance}">--%>
+<%--            <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 rounded-xl px-4 py-2 text-sm font-semibold mb-5">--%>
+<%--                 Seu saldo: <span class="font-bold">${userCreditsBalance} CS</span>--%>
+<%--            </div>--%>
+<%--        </c:if>--%>
+
         <%-- abas de navegação --%>
         <div class="flex gap-0 border-b border-gray-200 mb-6">
             <button onclick="showTab('pendentes')" id="tab-pendentes"
@@ -146,8 +165,8 @@
                                                     Confirmar
                                                 </button>
                                             </form>
-                                            <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
-                                                  onsubmit="return confirm('Recusar este meeting?')" class="inline">
+                                            <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline"
+                                                  onsubmit="return confirmarCancelamento(${cancelDeadlineMap[m.id]}, '${m.userRole}')">
                                                 <input type="hidden" name="id" value="${m.id}">
                                                 <input type="hidden" name="status" value="cancelled">
                                                 <button type="submit"
@@ -249,8 +268,8 @@
                                                 </button>
                                             </form>
                                         </c:if>
-                                        <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post"
-                                              onsubmit="return confirm('Cancelar este meeting?')" class="inline">
+                                        <form action="${pageContext.request.contextPath}/autenticado/meeting/status" method="post" class="inline"
+                                              onsubmit="return confirmarCancelamento(${cancelDeadlineMap[m.id]}, '${m.userRole}')">
                                             <input type="hidden" name="id" value="${m.id}">
                                             <input type="hidden" name="status" value="cancelled">
                                             <button type="submit"
@@ -563,6 +582,18 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/assets/js/meetingList.js"></script>
+<script>
+    function confirmarCancelamento(comReembolso, papel) {
+        if (comReembolso) {
+            return confirm('Cancelar este meeting? Os créditos serão devolvidos.');
+        }
+        // fora do prazo de 3 dias
+        if (papel === 'TEACHER') {
+            return confirm('Cancelar este meeting?\n\nAtenção: o meeting está a menos de 3 dias de acontecer. O cancelamento será realizado, mas os créditos do aluno não serão reembolsados.');
+        }
+        return confirm('Cancelar este meeting?\n\nAtenção: o meeting está a menos de 3 dias de acontecer. O cancelamento será realizado, mas seus créditos não serão reembolsados.');
+    }
+</script>
 
 </body>
 </html>

@@ -5,6 +5,7 @@ import com.aura.financial.controllers.FinancialController;
 import com.aura.interest.controllers.InterestController;
 import com.aura.meeting.controller.MeetingController;
 import com.aura.meeting.controller.MeetingWebController;
+import com.aura.notification.controller.NotificationWebController;
 import com.aura.user.controllers.AdminController;
 import com.aura.user.controllers.UsersController;
 import jakarta.servlet.ServletException;
@@ -33,6 +34,7 @@ public class FrontController extends HttpServlet {
         routes.put("/availability", new AvailabilityController());
         routes.put("/financial", new FinancialController());
         routes.put("/meeting", new MeetingWebController());
+        routes.put("/notification", new NotificationWebController());
 
         for (HttpServlet controller : routes.values()) {
             controller.init(getServletConfig()); //inicia manualmente cada controller
