@@ -57,7 +57,7 @@ public class RegisterController extends BaseController {
                 throw new IllegalArgumentException("CPF é obrigatório.");
             }
 
-            if (cpf.length() != 11 && cpf.length() != 14) {
+            if (!isValid(cpf)) {
                 throw new IllegalArgumentException("CPF inválido.");
             }
 
@@ -87,6 +87,43 @@ public class RegisterController extends BaseController {
             forward(request, response, "users/register.jsp");
 
         }
-    }
 
+
+
+    }
+    public static boolean isValid(String cpf) {
+
+        if (cpf == null) return false;
+
+        cpf = cpf.replaceAll("\\D", "");
+
+        if (cpf.length() != 11) return false;
+
+        if (cpf.matches("(\\d)\\1{10}")) return false;
+
+        int[] nums = new int[11];
+
+        for (int i = 0; i < 11; i++) {
+            nums[i] = cpf.charAt(i) - '0';
+        }
+
+        int soma = 0;
+        for (int i = 0, peso = 10; i < 9; i++, peso--) {
+            soma += nums[i] * peso;
+        }
+
+        int dv1 = 11 - (soma % 11);
+        if (dv1 >= 10) dv1 = 0;
+
+        soma = 0;
+        for (int i = 0, peso = 11; i < 10; i++, peso--) {
+            soma += nums[i] * peso;
+        }
+
+        int dv2 = 11 - (soma % 11);
+        if (dv2 >= 10) dv2 = 0;
+
+        return nums[9] == dv1 && nums[10] == dv2;
+
+    }
 }

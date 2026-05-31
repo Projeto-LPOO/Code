@@ -1,5 +1,7 @@
 package com.aura.meeting.controller;
 
+import com.aura.meeting.model.Meeting;
+import com.aura.notification.controller.NotificationWebController;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
 import jakarta.servlet.ServletException;
@@ -12,6 +14,7 @@ import java.io.IOException;
 public class MeetingStatusController extends BaseController {
 
     private final MeetingController meetingController = new MeetingController();
+    private final NotificationWebController notificationController = new NotificationWebController();
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -35,7 +38,30 @@ public class MeetingStatusController extends BaseController {
                 throw new IllegalArgumentException("Status é obrigatório.");
 
             int meetingId = Integer.parseInt(idParam);
+            Meeting m = meetingController.findById(meetingId);
+
             meetingController.updateStatus(meetingId, status.trim(), loggedUser.getId());
+
+            String ctx = request.getContextPath();
+            switch (status.trim()) {
+                case "confirmed" ->
+                        notificationController.onMeetingConfirmed(
+                                m.getLearner().getId(), m.getTeacher().getName(), m.getDescription(), ctx);
+                case "cancelled_by_teacher" ->
+                        notificationController.onMeetingCancelledByTeacher(
+                                m.getLearner().getId(), m.getTeacher().getName(), m.getDescription(), ctx);
+                case "cancelled" -> {
+                    boolean actorIsTeacher = m.getTeacher().getId() == loggedUser.getId();
+                    int targetId   = actorIsTeacher ? m.getLearner().getId() : m.getTeacher().getId();
+                    String actor   = actorIsTeacher
+                            ? "O professor " + m.getTeacher().getName()
+                            : "O aluno " + m.getLearner().getName();
+                    notificationController.onMeetingCancelled(targetId, actor, m.getDescription(), ctx);
+                }
+                case "done" ->
+                        notificationController.onMeetingDone(
+                                m.getLearner().getId(), m.getTeacher().getName(), m.getDescription(), ctx);
+            }
 
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
 
