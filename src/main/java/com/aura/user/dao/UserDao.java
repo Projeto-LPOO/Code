@@ -11,6 +11,7 @@ import com.aura.user.models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -526,5 +527,53 @@ public class UserDao {
         }
 
         return users;
+    }
+    public boolean cpfExists(String cpf){
+        String sql = "SELECT 1 FROM users WHERE cpf = ?";
+
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cpf);
+
+            ResultSet rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public boolean emailExists(String email) {
+        String sql = "SELECT 1 FROM users WHERE email = ?";
+
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public boolean phoneExist(String phone) {
+        String sql = "SELECT 1 FROM users WHERE phone = ? LIMIT 1";
+
+        try (
+                Connection conn = dbFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setString(1, phone);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
