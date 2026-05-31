@@ -131,7 +131,7 @@
 <nav id="nav" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-white/90 backdrop-blur-md"
      style="border-bottom: 1px solid #f0ece4;">
 
-  <span class="font-serif text-xl text-warm-dark tracking-tight">Aura</span>
+  <img src="${pageContext.request.contextPath}/assets/img/logos/logo-horizontal.png" alt="Aura" class="h-12 w-auto">
 
   <div class="hidden md:flex items-center gap-8 text-sm text-warm-gray font-light">
     <a href="#sobre">Sobre</a>
