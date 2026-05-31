@@ -272,6 +272,7 @@ public class ReportDao {
             WHERE mp.user_id = ?
               AND mp.user_id != mr.from_user_id
             AND mr.report_category = 'NAO_COMPARECEU'
+            AND status = false
             """;
 
         try (Connection connection = dbFactory.getConnection();

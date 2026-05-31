@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet("/register")
 public class RegisterController extends BaseController {
@@ -34,6 +35,7 @@ public class RegisterController extends BaseController {
             String address = request.getParameter("address");
             String phone = request.getParameter("phone");
             String cpf = request.getParameter("cpf");
+            cpf = cpf.replaceAll("\\D", "");
             String email = request.getParameter("email");
             String password = request.getParameter("password");
 
@@ -44,6 +46,8 @@ public class RegisterController extends BaseController {
             if (email == null || email.trim().isEmpty() || !email.contains("@")) {
                 throw new IllegalArgumentException("Email inválido.");
             }
+            if (userDao.emailExists(email))
+                throw new IllegalArgumentException("E-mail já cadastrado.");
 
             if (password == null || password.length() < 6) {
                 throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres.");
@@ -59,6 +63,12 @@ public class RegisterController extends BaseController {
 
             if (!isValid(cpf)) {
                 throw new IllegalArgumentException("CPF inválido.");
+            }
+            if(userDao.cpfExists(cpf)) {
+                request.setAttribute("error", "CPF já cadastrado.");
+                request.getRequestDispatcher("/WEB-INF/views/register/register.jsp")
+                        .forward(request, response);
+                return;
             }
 
             if (phone != null && !phone.trim().isEmpty() && phone.length() < 8) {
@@ -83,11 +93,35 @@ public class RegisterController extends BaseController {
             response.sendRedirect(request.getContextPath() + "/autenticado/interest/learn");
 
         } catch (IllegalArgumentException e) {
+
             request.setAttribute("error", e.getMessage());
-            forward(request, response, "users/register.jsp");
+            request.setAttribute("name", request.getParameter("name"));
+            request.setAttribute("age", request.getParameter("age"));
+            request.setAttribute("address", request.getParameter("address"));
+            request.setAttribute("phone", request.getParameter("phone"));
+            request.setAttribute("cpf", request.getParameter("cpf"));
+            request.setAttribute("email", request.getParameter("email"));
 
+            forward(request, response, "/register/register.jsp");
+
+        } catch (Exception e) {
+
+            String message = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
+
+            if (message.contains("unique") || message.contains("duplicate") || message.contains("cpf")) {
+                request.setAttribute("error", "CPF já cadastrado.");
+                request.setAttribute("name", request.getParameter("name"));
+                request.setAttribute("age", request.getParameter("age"));
+                request.setAttribute("address", request.getParameter("address"));
+                request.setAttribute("phone", request.getParameter("phone"));
+                request.setAttribute("cpf", request.getParameter("cpf"));
+                request.setAttribute("email", request.getParameter("email"));
+                forward(request, response, "/register/register.jsp");
+                return;
+            }
+
+            throw new ServletException(e);
         }
-
 
 
     }
