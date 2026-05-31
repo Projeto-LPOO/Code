@@ -54,9 +54,14 @@ public class Meeting extends BaseEntity {
     public String getUserRole() { return userRole; }
     public void setUserRole(String userRole) { this.userRole = userRole; }
 
+//    public String getMeetingType() {
+//        return this instanceof FaceToFaceMeeting ? "PRESENCIAL" : "ONLINE";
+//    }
+
     public String getMeetingType() {
-        return this instanceof FaceToFaceMeeting ? "PRESENCIAL" : "ONLINE";
+        throw new UnsupportedOperationException("Subclasse deve implementar getMeetingType()");
     }
+
 
     // retorna true se ainda é possível cancelar com reembolso (mais de 3 dias antes)
     public boolean isCancellableWithRefund() {
