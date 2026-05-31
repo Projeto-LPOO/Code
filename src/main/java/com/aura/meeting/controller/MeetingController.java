@@ -184,17 +184,15 @@ public class MeetingController {
     {
         List<MeetingReport> meetingsReport = reportDao.findAllReportsByUser(id);
 
-        Map<ReportCategory, List<MeetingReport>> allReports = meetingsReport.stream().collect(Collectors.groupingBy(
-                meetingReport -> meetingReport.getCategory()
-                ));
+        Map<ReportCategory, List<MeetingReport>> allReports =
+                meetingsReport.stream()
+                        .collect(Collectors.groupingBy(MeetingReport::getCategory));
 
-        List<MeetingReport> noShowReports =
-                allReports.getOrDefault(
-                        ReportCategory.NAO_COMPARECEU,
-                        new ArrayList<>()
-                );
-
-        return noShowReports;
+        return allReports
+                .getOrDefault(ReportCategory.NAO_COMPARECEU, new ArrayList<>())
+                .stream()
+                .filter(report -> !report.getStatus())
+                .collect(Collectors.toList());
     }
 
 
