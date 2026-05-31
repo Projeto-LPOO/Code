@@ -6,4 +6,8 @@ public class OnlineMeeting extends Meeting{
 
     public String getLinkPlataform() {return linkPlataform;}
     public void setLinkPlataform(String linkPlataform) {this.linkPlataform = linkPlataform;}
+
+    @Override
+    public String getMeetingType() { return "ONLINE"; }
+
 }
