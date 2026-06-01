@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FeedbackDao {
 
@@ -69,5 +71,43 @@ public class FeedbackDao {
 			throw new RuntimeException("Erro ao verificar existência de feedback: " + e.getMessage(), e);
 		}
 		return false;
+	}
+	public List<Feedback> findByToUserId(int id) {
+		List<Feedback> feedbackList = new ArrayList<>();
+
+		String sql = "SELECT * FROM feedbacks WHERE to_user_id = ?";
+
+		try (
+				Connection connection = dbFactory.getConnection();
+				PreparedStatement stmt = connection.prepareStatement(sql)
+		) {
+			stmt.setInt(1, id);
+
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				Feedback feedback = new Feedback();
+
+				feedback.setId(rs.getInt("id"));
+				feedback.setToUserId(rs.getInt("to_user_id"));
+				feedback.setFromUserId(rs.getInt("from_user_id"));
+				feedback.setRating(rs.getInt("rating"));
+				feedback.setComment(rs.getString("comment"));
+				feedback.setMeetingId(rs.getInt("meeting_id"));
+
+				if (rs.getTimestamp("date") != null) {
+					feedback.setDate(
+							rs.getTimestamp("date").toLocalDateTime()
+					);
+				}
+
+				feedbackList.add(feedback);
+			}
+
+			return feedbackList;
+
+		} catch (Exception e) {
+			throw new RuntimeException("Erro ao buscar feedbacks", e);
+		}
 	}
 }

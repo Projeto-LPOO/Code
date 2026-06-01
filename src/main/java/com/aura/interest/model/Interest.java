@@ -7,7 +7,6 @@ public class Interest {
     private String name;
     private String description;
     private Category category;
-
     public Interest() {
     }
     // Construtor sem o ID
@@ -24,6 +23,8 @@ public class Interest {
         this.description = description;
         this.category = category;
     }
+
+
 
     public int getId() {
         return idInterest;

@@ -123,8 +123,8 @@
                                             ${user.name}
                                     </h1>
 
-                                    <p class="mt-2 text-slate-500">
-                                        Principal Software Architect
+                                    <p class="text-sm text-violet-600 font-medium mt-0.5">
+                                        ⭐ ${not empty averageRating ? averageRating : '0.0'} (${not empty totalReviews ? totalReviews : '0'} avaliações)
                                     </p>
 
                                 </div>
@@ -152,129 +152,26 @@
 
                         </div>
 
-                        <!-- STATS -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-9">
-
-                            <!-- CARD -->
-                            <div class="bg-[#fafbff]
-                                        border border-[#edf0f7]
-                                        rounded-3xl
-                                        p-6
-                                        text-center">
-
-                                <div class="w-[52px] h-[52px]
-                                            mx-auto mb-4
-                                            rounded-2xl
-                                            bg-violet-100
-                                            text-violet-700
-                                            flex items-center justify-center">
-
-                                    <svg class="w-6 h-6"
-                                         fill="none"
-                                         stroke="currentColor"
-                                         stroke-width="2"
-                                         viewBox="0 0 24 24">
-
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <path d="M12 6v6l4 2"/>
-
-                                    </svg>
-
-                                </div>
-
-                                <h3 class="text-3xl font-black">
-                                    482
-                                </h3>
-
-                                <span class="text-slate-500 text-sm">
-                                    Horas Ensinadas
-                                </span>
-
-                            </div>
-
-                            <!-- CARD -->
-                            <div class="bg-[#fafbff]
-                                        border border-[#edf0f7]
-                                        rounded-3xl
-                                        p-6
-                                        text-center">
-
-                                <div class="w-[52px] h-[52px]
-                                            mx-auto mb-4
-                                            rounded-2xl
-                                            bg-violet-100
-                                            text-violet-700
-                                            flex items-center justify-center">
-
-                                    <svg class="w-6 h-6"
-                                         fill="none"
-                                         stroke="currentColor"
-                                         stroke-width="2"
-                                         viewBox="0 0 24 24">
-
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="9" cy="7" r="4"/>
-
-                                    </svg>
-
-                                </div>
-
-                                <h3 class="text-3xl font-black">
-                                    124
-                                </h3>
-
-                                <span class="text-slate-500 text-sm">
-                                    Aprendizes Ativos
-                                </span>
-
-                            </div>
-
-                            <!-- CARD -->
-                            <div class="bg-[#fafbff]
-                                        border border-[#edf0f7]
-                                        rounded-3xl
-                                        p-6
-                                        text-center">
-
-                                <div class="w-[52px] h-[52px]
-                                            mx-auto mb-4
-                                            rounded-2xl
-                                            bg-violet-100
-                                            text-violet-700
-                                            flex items-center justify-center">
-
-                                    <svg class="w-6 h-6"
-                                         fill="currentColor"
-                                         viewBox="0 0 20 20">
-
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-
-                                    </svg>
-
-                                </div>
-
-                                <h3 class="text-3xl font-black">
-                                    4.9
-                                </h3>
-
-                                <span class="text-slate-500 text-sm">
-                                    Avaliação Média
-                                </span>
-
-                            </div>
-
-                        </div>
-
                     </div>
 
                 </section>
 
-                <!-- JORNADA -->
-                <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+            <div class="flex border-b border-slate-200 bg-white rounded-t-2xl">
+                <button type="button" id="profileTab" class="flex-1 py-4 text-center text-sm font-semibold border-b-2 border-violet-700 text-violet-700 transition cursor-pointer">
+                    Perfil & Informações
+                </button>
+                <button type="button" id="reviewTab" class="flex-1 py-4 text-center text-sm font-medium text-slate-400 hover:text-slate-600 bg-slate-50/50 transition cursor-pointer">
+                    Avaliações
+                </button>
+            </div>
 
-                    <div class="flex items-center gap-3 mb-5">
+            <form id="profileForm" action="${pageContext.request.contextPath}/autenticado/profile" method="POST">
+                <div id="profileSection" class="flex flex-col gap-6">
+                    <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
 
-                        <div class="w-7 h-7 rounded-xl
+                        <div class="flex items-center gap-3 mb-5">
+
+                            <div class="w-7 h-7 rounded-xl
                                     bg-gradient-to-br
                                     from-violet-600
                                     to-violet-800
@@ -282,32 +179,29 @@
                                     flex items-center justify-center
                                     text-xs">
 
-                            ✦
+                                ✦
+
+                            </div>
+
+                            <h2 class="text-xl font-black">
+                                Minha Jornada
+                            </h2>
 
                         </div>
 
-                        <h2 class="text-xl font-black">
-                            Minha Jornada
-                        </h2>
+                        <p class="text-slate-500 leading-8">
 
-                    </div>
+                           ${profile.bio}
 
-                    <p class="text-slate-500 leading-8">
+                        </p>
 
-                        Aqui serão evidenciadas as experiências, trajetória,
-                        projetos, conhecimentos e evolução profissional do usuário
-                        dentro da plataforma Infinity Aura.
+                    </section>
+                    <!-- INTERESSES -->
+                    <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
 
-                    </p>
+                        <div class="flex items-center gap-3 mb-5">
 
-                </section>
-
-                <!-- INTERESSES -->
-                <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
-
-                    <div class="flex items-center gap-3 mb-5">
-
-                        <div class="w-7 h-7 rounded-xl
+                            <div class="w-7 h-7 rounded-xl
                                     bg-gradient-to-br
                                     from-violet-600
                                     to-violet-800
@@ -315,21 +209,21 @@
                                     flex items-center justify-center
                                     text-xs">
 
-                            ✦
+                                ✦
+
+                            </div>
+
+                            <h2 class="text-xl font-black">
+                                Interesses & Habilidades
+                            </h2>
 
                         </div>
 
-                        <h2 class="text-xl font-black">
-                            Interesses & Habilidades
-                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
-                    </div>
+                            <c:forEach items="${user.interests}" var="interest">
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-
-                        <c:forEach items="${user.interests}" var="interest">
-
-                            <div class="bg-[#fafbff]
+                                <div class="bg-[#fafbff]
                                         border border-[#edf0f7]
                                         rounded-2xl
                                         p-5
@@ -337,40 +231,36 @@
                                         hover:-translate-y-0.5
                                         transition">
 
-                                <h3 class="font-bold mb-1">
-                                        ${interest.name}
-                                </h3>
+                                    <h3 class="font-bold mb-1">
+                                            ${interest.name}
+                                    </h3>
 
-                                <p class="text-sm text-slate-500">
+                                    <p class="text-sm text-slate-500">
 
-                                    <c:choose>
+                                        <c:choose>
 
-                                        <c:when test="${not empty interest.category}">
-                                            ${interest.category.name}
-                                        </c:when>
+                                            <c:when test="${not empty interest.category}">
+                                                ${interest.category.name}
+                                            </c:when>
 
-                                        <c:otherwise>
-                                            Interesse
-                                        </c:otherwise>
+                                        </c:choose>
 
-                                    </c:choose>
+                                    </p>
 
-                                </p>
+                                </div>
 
-                            </div>
+                            </c:forEach>
 
-                        </c:forEach>
+                        </div>
 
-                    </div>
+                    </section>
 
-                </section>
+                    <!-- INFORMAÇÕES -->
+                    <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
 
-                <!-- INFORMAÇÕES -->
-                <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+                        <div class="flex items-center gap-3 mb-5">
 
-                    <div class="flex items-center gap-3 mb-5">
-
-                        <div class="w-7 h-7 rounded-xl
+                            <div class="w-7 h-7 rounded-xl
                                     bg-gradient-to-br
                                     from-violet-600
                                     to-violet-800
@@ -378,59 +268,126 @@
                                     flex items-center justify-center
                                     text-xs">
 
-                            ✦
+                                ✦
+
+                            </div>
+
+                            <h2 class="text-xl font-black">
+                                Informações Pessoais
+                            </h2>
 
                         </div>
 
-                        <h2 class="text-xl font-black">
-                            Informações Pessoais
-                        </h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
+                            <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
 
                             <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
                                 IDADE
                             </span>
 
-                            <strong class="text-slate-700">
-                                    ${user.age} anos
-                            </strong>
+                                <strong class="text-slate-700">
+                                        ${user.age} anos
+                                </strong>
 
-                        </div>
+                            </div>
 
-                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
+                            <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
 
                             <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
                                 TELEFONE
                             </span>
 
-                            <strong class="text-slate-700">
-                                    ${user.phone}
-                            </strong>
+                                <strong class="text-slate-700">
+                                        ${user.phone}
+                                </strong>
 
-                        </div>
+                            </div>
 
-                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5 lg:col-span-2">
+                            <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5 lg:col-span-2">
 
                             <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
                                 ENDEREÇO
                             </span>
 
-                            <strong class="text-slate-700">
-                                    ${user.address}
-                            </strong>
+                                <strong class="text-slate-700">
+                                        ${user.address}
+                                </strong>
+
+                            </div>
 
                         </div>
 
+                    </section>
+                </div>
+            </form>
+
+
+            <div id="reviewSection" class="flex flex-col gap-6 hidden">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4">
+                        Avaliações Recebidas
+                    </h2>
+
+                    <div class="flex flex-col gap-4">
+
+                        <c:choose>
+
+                            <c:when test="${not empty feedbacks}">
+                                <c:forEach items="${feedbacks}" var="fb">
+
+                                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+                                        <div class="flex items-start justify-between mb-3">
+
+                                            <div class="flex flex-col gap-1">
+                                    <span class="text-sm font-semibold text-slate-900">
+                                            ${fb.fromUserName}
+                                    </span>
+
+                                                <span class="text-xs text-slate-500">
+                                                        ${fb.date}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex items-center gap-1">
+                                    <span class="text-amber-500 text-sm">
+                                        <c:forEach begin="1" end="${fb.rating}">
+                                            ⭐
+                                        </c:forEach>
+                                    </span>
+
+                                                <span class="text-xs text-slate-500">
+                                        (${fb.rating}/5)
+                                    </span>
+                                            </div>
+
+                                        </div>
+
+                                        <p class="text-sm text-slate-700 leading-relaxed">
+                                            <c:out value="${fb.comment}" />
+                                        </p>
+
+                                    </div>
+
+                                </c:forEach>
+                            </c:when>
+
+                            <c:otherwise>
+                                <div class="text-center py-10">
+                                    <p class="text-slate-400 italic">
+                                        Nenhuma avaliação recebida ainda.
+                                    </p>
+                                </div>
+                            </c:otherwise>
+
+                        </c:choose>
+
                     </div>
+                </div>
+            </div>
 
-                </section>
-
-            </c:if>
+            </form>
 
         </div>
 
@@ -438,11 +395,158 @@
 
 </div>
 
-<footer class="text-center py-6 text-sm text-slate-400 lg:ml-[240px]">
-    © 2026 Aura. Conectando pessoas pelo conhecimento.
+<footer class="text-center py-6 text-xs text-slate-400 lg:ml-[240px] border-t border-slate-200/60 mt-auto bg-white">
+    &copy; 2026 Aura. Conectando pessoas pelo conhecimento.
 </footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        // ===== Abas =====
+        const profileTab = document.getElementById("profileTab");
+        const reviewTab = document.getElementById("reviewTab");
+        const profileSection = document.getElementById("profileSection");
+        const reviewSection = document.getElementById("reviewSection");
+
+        const activeTab =
+            "flex-1 py-4 text-center text-sm font-semibold border-b-2 border-violet-700 text-violet-700 transition cursor-pointer";
+
+        const inactiveTab =
+            "flex-1 py-4 text-center text-sm font-medium text-slate-400 hover:text-slate-600 bg-slate-50/50 transition cursor-pointer";
+
+        if (profileTab && reviewTab && profileSection && reviewSection) {
+
+            // Estado inicial
+            profileSection.classList.remove("hidden");
+            reviewSection.classList.add("hidden");
+
+            profileTab.addEventListener("click", () => {
+                profileTab.className = activeTab;
+                reviewTab.className = inactiveTab;
+
+                profileSection.classList.remove("hidden");
+                reviewSection.classList.add("hidden");
+            });
+
+            reviewTab.addEventListener("click", () => {
+                reviewTab.className = activeTab;
+                profileTab.className = inactiveTab;
+
+                profileSection.classList.add("hidden");
+                reviewSection.classList.remove("hidden");
+            });
+        }
+
+        // ===== Formulário =====
+        const profileForm = document.getElementById("profileForm");
+
+        if (profileForm) {
+            profileForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(profileForm);
+                const searchParams = new URLSearchParams(formData);
+
+                try {
+                    const response = await fetch(profileForm.action, {
+                        method: "POST",
+                        body: searchParams,
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded; charset=UTF-8"
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        showToast(
+                            result.message || "Perfil atualizado com sucesso!",
+                            "success"
+                        );
+                    } else {
+                        showToast(
+                            result.message || "Erro ao salvar alterações.",
+                            "error"
+                        );
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    showToast(
+                        "Erro de comunicação com o servidor.",
+                        "error"
+                    );
+                }
+            });
+        }
+
+        // ===== Toast =====
+        function showToast(message, type) {
+            const toast = document.getElementById("toastNotification");
+            const icon = document.getElementById("toastIcon");
+            const msg = document.getElementById("toastMessage");
+
+            if (!toast || !icon || !msg) return;
+
+            msg.textContent = message;
+
+            toast.classList.remove(
+                "bg-emerald-50",
+                "text-emerald-800",
+                "border-emerald-200",
+                "bg-rose-50",
+                "text-rose-800",
+                "border-rose-200"
+            );
+
+            if (type === "success") {
+                toast.classList.add(
+                    "bg-emerald-50",
+                    "text-emerald-800",
+                    "border",
+                    "border-emerald-200"
+                );
+                icon.textContent = "✅";
+            } else {
+                toast.classList.add(
+                    "bg-rose-50",
+                    "text-rose-800",
+                    "border",
+                    "border-rose-200"
+                );
+                icon.textContent = "❌";
+            }
+
+            toast.classList.remove(
+                "opacity-0",
+                "translate-y-[-20px]",
+                "pointer-events-none"
+            );
+
+            toast.classList.add(
+                "opacity-100",
+                "translate-y-0"
+            );
+
+            setTimeout(() => {
+                toast.classList.remove(
+                    "opacity-100",
+                    "translate-y-0"
+                );
+
+                toast.classList.add(
+                    "opacity-0",
+                    "translate-y-[-20px]",
+                    "pointer-events-none"
+                );
+            }, 4000);
+        }
+    });
+</script>
 
 <script src="${pageContext.request.contextPath}/assets/js/userProfile.js"></script>
 
+</c:if>
 </body>
 </html>

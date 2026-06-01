@@ -24,9 +24,9 @@
 
     <t:menu paginaAtiva="profile"/>
 
-    <main class="w-full flex justify-center px-4 sm:px-6 lg:px-8 py-10 lg:ml-[240px]">
+    <main class="flex-1 p-10">
 
-        <div class="w-full max-w-4xl flex flex-col gap-6">
+        <div class="w-full  flex flex-col gap-6">
 
             <section class="bg-white rounded-3xl p-6 border border-slate-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -38,7 +38,6 @@
                         <div>
                             <div class="flex items-center justify-center sm:justify-start gap-2">
                                 <h1 class="text-2xl font-bold text-slate-900">${not empty profile.name ? profile.name : 'Nome não informado'}</h1>
-                                <span class="bg-violet-100 text-violet-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">Mentor</span>
                             </div>
                             <p class="text-sm text-slate-400 mt-1">${not empty profile.email ? profile.email : 'Email não cadastrado'}</p>
 
@@ -82,36 +81,196 @@
                             </div>
                         </div>
                     </div>
+                <!-- INTERESSES -->
+                <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+
+                    <div class="flex items-center gap-3 mb-5">
+
+                        <div class="w-7 h-7 rounded-xl
+                                    bg-gradient-to-br
+                                    from-violet-600
+                                    to-violet-800
+                                    text-white
+                                    flex items-center justify-center
+                                    text-xs">
+
+                            ✦
+
+                        </div>
+
+                        <h2 class="text-xl font-black">
+                            Interesses & Habilidades
+                        </h2>
+
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+
+                        <c:forEach items="${user.interests}" var="interest">
+
+                            <div class="bg-[#fafbff]
+                                        border border-[#edf0f7]
+                                        rounded-2xl
+                                        p-5
+                                        hover:border-violet-300
+                                        hover:-translate-y-0.5
+                                        transition">
+
+                                <h3 class="font-bold mb-1">
+                                        ${interest.name}
+                                </h3>
+
+                                <p class="text-sm text-slate-500">
+
+                                    <c:choose>
+
+                                        <c:when test="${not empty interest.category}">
+                                            ${interest.category.name}
+                                        </c:when>
+
+                                    </c:choose>
+
+                                </p>
+
+                            </div>
+
+                        </c:forEach>
+
+                    </div>
+
+                </section>
+
+                <!-- INFORMAÇÕES -->
+                <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+
+                    <div class="flex items-center gap-3 mb-5">
+
+                        <div class="w-7 h-7 rounded-xl
+                                    bg-gradient-to-br
+                                    from-violet-600
+                                    to-violet-800
+                                    text-white
+                                    flex items-center justify-center
+                                    text-xs">
+
+                            ✦
+
+                        </div>
+
+                        <h2 class="text-xl font-black">
+                            Informações Pessoais
+                        </h2>
+
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
+
+                            <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
+                                IDADE
+                            </span>
+
+                            <strong class="text-slate-700">
+                                ${user.age} anos
+                            </strong>
+
+                        </div>
+
+                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
+
+                            <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
+                                TELEFONE
+                            </span>
+
+                            <strong class="text-slate-700">
+                                ${user.phone}
+                            </strong>
+
+                        </div>
+
+                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5 lg:col-span-2">
+
+                            <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
+                                ENDEREÇO
+                            </span>
+
+                            <strong class="text-slate-700">
+                                ${user.address}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
                 </div>
             </form>
 
-                <div id="reviewSection" class="flex flex-col gap-6 hidden">
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                        <h2 class="text-lg font-bold text-slate-900 mb-4">Avaliações Recebidas</h2>
-                        <div class="flex flex-col gap-4">
-                            <c:choose>
-                                <c:when test="${not empty feedbacks}">
-                                    <c:forEach items="${feedbacks}" var="fb">
-                                        <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col gap-2">
-                                            <div class="flex items-center justify-between">
-                                                <span class="text-sm font-bold text-amber-500">
-                                                    <c:forEach begin="1" end="${fb.rating}">⭐</c:forEach>
-                                                    <span class="text-slate-600 ml-1">(${fb.rating}.0)</span>
+
+            <div id="reviewSection" class="flex flex-col gap-6 hidden">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4">
+                        Avaliações Recebidas
+                    </h2>
+
+                    <div class="flex flex-col gap-4">
+
+                        <c:choose>
+
+                            <c:when test="${not empty feedbacks}">
+                                <c:forEach items="${feedbacks}" var="fb">
+
+                                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+                                        <div class="flex items-start justify-between mb-3">
+
+                                            <div class="flex flex-col gap-1">
+                                    <span class="text-sm font-semibold text-slate-900">
+                                        ${fb.fromUserName}
+                                    </span>
+
+                                                <span class="text-xs text-slate-500">
+                                                        ${fb.date}
                                                 </span>
                                             </div>
-                                            <p class="text-slate-700 text-sm leading-relaxed"><c:out value="${fb.comment}" /></p>
+
+                                            <div class="flex items-center gap-1">
+                                    <span class="text-amber-500 text-sm">
+                                        <c:forEach begin="1" end="${fb.rating}">
+                                            ⭐
+                                        </c:forEach>
+                                    </span>
+
+                                                <span class="text-xs text-slate-500">
+                                        (${fb.rating}/5)
+                                    </span>
+                                            </div>
+
                                         </div>
-                                    </c:forEach>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="text-center py-8">
-                                        <p class="text-slate-400 italic text-sm">Nenhuma avaliação recebida ainda.</p>
+
+                                        <p class="text-sm text-slate-700 leading-relaxed">
+                                            <c:out value="${fb.comment}" />
+                                        </p>
+
                                     </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
+
+                                </c:forEach>
+                            </c:when>
+
+                            <c:otherwise>
+                                <div class="text-center py-10">
+                                    <p class="text-slate-400 italic">
+                                        Nenhuma avaliação recebida ainda.
+                                    </p>
+                                </div>
+                            </c:otherwise>
+
+                        </c:choose>
+
                     </div>
                 </div>
+            </div>
 
             </form>
 
@@ -127,87 +286,145 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Referências das Abas
-        const profileTab = document.getElementById('profileTab');
-        const reviewTab = document.getElementById('reviewTab');
-        const profileSection = document.getElementById('profileSection');
-        const reviewSection = document.getElementById('reviewSection');
 
-        // Estilos CSS das Abas
-        const activeTab = "flex-1 py-4 text-center text-sm font-semibold border-b-2 border-violet-700 text-violet-700 transition cursor-pointer";
-        const inactiveTab = "flex-1 py-4 text-center text-sm font-medium text-slate-400 hover:text-slate-600 bg-slate-50/50 transition cursor-pointer";
+        // ===== Abas =====
+        const profileTab = document.getElementById("profileTab");
+        const reviewTab = document.getElementById("reviewTab");
+        const profileSection = document.getElementById("profileSection");
+        const reviewSection = document.getElementById("reviewSection");
+
+        const activeTab =
+            "flex-1 py-4 text-center text-sm font-semibold border-b-2 border-violet-700 text-violet-700 transition cursor-pointer";
+
+        const inactiveTab =
+            "flex-1 py-4 text-center text-sm font-medium text-slate-400 hover:text-slate-600 bg-slate-50/50 transition cursor-pointer";
 
         if (profileTab && reviewTab && profileSection && reviewSection) {
-            profileTab.addEventListener('click', () => {
+
+            // Estado inicial
+            profileSection.classList.remove("hidden");
+            reviewSection.classList.add("hidden");
+
+            profileTab.addEventListener("click", () => {
                 profileTab.className = activeTab;
                 reviewTab.className = inactiveTab;
-                profileSection.classList.replace('hidden', 'block');
-                reviewSection.classList.replace('block', 'hidden');
+
+                profileSection.classList.remove("hidden");
+                reviewSection.classList.add("hidden");
             });
 
-            reviewTab.addEventListener('click', () => {
+            reviewTab.addEventListener("click", () => {
                 reviewTab.className = activeTab;
                 profileTab.className = inactiveTab;
-                reviewSection.classList.replace('hidden', 'block');
-                profileSection.classList.replace('block', 'hidden');
+
+                profileSection.classList.add("hidden");
+                reviewSection.classList.remove("hidden");
             });
         }
 
-        // Envio assíncrono do formulário
-        const profileForm = document.getElementById('profileForm');
-        profileForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Impede o redirecionamento padrão
+        // ===== Formulário =====
+        const profileForm = document.getElementById("profileForm");
 
-            const formData = new FormData(profileForm);
-            const searchParams = new URLSearchParams(formData);
+        if (profileForm) {
+            profileForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
 
-            try {
-                const response = await fetch(profileForm.action, {
-                    method: 'POST',
-                    body: searchParams,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                const formData = new FormData(profileForm);
+                const searchParams = new URLSearchParams(formData);
+
+                try {
+                    const response = await fetch(profileForm.action, {
+                        method: "POST",
+                        body: searchParams,
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded; charset=UTF-8"
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        showToast(
+                            result.message || "Perfil atualizado com sucesso!",
+                            "success"
+                        );
+                    } else {
+                        showToast(
+                            result.message || "Erro ao salvar alterações.",
+                            "error"
+                        );
                     }
-                });
 
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showToast(result.message, "success");
-                } else {
-                    showToast(result.message || "Erro ao salvar alterações.", "error");
+                } catch (error) {
+                    console.error(error);
+                    showToast(
+                        "Erro de comunicação com o servidor.",
+                        "error"
+                    );
                 }
-            } catch (error) {
-                showToast("Erro de comunicação com o servidor.", "error");
-            }
-        });
+            });
+        }
 
-        // Função de Feedback Visual (Toast)
+        // ===== Toast =====
         function showToast(message, type) {
-            const toast = document.getElementById('toastNotification');
-            const icon = document.getElementById('toastIcon');
-            const msgSpan = document.getElementById('toastMessage');
+            const toast = document.getElementById("toastNotification");
+            const icon = document.getElementById("toastIcon");
+            const msg = document.getElementById("toastMessage");
 
-            msgSpan.textContent = message;
+            if (!toast || !icon || !msg) return;
+
+            msg.textContent = message;
+
+            toast.classList.remove(
+                "bg-emerald-50",
+                "text-emerald-800",
+                "border-emerald-200",
+                "bg-rose-50",
+                "text-rose-800",
+                "border-rose-200"
+            );
 
             if (type === "success") {
-                toast.className = toast.className.replace(/bg-\w+-\d+ text-\w+-\d+ border-\w+-\d+/, "");
-                toast.classList.add("bg-emerald-50", "text-emerald-800", "border", "border-emerald-200");
+                toast.classList.add(
+                    "bg-emerald-50",
+                    "text-emerald-800",
+                    "border",
+                    "border-emerald-200"
+                );
                 icon.textContent = "✅";
             } else {
-                toast.className = toast.className.replace(/bg-\w+-\d+ text-\w+-\d+ border-\w+-\d+/, "");
-                toast.classList.add("bg-rose-50", "text-rose-800", "border", "border-rose-200");
+                toast.classList.add(
+                    "bg-rose-50",
+                    "text-rose-800",
+                    "border",
+                    "border-rose-200"
+                );
                 icon.textContent = "❌";
             }
 
-            // Exibe o toast animado
-            toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
-            toast.classList.add('opacity-100', 'translate-y-0');
+            toast.classList.remove(
+                "opacity-0",
+                "translate-y-[-20px]",
+                "pointer-events-none"
+            );
 
-            // Oculta automaticamente após 4 segundos
+            toast.classList.add(
+                "opacity-100",
+                "translate-y-0"
+            );
+
             setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                toast.classList.remove(
+                    "opacity-100",
+                    "translate-y-0"
+                );
+
+                toast.classList.add(
+                    "opacity-0",
+                    "translate-y-[-20px]",
+                    "pointer-events-none"
+                );
             }, 4000);
         }
     });

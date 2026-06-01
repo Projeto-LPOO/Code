@@ -6,7 +6,8 @@ import com.aura.shared.BaseEntity;
 public class Feedback extends BaseEntity {
     private int meetingId;
     private int fromUserId;
-    private int toUserId;
+	private String fromUserName;
+	private int toUserId;
     private int rating; 
     private String comment;
     private LocalDateTime date;
@@ -19,7 +20,7 @@ public class Feedback extends BaseEntity {
     	this.comment = comment;
     	
     }
-    
+    public Feedback(){}
 	public int getMeetingId() {
 		return meetingId;
 	}
@@ -55,6 +56,14 @@ public class Feedback extends BaseEntity {
 	}
 	public void setDate(LocalDateTime date) {
 		this.date = date;
+	}
+
+	public String getFromUserName() {
+		return fromUserName;
+	}
+
+	public void setFromUserName(String fromUserName) {
+		this.fromUserName = fromUserName;
 	}
     
     

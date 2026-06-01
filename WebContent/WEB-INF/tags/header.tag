@@ -10,7 +10,29 @@
              alt="Aura"
              class="h-8">
     </div>
+    <div class="flex items-center w-full px-4 py-2">
 
+
+
+        <div class="ml-auto">
+
+            <a href="${pageContext.request.contextPath}/autenticado/profile?id=${user.id}"
+               class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-[#7c3aed] transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                    <circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/>
+
+                    <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+
+                    <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/>
+
+                </svg>
+                <span class="font-medium">Perfil</span>
+            </a>
+
+        </div>
+
+    </div>
     <div class="flex items-center">
         <a href="${pageContext.request.contextPath}/autenticado/financial/"
            class="flex items-center gap-2 bg-[#f3e8ff] text-[#6b21a8] px-3 py-2 rounded-full text-xs font-medium border border-[#e9d5ff]">
