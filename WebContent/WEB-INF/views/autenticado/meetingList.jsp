@@ -82,8 +82,9 @@
                     class="tab-btn px-5 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-500 -mb-px hover:text-gray-700 transition-colors">
                 Concluídos
             </button>
-            <button onclick="showTab('comprovaçõesPendentes')" id="tab-comprovaçõesPendentes" class="tab-btn px-5 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-500 -mb-px hover:text-gray-700 transition-colors">
-                Comprovações pendentes
+            <button onclick="showTab('reportados')" id="tab-reportados"
+                    class="tab-btn px-5 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-500 -mb-px hover:text-gray-700 transition-colors">
+                Reportados
             </button>
         </div>
 
@@ -354,8 +355,8 @@
         <div id="pane-concluidos" class="tab-pane hidden">
             <c:set var="hasDone" value="false" />
             <c:forEach var="m" items="${meetings}">
-                <c:if test="${m.status == 'done' || m.status == 'reported'}">
-                    <c:set var="hasDone" value="true" />
+                <c:if test="${m.status == 'done'}">
+                <c:set var="hasDone" value="true" />
                 </c:if>
             </c:forEach>
 
@@ -368,8 +369,8 @@
                 <c:otherwise>
                     <section class="flex flex-col gap-4">
                         <c:forEach var="m" items="${meetings}">
-                            <c:if test="${m.status == 'done' || m.status == 'reported'}">
-                                <div class="bg-white border border-gray-200 rounded-2xl p-5">
+                            <c:if test="${m.status == 'done'}">
+                            <div class="bg-white border border-gray-200 rounded-2xl p-5">
 
                                     <div class="flex items-start justify-between gap-4 mb-3">
                                         <div class="flex flex-col gap-1">
@@ -458,126 +459,112 @@
                 </c:otherwise>
             </c:choose>
         </div>
-        <%-- aba comprovações pendentes --%>
-        <%-- aba comprovações pendentes --%>
-        <div id="pane-comprovaçõesPendentes" class="tab-pane hidden">
+
+        <%-- aba reportados --%>
+        <div id="pane-reportados" class="tab-pane hidden">
+            <c:set var="hasReported" value="false" />
+            <c:forEach var="m" items="${meetings}">
+                <c:if test="${m.status == 'reported'}">
+                    <c:set var="hasReported" value="true" />
+                </c:if>
+            </c:forEach>
 
             <c:choose>
-
-                <c:when test="${empty noShowReports}">
+                <c:when test="${hasReported == 'false'}">
                     <div class="bg-white border border-gray-200 rounded-2xl p-12 text-center">
-                        <p class="text-sm font-semibold text-gray-600">
-                            Nenhuma comprovação pendente.
-                        </p>
+                        <p class="text-sm font-semibold text-gray-600">Nenhum meeting reportado.</p>
                     </div>
                 </c:when>
-
                 <c:otherwise>
-
                     <section class="flex flex-col gap-4">
+                        <c:forEach var="m" items="${meetings}">
+                            <c:if test="${m.status == 'reported'}">
+                                <div class="bg-white border border-orange-200 rounded-2xl p-5">
 
-                        <c:forEach var="report" items="${noShowReports}">
-
-                            <div class="bg-white border border-orange-200 rounded-2xl p-5">
-
-                                <div class="flex items-start justify-between gap-4 mb-3">
-
-                                    <div class="flex flex-col gap-1">
-
-                                        <p class="text-sm font-semibold text-gray-900">
-                                                ${report.meetingReport.description}
-                                        </p>
-
-                                        <p class="text-xs text-gray-500">
-                                                ${report.meetingReport.dayTime}
-                                        </p>
-
+                                    <div class="flex items-start justify-between gap-4 mb-3">
+                                        <div class="flex flex-col gap-1">
+                                            <p class="text-sm font-semibold text-gray-900">${m.description}</p>
+                                            <p class="text-xs text-gray-500">${m.dayTime}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full
+                                        ${tipoMap[m.id] == 'ONLINE' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}">
+                                            ${tipoMap[m.id]}
+                                    </span>
+                                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-50 text-orange-700">
+                                        ⚑ Reportado
+                                    </span>
+                                        </div>
                                     </div>
 
-                                    <div class="flex items-center gap-2 shrink-0">
+                                    <c:if test="${not empty m.category}">
+                                        <p class="text-xs text-gray-400 mb-1">Categoria: <span class="font-medium text-gray-600">${m.category.name}</span></p>
+                                    </c:if>
 
-                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-50 text-orange-700">
-                                    Não Compareceu
-                                </span>
-
-                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-50 text-yellow-700">
-                                    Comprovação Pendente
-                                </span>
-
-                                    </div>
-
-                                </div>
-
-                                <c:if test="${not empty report.meetingReport.category}">
                                     <p class="text-xs text-gray-400 mb-1">
-                                        Categoria:
-                                        <span class="font-medium text-gray-600">
-                                                ${report.meetingReport.category.name}
-                                        </span>
+                                        Professor: <span class="font-medium text-gray-600">${m.teacher.name}</span>
                                     </p>
-                                </c:if>
-
-                                <p class="text-xs text-gray-400 mb-1">
-                                    Professor:
-                                    <span class="font-medium text-gray-600">
-                                            ${report.meetingReport.teacher.name}
-                                    </span>
-                                </p>
-
-                                <p class="text-xs text-gray-400 mb-3">
-                                    Aluno:
-                                    <span class="font-medium text-gray-600">
-                                            ${report.meetingReport.learner.name}
-                                    </span>
-                                </p>
-
-                                <c:if test="${report.meetingReport.durationMinutes > 0}">
                                     <p class="text-xs text-gray-400 mb-3">
-                                        Duração:
-                                        <span class="font-medium text-gray-600">
+                                        Aluno: <span class="font-medium text-gray-600">${m.learner.name}</span>
+                                    </p>
 
-                                    <c:choose>
-                                        <c:when test="${report.meetingReport.durationMinutes == 60}">
-                                            1h (60 CS)
-                                        </c:when>
+                                    <c:if test="${m.durationMinutes > 0}">
+                                        <p class="text-xs text-gray-400 mb-3">
+                                            Duração: <span class="font-medium text-gray-600">
+                                        <c:choose>
+                                            <c:when test="${m.durationMinutes == 60}">1h (60 CS)</c:when>
+                                            <c:when test="${m.durationMinutes == 90}">1h30 (90 CS)</c:when>
+                                            <c:when test="${m.durationMinutes == 120}">2h (120 CS)</c:when>
+                                            <c:otherwise>${m.durationMinutes} min</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                        </p>
+                                    </c:if>
 
-                                        <c:when test="${report.meetingReport.durationMinutes == 90}">
-                                            1h30 (90 CS)
-                                        </c:when>
-
-                                        <c:when test="${report.meetingReport.durationMinutes == 120}">
-                                            2h (120 CS)
-                                        </c:when>
-
-                                        <c:otherwise>
-                                            ${report.meetingReport.durationMinutes} min
-                                        </c:otherwise>
-                                    </c:choose>
-
+                                    <p class="text-xs mb-3">
+                                <span class="font-semibold px-2 py-0.5 rounded-full
+                                    ${m.userRole == 'TEACHER' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">
+                                        ${m.userRole == 'TEACHER' ? 'Você foi o professor' : 'Você foi o aluno'}
                                 </span>
                                     </p>
-                                </c:if>
 
+                                        <%-- quem reportou --%>
+                                    <p class="text-xs text-orange-700 font-semibold mt-1">
+                                        <c:choose>
+                                            <c:when test="${reporterRoleMap[m.id] == 'TEACHER'}">
+                                                ⚑ Reportado pelo professor
+                                            </c:when>
+                                            <c:otherwise>
+                                                ⚑ Reportado pelo aluno
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </p>
 
-                                <div class="flex items-center gap-2 flex-wrap">
-
-                                    <a href="${pageContext.request.contextPath}/autenticado/meeting/comprovation?id=${report.id}" class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer">
-                                        Enviar Comprovação
-                                    </a>
+                                        <%-- avaliação ainda disponível mesmo em meeting reportado --%>
+                                    <div class="flex items-center gap-2 mt-3">
+                                        <c:choose>
+                                            <c:when test="${feedbackDoneMap[m.id]}">
+                                        <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-lg">
+                                            ✓ Avaliação enviada
+                                        </span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="${pageContext.request.contextPath}/autenticado/feedback?meetingId=${m.id}"
+                                                   class="inline-block bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors">
+                                                        ${m.userRole == 'TEACHER' ? '⭐ Avaliar Aluno' : '⭐ Avaliar Professor'}
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
 
                                 </div>
-
-                            </div>
-
+                            </c:if>
                         </c:forEach>
-
                     </section>
-
                 </c:otherwise>
-
             </c:choose>
-
         </div>
+
     </main>
 </div>
 
