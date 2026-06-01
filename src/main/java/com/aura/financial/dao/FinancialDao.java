@@ -219,19 +219,32 @@ public class FinancialDao {
                 Credits learnerCredits = findByIdForUpdate(conn, learnerId);
                 Credits teacherCredits = findByIdForUpdate(conn, teacherId);
 
+
+                BigDecimal amountBD = BigDecimal.valueOf(amount);
                 if (isDone) {
-                    if (learnerCredits.getBalance().compareTo(BigDecimal.valueOf(amount)) < 0) {
+                    if (learnerCredits.getBalance().compareTo(amountBD) < 0) {
                         throw new IllegalStateException(
                                 "Saldo insuficiente. Você precisa de " + amount +
                                         " CS mas possui apenas " + learnerCredits.getBalance().intValue() + " CS."
                         );
                     }
-                    learnerCredits.withdraw(amount);
-                    teacherCredits.buy(amount);
+                    // Debitar aluno
+                    learnerCredits.setBalance(learnerCredits.getBalance().subtract(amountBD));
+                    learnerCredits.setTotalSpent(learnerCredits.getTotalSpent().add(amountBD));
+                    // Creditar professor
+                    teacherCredits.setBalance(teacherCredits.getBalance().add(amountBD));
+                    teacherCredits.setTotalEarned(teacherCredits.getTotalEarned().add(amountBD));
                 } else {
-                    // Revert: teacher returns credits to learner
-                    teacherCredits.withdraw(amount);
-                    learnerCredits.buy(amount);
+                    if (teacherCredits.getBalance().compareTo(amountBD) < 0) {
+                        throw new IllegalStateException(
+                                "Saldo insuficiente do professor para estorno."
+                        );
+                    }
+                    teacherCredits.setBalance(teacherCredits.getBalance().subtract(amountBD));
+                    teacherCredits.setTotalSpent(teacherCredits.getTotalSpent().add(amountBD)); // corrigir: totalEarned deve diminuir no estorno
+                    learnerCredits.setBalance(learnerCredits.getBalance().add(amountBD));
+                    teacherCredits.setTotalEarned(teacherCredits.getTotalEarned().subtract(amountBD));
+                    learnerCredits.setTotalSpent(learnerCredits.getTotalSpent().subtract(amountBD));
                 }
 
                 updateCreditsInTransaction(conn, learnerCredits);
