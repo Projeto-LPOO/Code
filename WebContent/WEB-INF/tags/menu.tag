@@ -2,14 +2,25 @@
 <%@ attribute name="paginaAtiva" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ tag import="com.aura.notification.dao.NotificationDao" %>
+<%@ tag import="com.aura.financial.dao.FinancialDao" %>
+<%@ tag import="com.aura.financial.models.Credits" %>
 <%@ tag import="com.aura.user.models.User" %>
+<%@ tag import="java.math.BigDecimal" %>
 
 <%
-    NotificationDao notifDao = new NotificationDao();
     User menuUser = (User) session.getAttribute("user");
+
     int unreadCount = 0;
     if (menuUser != null) {
+        NotificationDao notifDao = new NotificationDao();
         unreadCount = notifDao.countUnread(menuUser.getId());
+
+        FinancialDao financialDao = new FinancialDao();
+        Credits credits = financialDao.findById(menuUser.getId());
+        BigDecimal balance = (credits != null && credits.getBalance() != null)
+                ? credits.getBalance()
+                : BigDecimal.ZERO;
+        session.setAttribute("creditsBalance", balance);
     }
     jspContext.setAttribute("unreadCount", unreadCount);
 %>
