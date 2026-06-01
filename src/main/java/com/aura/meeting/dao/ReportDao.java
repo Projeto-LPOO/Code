@@ -280,4 +280,16 @@ public class ReportDao {
         }
     }
 
+    public int findReporterUserId(int meetingId) {
+        String sql = "SELECT from_user_id FROM meeting_reports WHERE meeting_id = ? LIMIT 1";
+        try (Connection conn = dbFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, meetingId);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next() ? rs.getInt(1) : -1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar reporter: " + e.getMessage(), e);
+        }
+    }
+
 }

@@ -45,6 +45,7 @@ public class MeetingListController extends BaseController {
         Map<Integer, Boolean> feedbackDoneMap = new HashMap<>();
         Map<Integer, Boolean> reportDoneMap = new HashMap<>();
         Map<Integer, Boolean> cancelDeadlineMap = new HashMap<>();
+        Map<Integer, String> reporterRoleMap = new HashMap<>();
 
         for (Meeting m : meetings) {
             boolean isDone     = "done".equalsIgnoreCase(m.getStatus());
@@ -60,6 +61,18 @@ public class MeetingListController extends BaseController {
                     (isDone || isReported) && reportDao.hasReportFromUser(m.getId(), loggedUser.getId())
             );
             cancelDeadlineMap.put(m.getId(), m.isCancellableWithRefund());
+
+            if (isReported) {
+                // from_user_id já está em reportDoneMap como boolean — precisamos de quem reportou
+                // Buscar via ReportDao quem reportou este meeting
+                // Adicionar método findReporterUserId ao ReportDao (ver abaixo)
+                int reporterUserId = reportDao.findReporterUserId(m.getId());
+                if (reporterUserId == m.getTeacher().getId()) {
+                    reporterRoleMap.put(m.getId(), "TEACHER");
+                } else {
+                    reporterRoleMap.put(m.getId(), "LEARNER");
+                }
+            }
         }
 
         // move mensagens de sessão para o request (exibe uma única vez)
@@ -86,6 +99,7 @@ public class MeetingListController extends BaseController {
         request.setAttribute("feedbackDoneMap", feedbackDoneMap);
         request.setAttribute("reportDoneMap", reportDoneMap);
         request.setAttribute("cancelDeadlineMap", cancelDeadlineMap);
+        request.setAttribute("reporterRoleMap", reporterRoleMap);
 
         forward(request, response, "autenticado/meetingList.jsp");
     }
