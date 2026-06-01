@@ -16,7 +16,7 @@
 
         <div class="ml-auto">
 
-            <a href="${pageContext.request.contextPath}/autenticado/profile?id=${sessionScope.usuarioId}"
+            <a href="${pageContext.request.contextPath}/autenticado/profile?id=${user.id}"
 
                class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-[#7c3aed] transition-colors">
 
