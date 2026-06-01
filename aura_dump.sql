@@ -486,6 +486,42 @@ CREATE TABLE public.meeting_reports (
     status public.report_status DEFAULT 'PENDENTE'::public.report_status
 );
 
+--===============================================================================
+--ÚLTIMAS ALTERAÇÕES
+--===============================================================================
+
+CREATE TYPE public.report_category AS ENUM (
+    'NAO_COMPARECEU',
+    'ASSEDIO',
+    'VIOLENCIA'
+);
+
+CREATE TYPE public.evidence_accepted AS ENUM (
+    'ACEITO',
+    'PENDENTE',
+    'RECUSADO'
+);
+
+ALTER TABLE public.meeting_reports
+DROP COLUMN status;
+
+ALTER TABLE public.meeting_reports
+    ADD COLUMN status boolean,
+    ADD COLUMN report_category public.report_category;
+
+CREATE TABLE public.report_evidences (
+                                         id SERIAL PRIMARY KEY,
+                                         report_id integer NOT NULL REFERENCES public.meeting_reports(id),
+                                         user_id integer NOT NULL REFERENCES public.users(id),
+                                         description text NOT NULL,
+                                         image_path text,
+                                         created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                                         evidence_accepted public.evidence_accepted DEFAULT 'PENDENTE'
+);
+
+--===============================================================================
+--ÚLTIMAS ALTERAÇÕES
+--===============================================================================
 
 --
 -- Name: meeting_reports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
