@@ -947,6 +947,15 @@ CREATE INDEX idx_notifications_user_unread ON public.notifications USING btree (
 -- Name: users trigger_create_credits; Type: TRIGGER; Schema: public; Owner: -
 --
 
+--
+-- Name: meetings trigger_delete_location; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_delete_location 
+AFTER DELETE ON public.meetings 
+FOR EACH ROW 
+EXECUTE FUNCTION public.delete_location_after_meetings();
+
 CREATE TRIGGER trigger_create_credits AFTER INSERT ON public.users FOR EACH ROW EXECUTE FUNCTION public.create_credits_for_user();
 
 
