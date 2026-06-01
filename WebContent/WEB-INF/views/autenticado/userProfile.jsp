@@ -23,7 +23,7 @@
 
     <t:menu paginaAtiva="financial"/>
 
-    <main class="w-full flex justify-center px-4 sm:px-6 lg:px-8 py-10 lg:ml-[240px]">
+    <main class="flex-1 p-10">
 
         <div class="w-full max-w-6xl flex flex-col gap-6">
 

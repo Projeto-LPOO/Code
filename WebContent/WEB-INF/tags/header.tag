@@ -16,8 +16,10 @@
 
         <div class="ml-auto">
 
-            <a href="${pageContext.request.contextPath}/autenticado/profile?id=${user.id}"
+            <a href="${pageContext.request.contextPath}/autenticado/profile?id=${sessionScope.usuarioId}"
+
                class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-[#7c3aed] transition-colors">
+
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 
                     <circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/>
@@ -27,7 +29,7 @@
                     <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/>
 
                 </svg>
-                <span class="font-medium">Perfil</span>
+
             </a>
 
         </div>

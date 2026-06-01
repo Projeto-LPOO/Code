@@ -330,7 +330,7 @@
                 <input
                         type="hidden"
                         name="meetingId"
-                        value="${e.report.meetingReport.id}"
+                        value="${e.report.id}"
                 />
 
                 <button class="
@@ -364,7 +364,7 @@
                 <input
                         type="hidden"
                         name="meetingId"
-                        value="${e.report.meetingReport.id}"
+                        value="${e.report.id}"
                 />
 
                 <button class="
