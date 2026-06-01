@@ -15,7 +15,6 @@ public class BCryptPasswordHasher implements PasswordHasher{
         }
         return BCrypt.hashpw(password, BCrypt.gensalt(COST));
     }
-
     @Override
     public boolean verify(String password, String hashPassword) {
         if(password == null || hashPassword == null)

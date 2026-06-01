@@ -9,5 +9,5 @@ public class OnlineMeeting extends Meeting{
 
     @Override
     public String getMeetingType() { return "ONLINE"; }
-
+    
 }

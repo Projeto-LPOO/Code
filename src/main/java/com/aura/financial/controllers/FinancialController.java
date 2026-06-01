@@ -201,42 +201,33 @@ public class FinancialController extends BaseController {
 
         try {
 
-            Transaction transaction = new Transaction(account, creditPackage.getPrice(), TransactionType.BUY);
+            Transaction transaction = new BuyTransaction(account, creditPackage.getPrice());
 
             GateWay gateWay = new GateWay();
-
             GateWayResponse gateWayResponse = gateWay.validateTransaction(transaction);
 
             transaction.setExternalId(gateWayResponse.getId());
-
             transaction.setAccount(account);
 
-            if (gateWayResponse.getResult())
-            {
-                transaction.setStatus(
-                        TransactionStatus.COMPLETED
-                );
+            if (gateWayResponse.getResult()) {
+                transaction.setStatus(TransactionStatus.COMPLETED);
 
                 Credits credits = financialDao.findById(user.getId());
 
-                transaction.process(credits, creditPackage.getCredits());
+                transaction.process(credits, creditPackage.getCredits()); // chama credits.buy() automaticamente
 
                 financialDao.registerTransaction(transaction);
                 financialDao.updateCredits(credits);
 
                 response.sendRedirect(
-                        request.getContextPath()
-                                + "/autenticado/financial?success=true"
+                        request.getContextPath() + "/autenticado/financial?success=true"
                 );
-            }
-            else {
-
+            } else {
                 transaction.setStatus(TransactionStatus.FAILED);
                 financialDao.registerTransaction(transaction);
 
                 response.sendRedirect(
-                        request.getContextPath()
-                                + "/autenticado/financial?error=payment_failed"
+                        request.getContextPath() + "/autenticado/financial?error=payment_failed"
                 );
             }
 
@@ -347,45 +338,33 @@ public class FinancialController extends BaseController {
 
         try {
 
-            Transaction transaction = new Transaction(account, amountMoney, TransactionType.WITHDRAW);
+            Transaction transaction = new WithdrawTransaction(account, amountMoney);
 
             GateWay gateWay = new GateWay();
+            GateWayResponse gateWayResponse = gateWay.validateTransaction(transaction);
 
-            GateWayResponse gateWayResponse =
-                    gateWay.validateTransaction(transaction);
-
-            transaction.setExternalId(
-                    gateWayResponse.getId()
-            );
-
+            transaction.setExternalId(gateWayResponse.getId());
             transaction.setAccount(account);
 
-            if (gateWayResponse.getResult())
-            {
-                transaction.setStatus(
-                        TransactionStatus.COMPLETED
-                );
+            if (gateWayResponse.getResult()) {
+                transaction.setStatus(TransactionStatus.COMPLETED);
 
                 Credits credits = financialDao.findById(user.getId());
 
-                transaction.process(credits, amount);
+                transaction.process(credits, amount); // chama credits.withdraw() automaticamente
 
                 financialDao.registerTransaction(transaction);
-
                 financialDao.updateCredits(credits);
 
-                response.sendRedirect(request.getContextPath() + "/autenticado/financial?success=true"
+                response.sendRedirect(
+                        request.getContextPath() + "/autenticado/financial?success=true"
                 );
-            }
-            else {
-
+            } else {
                 transaction.setStatus(TransactionStatus.FAILED);
-
                 financialDao.registerTransaction(transaction);
 
                 response.sendRedirect(
-                        request.getContextPath()
-                                + "/autenticado/financial?error=payment_failed"
+                        request.getContextPath() + "/autenticado/financial?error=payment_failed"
                 );
             }
 

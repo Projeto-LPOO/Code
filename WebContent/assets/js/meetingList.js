@@ -1,4 +1,3 @@
-showTab('${empty activeTab ? "pendentes" : activeTab}');
 function showTab(name) {
     document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -16,8 +15,11 @@ function showTab(name) {
 // mantém o estado da aba ao voltar da ação
 (function () {
     const params = new URLSearchParams(window.location.search);
-    const tab = params.get('tab');
-    if (tab) {
+    const tab = params.get('tab') || 'pendentes';
+
+    if (document.getElementById('pane-' + tab)) {
         showTab(tab);
+    } else {
+        showTab('pendentes');
     }
 })();

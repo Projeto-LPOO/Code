@@ -38,7 +38,7 @@ public class MeetingListController extends BaseController {
         String activeTab = request.getParameter("tab");
 
         if (activeTab == null || activeTab.isBlank()) {
-            activeTab = "comprovacoesPendentes";
+            activeTab = "pendentes";
         }
 
         request.setAttribute("activeTab", activeTab);

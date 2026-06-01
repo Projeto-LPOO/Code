@@ -5,7 +5,6 @@ public class FaceToFaceMeeting extends Meeting {
     private String instructions;
     private Location location;
 
-
     public String getInstructions() {return instructions;}
     public void setInstructions(String instructions) {this.instructions = instructions;}
 

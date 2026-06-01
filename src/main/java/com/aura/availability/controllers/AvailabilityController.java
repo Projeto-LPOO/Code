@@ -47,7 +47,7 @@ public class AvailabilityController extends BaseController {
         LocalDate weekEnd = baseDate.plusDays(6);
 
         findAllAvailability(request, user.getId());
-        findMeetingsOfWeek(request, user.getId(), baseDate, weekEnd); // <-- novo
+        findMeetingsOfWeek(request, user.getId(), baseDate, weekEnd);
 
         forward(request, response, "autenticado/availability.jsp");
     }
