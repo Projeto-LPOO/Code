@@ -152,6 +152,20 @@
                                         </p>
                                     </c:if>
 
+                                        <%-- Link da plataforma (online) ou localização (presencial) --%>
+                                    <c:if test="${not empty linkMap[m.id]}">
+                                        <p class="text-xs text-gray-400 mb-3">
+                                            🔗 Plataforma:
+                                            <a href="${linkMap[m.id]}" target="_blank" rel="noopener noreferrer"
+                                               class="font-medium text-violet-600 hover:underline break-all">${linkMap[m.id]}</a>
+                                        </p>
+                                    </c:if>
+                                    <c:if test="${not empty locationMap[m.id]}">
+                                        <p class="text-xs text-gray-400 mb-3">
+                                            📍 Local: <span class="font-medium text-gray-600">${locationMap[m.id]}</span>
+                                        </p>
+                                    </c:if>
+
                                     <p class="text-xs mb-3">
                                         <span class="font-semibold px-2 py-0.5 rounded-full
                                             ${m.userRole == 'TEACHER' ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'}">
@@ -250,6 +264,20 @@
                                                     <c:otherwise>${m.durationMinutes} min</c:otherwise>
                                                 </c:choose>
                                             </span>
+                                        </p>
+                                    </c:if>
+
+                                        <%-- Link da plataforma (online) ou localização (presencial) --%>
+                                    <c:if test="${not empty linkMap[m.id]}">
+                                        <p class="text-xs text-gray-400 mb-3">
+                                            🔗 Plataforma:
+                                            <a href="${linkMap[m.id]}" target="_blank" rel="noopener noreferrer"
+                                               class="font-medium text-violet-600 hover:underline break-all">${linkMap[m.id]}</a>
+                                        </p>
+                                    </c:if>
+                                    <c:if test="${not empty locationMap[m.id]}">
+                                        <p class="text-xs text-gray-400 mb-3">
+                                            📍 Local: <span class="font-medium text-gray-600">${locationMap[m.id]}</span>
                                         </p>
                                     </c:if>
 
@@ -410,6 +438,20 @@
                                     <p class="text-xs text-gray-400 mb-3">
                                         Aluno: <span class="font-medium text-gray-600">${m.learner.name}</span>
                                     </p>
+
+                                    <%-- Link da plataforma (online) ou localização (presencial) --%>
+                                <c:if test="${not empty linkMap[m.id]}">
+                                    <p class="text-xs text-gray-400 mb-3">
+                                        🔗 Plataforma:
+                                        <a href="${linkMap[m.id]}" target="_blank" rel="noopener noreferrer"
+                                           class="font-medium text-violet-600 hover:underline break-all">${linkMap[m.id]}</a>
+                                    </p>
+                                </c:if>
+                                <c:if test="${not empty locationMap[m.id]}">
+                                    <p class="text-xs text-gray-400 mb-3">
+                                        📍 Local: <span class="font-medium text-gray-600">${locationMap[m.id]}</span>
+                                    </p>
+                                </c:if>
 
                                     <p class="text-xs mb-3">
                                         <span class="font-semibold px-2 py-0.5 rounded-full

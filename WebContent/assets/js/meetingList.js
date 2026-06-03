@@ -1,4 +1,3 @@
-showTab('${empty activeTab ? "pendentes" : activeTab}');
 function showTab(name) {
     document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -19,5 +18,7 @@ function showTab(name) {
     const tab = params.get('tab');
     if (tab) {
         showTab(tab);
+    } else {
+    showTab('${empty activeTab ? "pendentes" : activeTab}');
     }
 })();

@@ -473,7 +473,7 @@
 
         </div>
 
-        <!-- Sara -->
+        <!-- Sarah -->
         <div class="reveal rounded-3xl overflow-hidden shadow-sm"
              style="background:#f5f3ff; border:1px solid #ede9fe;">
 
@@ -490,7 +490,7 @@
         </span>
 
               <h3 class="font-serif text-2xl text-warm-dark">
-                Sara Moniky
+                Sarah Moniky
               </h3>
 
               <p class="text-warm-gray mt-4 text-sm leading-7">

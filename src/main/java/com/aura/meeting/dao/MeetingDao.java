@@ -20,9 +20,9 @@ import java.util.List;
 public class MeetingDao {
 
     public void register(Meeting meeting) {
-        // ALTERADO: adicionado duration_minutes na INSERT
-        String sqlMeeting = "INSERT INTO meetings(description, scheduled_at, meeting_type, status, category_id, duration_minutes)" +
-                "VALUES(?, ?, ?::meeting_type_enum, ?::meeting_status, ?, ?)";
+
+        String sqlMeeting = "INSERT INTO meetings(description, scheduled_at, meeting_type, status, category_id, duration_minutes, link_platform)" +
+                "VALUES(?, ?, ?::meeting_type_enum, ?::meeting_status, ?, ?, ?)";
         String sqlLocation = "INSERT INTO locations(city, neighborhood, street, house_number, reference_point)" +
                 "VALUES(?, ?, ?, ?, ?)";
         String sqlParticipantLearner = "INSERT INTO meeting_participants(meeting_id, user_id, role)" +
@@ -44,9 +44,15 @@ public class MeetingDao {
                         pstmt.setInt(5, meeting.getCategory().getId());
                     else
                         pstmt.setNull(5, Types.INTEGER);
-                    // NOVO: duração, padrão 60 se não informada
+                    // duração, padrão 60 se não informada
                     int dur = meeting.getDurationMinutes() > 0 ? meeting.getDurationMinutes() : 60;
                     pstmt.setInt(6, dur);
+                    //Salva link da meeting
+                    if (meeting instanceof OnlineMeeting om && om.getLinkPlataform() != null) {
+                        pstmt.setString(7, om.getLinkPlataform());
+                    } else {
+                        pstmt.setNull(7, Types.VARCHAR);
+                    }
                     pstmt.executeUpdate();
 
                     ResultSet rs = pstmt.getGeneratedKeys();
@@ -109,7 +115,6 @@ public class MeetingDao {
     public List<Meeting> findByUserId(int userId) {
         List<Meeting> meetings = new ArrayList<>();
 
-        // ALTERADO: inclui duration_minutes no SELECT
         String sql = "SELECT DISTINCT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
                 "c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
@@ -155,7 +160,7 @@ public class MeetingDao {
 
     public List<Meeting> findAll() {
         List<Meeting> meetings = new ArrayList<>();
-        // ALTERADO: inclui duration_minutes
+
         String sql = "SELECT DISTINCT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
                 "c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
@@ -196,7 +201,7 @@ public class MeetingDao {
     }
 
     public Meeting findById(int meetingId) {
-        // ALTERADO: inclui duration_minutes
+
         String sql = "SELECT DISTINCT m.*, c.id AS category_id, c.name AS category_name " +
                 "FROM meetings m " +
                 "LEFT JOIN categories c ON c.id = m.category_id " +
@@ -243,7 +248,8 @@ public class MeetingDao {
                     om.setDescription(rs.getString("description"));
                     om.setStatus(rs.getString("status"));
                     om.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
-                    om.setDurationMinutes(rs.getInt("duration_minutes")); // NOVO
+                    om.setDurationMinutes(rs.getInt("duration_minutes"));
+                    om.setLinkPlataform(rs.getString("link_platform"));
                     meeting = om;
                 }
 
@@ -675,11 +681,12 @@ public class MeetingDao {
     public List<Meeting> findByUserIdWithRole(int userId) {
         List<Meeting> meetings = new ArrayList<>();
 
-        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, " +
+        String sql = "SELECT m.id, m.description, m.scheduled_at, m.status, m.meeting_type, m.duration_minutes, m.link_platform, " +
                 "c.id AS category_id, c.name AS category_name, " +
                 "mp.role AS user_role, " +
                 "learner.id AS learner_id, learner.name AS learner_name, " +
-                "teacher.id AS teacher_id, teacher.name AS teacher_name " +
+                "teacher.id AS teacher_id, teacher.name AS teacher_name, " +
+                "loc.city, loc.neighborhood, loc.street, loc.house_number, loc.reference_point " +
                 "FROM meetings m " +
                 "JOIN meeting_participants mp ON mp.meeting_id = m.id AND mp.user_id = ? " +
                 "LEFT JOIN categories c ON c.id = m.category_id " +
@@ -687,6 +694,7 @@ public class MeetingDao {
                 "LEFT JOIN users learner ON learner.id = lmp.user_id " +
                 "LEFT JOIN meeting_participants tmp ON tmp.meeting_id = m.id AND tmp.role = 'TEACHER'::participant_role " +
                 "LEFT JOIN users teacher ON teacher.id = tmp.user_id " +
+                "LEFT JOIN locations loc ON loc.id = m.location_id " +
                 "ORDER BY mp.role DESC, m.scheduled_at DESC";
 
         try (Connection conn = dbFactory.getConnection();
@@ -705,6 +713,20 @@ public class MeetingDao {
                 meeting.setStatus(rs.getString("status"));
                 meeting.setDayTime(rs.getTimestamp("scheduled_at").toLocalDateTime());
                 meeting.setDurationMinutes(rs.getInt("duration_minutes"));
+                if (meeting instanceof OnlineMeeting om) {
+                    om.setLinkPlataform(rs.getString("link_platform"));
+                } else if (meeting instanceof FaceToFaceMeeting ftf) {
+                    String city = rs.getString("city");
+                    if (city != null) {
+                        Location loc = new Location();
+                        loc.setCity(city);
+                        loc.setNeighborhood(rs.getString("neighborhood"));
+                        loc.setStreet(rs.getString("street"));
+                        loc.setHouseNumber(rs.getInt("house_number"));
+                        loc.setReferencePoint(rs.getString("reference_point"));
+                        ftf.setLocation(loc);
+                    }
+                }
 
                 int categoryId = rs.getInt("category_id");
                 if (!rs.wasNull()) {

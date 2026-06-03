@@ -17,6 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.aura.meeting.model.FaceToFaceMeeting;
+import com.aura.meeting.model.Location;
+import com.aura.meeting.model.OnlineMeeting;
+
 @WebServlet("/autenticado/meeting")
 public class MeetingListController extends BaseController {
 
@@ -48,12 +52,15 @@ public class MeetingListController extends BaseController {
         Map<Integer, String> typeMap = new HashMap<>();
         Map<Integer, Boolean> feedbackDoneMap = new HashMap<>();
         Map<Integer, Boolean> reportDoneMap = new HashMap<>();
+        Map<Integer, String> linkMap = new HashMap<>();
+        Map<Integer, String> locationMap = new HashMap<>();
 
         for (Meeting m : meetings) {
-            boolean isDone     = "done".equalsIgnoreCase(m.getStatus());
+            boolean isDone = "done".equalsIgnoreCase(m.getStatus());
             boolean isReported = "reported".equalsIgnoreCase(m.getStatus());
 
             typeMap.put(m.getId(), m.getMeetingType());
+
             feedbackDoneMap.put(m.getId(),
                     "done".equalsIgnoreCase(m.getStatus())
                             && feedbackDao.hasFeedbackFromUser(m.getId(), loggedUser.getId())
@@ -62,9 +69,22 @@ public class MeetingListController extends BaseController {
             reportDoneMap.put(m.getId(),
                     (isDone || isReported) && reportDao.hasReportFromUser(m.getId(), loggedUser.getId())
             );
+
+            //mapa de link (online) e localização (presencial)
+            if (m instanceof OnlineMeeting om && om.getLinkPlataform() != null && !om.getLinkPlataform().isBlank()) {
+                linkMap.put(m.getId(), om.getLinkPlataform());
+            } else if (m instanceof FaceToFaceMeeting ftf && ftf.getLocation() != null) {
+                Location loc = ftf.getLocation();
+                String locStr = loc.getStreet() + ", " + loc.getHouseNumber()
+                        + " — " + loc.getNeighborhood() + ", " + loc.getCity();
+                if (loc.getReferencePoint() != null && !loc.getReferencePoint().isBlank()) {
+                    locStr += " (" + loc.getReferencePoint() + ")";
+                }
+                locationMap.put(m.getId(), locStr);
+            }
         }
 
-        // move mensagens de sessão para o request (exibe uma única vez)
+// mover mensagens de sessão para request — sem alteração
         for (String key : new String[]{"successMsg", "erroMsg", "statusError"}) {
             Object val = session != null ? session.getAttribute(key) : null;
             if (val != null) {
@@ -72,11 +92,15 @@ public class MeetingListController extends BaseController {
                 session.removeAttribute(key);
             }
         }
+
         request.setAttribute("noShowReports", meetingController.noShowReports(loggedUser.getId()));
         request.setAttribute("meetings", meetings);
+        request.setAttribute("tipoMap", typeMap);
         request.setAttribute("typeMap", typeMap);
         request.setAttribute("feedbackDoneMap", feedbackDoneMap);
         request.setAttribute("reportDoneMap", reportDoneMap);
+        request.setAttribute("linkMap", linkMap);
+        request.setAttribute("locationMap", locationMap);
 
         forward(request, response, "autenticado/meetingList.jsp");
     }
