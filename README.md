@@ -1,6 +1,39 @@
-# 📚 Infinity Aura
+# 📚 Aura
 > Sistema desenvolvido para a disciplina de **Linguagem e Programação Orientada a Objetos** — IF Baiano.
 ---
+
+## Como compilar
+```
+1. Dê git clone a partir de SSh ou link do repositório
+2. git switch dev
+3. docker compose down -v
+4. docker compose up -d --build
+5. Acesse: http://localhost:8080/aura
+```
+
+## Primeiro Acesso
+```
+1. Logar com usuário comercial, ex: bruno@gmail.com   // senha: 123456
+                                    xiomara@gmail.com // senha: 123456
+
+2. Logar com usuário admin: alice@gmail.com // senha: 123456
+```
+
+## Acesso ao banco de dados (Pg Admin)
+```
+1. acesse http://localhost:5080 ou http://localhost:5080/login?next=/
+2. Login: admin@admin.com
+3. Senha: admin
+4. No painel, adicione um server em "new server"
+5. Na aba general, defina name = aura-db
+
+6. na aba connection, defina: Host name/ adress = aura-db
+                              Port = 5432
+                              Maintenence database = postgres
+                              Username = postgres
+                              Password = dsoliveira06
+```
+
 ## 🌿 Estrutura de Branches
 Este repositório adota uma estratégia de branches baseada em **GitFlow simplificado**, garantindo organização, rastreabilidade e estabilidade em cada etapa do desenvolvimento.
 ```
