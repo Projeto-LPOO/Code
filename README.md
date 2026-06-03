@@ -123,12 +123,16 @@ PGADMIN_HOST_PORT=5080
 
 ```bash
 # 1. Crie o .env conforme o modelo acima
+rode: 'nano .env' em seu terminal
 
 # 2. Suba o ambiente
-docker compose up -d
+docker compose up -d --build
 
 # 3. Acesse a aplicação
 http://localhost:8080/aura
+
+# 4. Para o Pg Admin
+http://localhost:5080
 ```
 
 Na primeira subida o Docker irá:
