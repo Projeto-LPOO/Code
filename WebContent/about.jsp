@@ -437,37 +437,77 @@
         </p>
       </div>
 
-      <!-- Orientador -->
-      <div class="reveal mb-16 rounded-3xl overflow-hidden shadow-sm"
-           style="background:#f5f3ff; border:1px solid #ede9fe;">
+      <!-- Orientadores -->
+      <div class="grid lg:grid-cols-2 gap-8 mb-16">
 
-        <div class="grid lg:grid-cols-[380px_1fr]">
+        <!-- Woquiton -->
+        <div class="reveal rounded-3xl overflow-hidden shadow-sm"
+             style="background:#f5f3ff; border:1px solid #ede9fe;">
 
-          <img src="${pageContext.request.contextPath}/assets/img/team/woquiton.enc"
-               alt="Prof. Woquiton Fernandes"
-               class="w-full h-[420px] object-cover">
+          <div class="grid md:grid-cols-[220px_1fr] h-full">
 
-          <div class="p-12 flex flex-col justify-center">
+            <img src="${pageContext.request.contextPath}/assets/img/team/woquiton.enc"
+                 alt="Prof. Woquiton Fernandes"
+                 class="w-full h-[280px] md:h-full object-cover object-top">
 
-      <span class="label w-fit mb-5">
-        Orientador
-      </span>
+            <div class="p-6 flex flex-col justify-center">
 
-            <h3 class="font-serif text-4xl text-warm-dark">
-              Woquiton Fernandes
-            </h3>
+        <span class="label w-fit mb-4">
+          Orientador de Programação
+        </span>
 
-            <p class="text-warm-gray mt-5 text-lg leading-9 max-w-3xl">
-              Professor responsável pela disciplina de Linguagem de Programação
-              Orientada a Objetos (LPOO) e orientador do desenvolvimento do
-              Aura, acompanhando a equipe desde a concepção da ideia até a
-              implementação final da plataforma.
-            </p>
+              <h3 class="font-serif text-2xl text-warm-dark">
+                Woquiton Fernandes
+              </h3>
+
+              <p class="text-warm-gray mt-4 text-sm leading-7">
+                Professor responsável pela disciplina de Linguagem de Programação
+                Orientada a Objetos (LPOO) e orientador do desenvolvimento do Aura,
+                acompanhando a equipe desde a concepção da ideia até a implementação
+                final da plataforma.
+              </p>
+
+            </div>
 
           </div>
 
         </div>
+
+        <!-- Sara -->
+        <div class="reveal rounded-3xl overflow-hidden shadow-sm"
+             style="background:#f5f3ff; border:1px solid #ede9fe;">
+
+          <div class="grid md:grid-cols-[220px_1fr] h-full">
+
+            <img src="${pageContext.request.contextPath}/assets/img/team/moniky.jpeg"
+                 alt="Profª Sara Moniky"
+                 class="w-full h-[280px] md:h-full object-cover object-top">
+
+            <div class="p-6 flex flex-col justify-center">
+
+        <span class="label w-fit mb-4">
+          Orientadora de Análise
+        </span>
+
+              <h3 class="font-serif text-2xl text-warm-dark">
+                Sara Moniky
+              </h3>
+
+              <p class="text-warm-gray mt-4 text-sm leading-7">
+                Professora orientadora do projeto Aura, contribuindo no acompanhamento
+                acadêmico, validação das decisões do sistema e apoio à equipe durante
+                o desenvolvimento da plataforma.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
+
 
       <!-- Integrantes -->
       <%
