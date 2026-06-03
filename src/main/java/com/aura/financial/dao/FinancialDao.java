@@ -219,7 +219,6 @@ public class FinancialDao {
                 Credits learnerCredits = findByIdForUpdate(conn, learnerId);
                 Credits teacherCredits = findByIdForUpdate(conn, teacherId);
 
-
                 BigDecimal amountBD = BigDecimal.valueOf(amount);
                 if (isDone) {
                     if (learnerCredits.getBalance().compareTo(amountBD) < 0) {

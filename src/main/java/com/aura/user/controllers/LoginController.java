@@ -56,23 +56,19 @@ public class LoginController extends HttpServlet {
             Credits creditsUser = financialDao.findById(user.getId());
 
             if (creditsUser != null) {
-
+                session.setAttribute("isCommercial", user instanceof CommercialUser);
                 session.setAttribute("creditsBalance", creditsUser.getBalance());
             }
-
             response.sendRedirect(request.getContextPath() + "/autenticado/home");
 
             return;
         }
 
         if (user instanceof Admin) {
-
             response.sendRedirect(request.getContextPath() + "/autenticado/admin");
 
             return;
         }
-
-
         response.sendRedirect(request.getContextPath() + "/");
     }
 

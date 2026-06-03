@@ -16,6 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 </head>
+
 <body class="bg-white min-h-screen text-gray-800 flex flex-col">
 <t:header paginaAtiva="financial" />
 

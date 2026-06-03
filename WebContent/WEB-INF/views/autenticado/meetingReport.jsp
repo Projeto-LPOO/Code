@@ -36,7 +36,51 @@
           <label for="reason" class="block text-sm font-semibold text-gray-700 mb-2">
             Motivo *
           </label>
-          <textarea name="reason" id="reason" rows="5" required
+          <div class="flex flex-col gap-3">
+
+            <label class="cursor-pointer">
+              <input type="radio" name="category"
+                     value="NAO_COMPARECEU"
+                     class="peer hidden" required>
+
+              <div class="border rounded-lg p-4 transition
+                            peer-checked:bg-red-500
+                            peer-checked:text-white
+                            peer-checked:border-red-500
+                            hover:border-red-300">
+                NÃO COMPARECEU
+              </div>
+            </label>
+
+            <label class="cursor-pointer">
+              <input type="radio" name="category"
+                     value="ASSEDIO"
+                     class="peer hidden">
+
+              <div class="border rounded-lg p-4 transition
+                            peer-checked:bg-red-500
+                            peer-checked:text-white
+                            peer-checked:border-red-500
+                            hover:border-red-300">
+                ASSÉDIO
+              </div>
+            </label>
+
+            <label class="cursor-pointer">
+              <input type="radio" name="category"
+                     value="VIOLENCIA"
+                     class="peer hidden">
+
+              <div class="border rounded-lg p-4 transition
+                            peer-checked:bg-red-500
+                            peer-checked:text-white
+                            peer-checked:border-red-500
+                            hover:border-red-300">
+                VIOLÊNCIA
+              </div>
+            </label>
+          </div>
+          <textarea name="description" id="description" rows="5"
                     placeholder="Descreva o que aconteceu de errado neste meeting..."
                     class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-red-400"></textarea>
         </div>

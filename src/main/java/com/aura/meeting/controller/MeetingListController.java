@@ -11,20 +11,21 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.aura.financial.dao.FinancialDao;
-import com.aura.financial.models.Credits;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.aura.meeting.model.FaceToFaceMeeting;
+import com.aura.meeting.model.Location;
+import com.aura.meeting.model.OnlineMeeting;
+
 @WebServlet("/autenticado/meeting")
 public class MeetingListController extends BaseController {
 
     private final MeetingController meetingController = new MeetingController();
     private final FeedbackDao feedbackDao = new FeedbackDao();
-    private final FinancialDao financialDao = new FinancialDao();
     private final ReportDao reportDao = new ReportDao();
 
     @Override
@@ -38,20 +39,28 @@ public class MeetingListController extends BaseController {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        String activeTab = request.getParameter("tab");
 
+        if (activeTab == null || activeTab.isBlank()) {
+            activeTab = "comprovacoesPendentes";
+        }
+
+        request.setAttribute("activeTab", activeTab);
+        
         List<Meeting> meetings = meetingController.findByUserIdWithRole(loggedUser.getId());
 
         Map<Integer, String> typeMap = new HashMap<>();
         Map<Integer, Boolean> feedbackDoneMap = new HashMap<>();
         Map<Integer, Boolean> reportDoneMap = new HashMap<>();
-        Map<Integer, Boolean> cancelDeadlineMap = new HashMap<>();
-        Map<Integer, String> reporterRoleMap = new HashMap<>();
+        Map<Integer, String> linkMap = new HashMap<>();
+        Map<Integer, String> locationMap = new HashMap<>();
 
         for (Meeting m : meetings) {
-            boolean isDone     = "done".equalsIgnoreCase(m.getStatus());
+            boolean isDone = "done".equalsIgnoreCase(m.getStatus());
             boolean isReported = "reported".equalsIgnoreCase(m.getStatus());
 
             typeMap.put(m.getId(), m.getMeetingType());
+
             feedbackDoneMap.put(m.getId(),
                     "done".equalsIgnoreCase(m.getStatus())
                             && feedbackDao.hasFeedbackFromUser(m.getId(), loggedUser.getId())
@@ -60,22 +69,22 @@ public class MeetingListController extends BaseController {
             reportDoneMap.put(m.getId(),
                     (isDone || isReported) && reportDao.hasReportFromUser(m.getId(), loggedUser.getId())
             );
-            cancelDeadlineMap.put(m.getId(), m.isCancellableWithRefund());
 
-            if (isReported) {
-                // from_user_id já está em reportDoneMap como boolean — precisamos de quem reportou
-                // Buscar via ReportDao quem reportou este meeting
-                // Adicionar método findReporterUserId ao ReportDao (ver abaixo)
-                int reporterUserId = reportDao.findReporterUserId(m.getId());
-                if (reporterUserId == m.getTeacher().getId()) {
-                    reporterRoleMap.put(m.getId(), "TEACHER");
-                } else {
-                    reporterRoleMap.put(m.getId(), "LEARNER");
+            //mapa de link (online) e localização (presencial)
+            if (m instanceof OnlineMeeting om && om.getLinkPlataform() != null && !om.getLinkPlataform().isBlank()) {
+                linkMap.put(m.getId(), om.getLinkPlataform());
+            } else if (m instanceof FaceToFaceMeeting ftf && ftf.getLocation() != null) {
+                Location loc = ftf.getLocation();
+                String locStr = loc.getStreet() + ", " + loc.getHouseNumber()
+                        + " — " + loc.getNeighborhood() + ", " + loc.getCity();
+                if (loc.getReferencePoint() != null && !loc.getReferencePoint().isBlank()) {
+                    locStr += " (" + loc.getReferencePoint() + ")";
                 }
+                locationMap.put(m.getId(), locStr);
             }
         }
 
-        // move mensagens de sessão para o request (exibe uma única vez)
+// mover mensagens de sessão para request — sem alteração
         for (String key : new String[]{"successMsg", "erroMsg", "statusError"}) {
             Object val = session != null ? session.getAttribute(key) : null;
             if (val != null) {
@@ -84,22 +93,14 @@ public class MeetingListController extends BaseController {
             }
         }
 
-        // mostra balanço atual
-        try {
-            Credits credits = financialDao.findById(loggedUser.getId());
-            int balance = (credits != null && credits.getBalance() != null)
-                    ? credits.getBalance().intValue() : 0;
-            request.setAttribute("userCreditsBalance", balance);
-        } catch (Exception ignored) {
-            request.setAttribute("userCreditsBalance", 0);
-        }
-
+        request.setAttribute("noShowReports", meetingController.noShowReports(loggedUser.getId()));
         request.setAttribute("meetings", meetings);
+        request.setAttribute("tipoMap", typeMap);
         request.setAttribute("typeMap", typeMap);
         request.setAttribute("feedbackDoneMap", feedbackDoneMap);
         request.setAttribute("reportDoneMap", reportDoneMap);
-        request.setAttribute("cancelDeadlineMap", cancelDeadlineMap);
-        request.setAttribute("reporterRoleMap", reporterRoleMap);
+        request.setAttribute("linkMap", linkMap);
+        request.setAttribute("locationMap", locationMap);
 
         forward(request, response, "autenticado/meetingList.jsp");
     }

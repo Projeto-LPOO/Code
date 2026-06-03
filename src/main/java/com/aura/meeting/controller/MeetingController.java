@@ -4,24 +4,24 @@ import com.aura.availability.dao.AvailabilityDao;
 import com.aura.availability.models.Availability;
 import com.aura.financial.dao.FinancialDao;
 import com.aura.meeting.dao.MeetingDao;
-import com.aura.meeting.model.FaceToFaceMeeting;
-import com.aura.meeting.model.Location;
-import com.aura.meeting.model.Meeting;
+import com.aura.meeting.dao.ReportDao;
+import com.aura.meeting.model.*;
 import jakarta.servlet.annotation.WebServlet;
 import com.aura.financial.models.Credits;
 import java.math.BigDecimal;
 
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @WebServlet
 public class MeetingController {
 
     private final MeetingDao meetingDao = new MeetingDao();
+    private final ReportDao reportDao =  new ReportDao();
     private AvailabilityDao availabilityDao = new AvailabilityDao();
     private final FinancialDao financialDao = new FinancialDao();
-
 
     public void register(Meeting meeting) {
         if (meeting.getDescription() == null || meeting.getDescription().trim().isEmpty())
@@ -179,5 +179,21 @@ public class MeetingController {
             throw new IllegalArgumentException("ID de usuário inválido.");
         return meetingDao.findByUserIdWithRole(userId);
     }
+
+    public List<MeetingReport> noShowReports(int id)
+    {
+        List<MeetingReport> meetingsReport = reportDao.findAllReportsByUser(id);
+
+        Map<ReportCategory, List<MeetingReport>> allReports =
+                meetingsReport.stream()
+                        .collect(Collectors.groupingBy(MeetingReport::getCategory));
+
+        return allReports
+                .getOrDefault(ReportCategory.NAO_COMPARECEU, new ArrayList<>())
+                .stream()
+                .filter(report -> !report.getStatus())
+                .collect(Collectors.toList());
+    }
+
 
 }

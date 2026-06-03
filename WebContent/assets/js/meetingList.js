@@ -18,5 +18,7 @@ function showTab(name) {
     const tab = params.get('tab');
     if (tab) {
         showTab(tab);
+    } else {
+    showTab('${empty activeTab ? "pendentes" : activeTab}');
     }
 })();

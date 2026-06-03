@@ -7,136 +7,208 @@
 <%@ taglib prefix="t"
            tagdir="/WEB-INF/tags" %>
 
-<html>
+<html lang="pt-BR">
 
 <head>
 
-    <title>Dashboard Admin</title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard Administrativo</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 </head>
 
-<body class="bg-white min-h-screen text-gray-800 flex flex-col">
+<body class="bg-gray-50 min-h-screen text-gray-800 flex flex-col">
 
-<t:header paginaAtiva="dashboard" />
+<t:header paginaAtiva="dashboard"/>
 
 <div class="flex flex-1">
 
-    <t:menuAdmin paginaAtiva="dashboard" />
+    <t:menuAdmin paginaAtiva="dashboard"/>
 
-    <main class="flex-1 p-10 space-y-8">
+    <main class="flex-1 p-8 space-y-8 overflow-hidden">
 
         <!-- HEADER -->
-        <div>
+        <section class="space-y-2">
 
-            <h1 class="text-3xl font-bold">
+            <h1 class="text-3xl font-bold text-gray-900">
                 Dashboard Administrativo
             </h1>
 
-            <p class="text-gray-500 text-sm mt-1">
-                Gerencie reportações realizadas pelos usuários
+            <p class="text-gray-500">
+                Gerencie denúncias e evidências enviadas pelos usuários da plataforma.
             </p>
 
-        </div>
+        </section>
 
         <!-- MÉTRICAS -->
-        <div class="grid grid-cols-4 gap-6">
+        <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
 
-            <!-- TOTAL -->
-            <div class="bg-[#ededed] p-6 rounded-xl shadow-sm">
+            <!-- TOTAL REPORTS -->
+            <div class="
+                bg-white
+                border
+                border-gray-200
+                rounded-2xl
+                p-6
+                shadow-sm
+            ">
 
                 <p class="text-sm text-gray-500">
-                    Total de reportações
+                    Total de denúncias
                 </p>
 
-                <h2 class="text-3xl font-bold text-[#8324a8] mt-2">
-                    ${reportStats.total}
+                <h2 class="text-3xl font-bold text-[#8324a8] mt-3">
+                    ${reportStats.totalReports}
                 </h2>
 
-                <p class="text-xs text-gray-400 mt-2">
+                <p class="text-xs text-gray-400 mt-3">
                     Todas as denúncias registradas
                 </p>
 
             </div>
 
+            <!-- TOTAL EVIDÊNCIAS -->
+            <div class="
+                bg-white
+                border
+                border-gray-200
+                rounded-2xl
+                p-6
+                shadow-sm
+            ">
+
+                <p class="text-sm text-gray-500">
+                    Total de evidências
+                </p>
+
+                <h2 class="text-3xl font-bold text-indigo-600 mt-3">
+                    ${reportStats.totalEvidences}
+                </h2>
+
+                <p class="text-xs text-gray-400 mt-3">
+                    Evidências anexadas às denúncias
+                </p>
+
+            </div>
+
             <!-- PENDENTES -->
-            <div class="border p-6 rounded-xl shadow-sm bg-yellow-50 border-yellow-200">
+            <div class="
+                bg-yellow-50
+                border
+                border-yellow-200
+                rounded-2xl
+                p-6
+                shadow-sm
+            ">
 
                 <p class="text-sm text-yellow-700">
                     Pendentes
                 </p>
 
-                <h2 class="text-3xl font-bold text-yellow-600 mt-2">
+                <h2 class="text-3xl font-bold text-yellow-600 mt-3">
                     ${reportStats.pendentes}
                 </h2>
 
-                <p class="text-xs text-yellow-700 mt-2">
-                    Aguardando análise
+                <p class="text-xs text-yellow-700 mt-3">
+                    Aguardando análise administrativa
                 </p>
 
             </div>
 
-            <!-- EM ANÁLISE -->
-            <div class="border p-6 rounded-xl shadow-sm bg-blue-50 border-blue-200">
-
-                <p class="text-sm text-blue-700">
-                    Em análise
-                </p>
-
-                <h2 class="text-3xl font-bold text-blue-600 mt-2">
-                    ${reportStats.emAnalise}
-                </h2>
-
-                <p class="text-xs text-blue-700 mt-2">
-                    Casos sendo avaliados
-                </p>
-
-            </div>
-
-            <!-- RESOLVIDOS -->
-            <div class="border p-6 rounded-xl shadow-sm bg-green-50 border-green-200">
+            <!-- ACEITAS -->
+            <div class="
+                bg-green-50
+                border
+                border-green-200
+                rounded-2xl
+                p-6
+                shadow-sm
+            ">
 
                 <p class="text-sm text-green-700">
-                    Resolvidos
+                    Evidências aceitas
                 </p>
 
-                <h2 class="text-3xl font-bold text-green-600 mt-2">
+                <h2 class="text-3xl font-bold text-green-600 mt-3">
                     ${reportStats.resolvidos}
                 </h2>
 
-                <p class="text-xs text-green-700 mt-2">
-                    Casos concluídos
+                <p class="text-xs text-green-700 mt-3">
+                    Evidências aprovadas
                 </p>
 
             </div>
 
-        </div>
+            <!-- RECUSADAS -->
+            <div class="
+                bg-red-50
+                border
+                border-red-200
+                rounded-2xl
+                p-6
+                shadow-sm
+            ">
 
-        <!-- TABELA -->
-        <section class="border rounded-2xl overflow-hidden shadow-sm bg-white">
+                <p class="text-sm text-red-700">
+                    Evidências recusadas
+                </p>
 
-            <!-- HEADER DA TABELA -->
-            <div class="p-6 border-b">
-
-                <h2 class="text-xl font-semibold">
-                    Meetings reportados
+                <h2 class="text-3xl font-bold text-red-600 mt-3">
+                    ${reportStats.recusados}
                 </h2>
 
-                <p class="text-sm text-gray-500 mt-1">
-                    Lista completa de denúncias registradas na plataforma
+                <p class="text-xs text-red-700 mt-3">
+                    Evidências rejeitadas
                 </p>
+
+            </div>
+
+        </section>
+
+        <!-- TABELA -->
+        <section class="
+            bg-white
+            border
+            border-gray-200
+            rounded-2xl
+            shadow-sm
+            overflow-hidden
+        ">
+
+            <!-- HEADER -->
+            <div class="p-6 border-b border-gray-100">
+
+                <div class="flex items-center justify-between">
+
+                    <div>
+
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            Denúncias registradas
+                        </h2>
+
+                        <p class="text-sm text-gray-500 mt-1">
+                            Lista completa das denúncias realizadas pelos usuários
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
 
             <!-- TABLE -->
             <div class="overflow-x-auto">
 
-                <table class="w-full">
+                <table class="w-full min-w-[1200px]">
 
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-50 border-b border-gray-100">
 
-                    <tr class="text-left text-gray-600 text-sm">
+                    <tr class="text-left text-sm text-gray-600">
 
                         <th class="px-6 py-4 font-semibold">
                             ID
@@ -155,11 +227,11 @@
                         </th>
 
                         <th class="px-6 py-4 font-semibold">
-                            Status
+                            Categoria
                         </th>
 
                         <th class="px-6 py-4 font-semibold">
-                            Motivo
+                            Descrição
                         </th>
 
                     </tr>
@@ -171,7 +243,7 @@
                     <c:forEach items="${meetingReportList}"
                                var="report">
 
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="hover:bg-gray-50 transition-colors">
 
                             <!-- ID -->
                             <td class="px-6 py-5 font-semibold text-gray-800">
@@ -181,9 +253,9 @@
                             <!-- ALUNO -->
                             <td class="px-6 py-5">
 
-                                <div>
+                                <div class="space-y-1">
 
-                                    <p class="font-medium">
+                                    <p class="font-medium text-gray-900">
                                             ${report.meetingReport.learner.name}
                                     </p>
 
@@ -198,9 +270,9 @@
                             <!-- PROFESSOR -->
                             <td class="px-6 py-5">
 
-                                <div>
+                                <div class="space-y-1">
 
-                                    <p class="font-medium">
+                                    <p class="font-medium text-gray-900">
                                             ${report.meetingReport.teacher.name}
                                     </p>
 
@@ -215,9 +287,9 @@
                             <!-- REPORTADO POR -->
                             <td class="px-6 py-5">
 
-                                <div>
+                                <div class="space-y-1">
 
-                                    <p class="font-medium">
+                                    <p class="font-medium text-gray-900">
                                             ${report.fromUser.name}
                                     </p>
 
@@ -228,90 +300,60 @@
                                 </div>
 
                             </td>
-
-                            <!-- STATUS -->
+                            
+                            <!-- CATEGORIA -->
                             <td class="px-6 py-5">
 
-                                <c:choose>
-
-                                    <c:when test="${report.status == 'PENDENTE'}">
-
-                                        <span class="
-                                            inline-flex
-                                            items-center
-                                            px-3
-                                            py-1
-                                            rounded-full
-                                            text-xs
-                                            font-medium
-                                            bg-yellow-100
-                                            text-yellow-700
-                                        ">
-                                            Pendente
-                                        </span>
-
-                                    </c:when>
-
-                                    <c:when test="${report.status == 'EM_ANALISE'}">
-
-                                        <span class="
-                                            inline-flex
-                                            items-center
-                                            px-3
-                                            py-1
-                                            rounded-full
-                                            text-xs
-                                            font-medium
-                                            bg-blue-100
-                                            text-blue-700
-                                        ">
-                                            Em análise
-                                        </span>
-
-                                    </c:when>
-
-                                    <c:when test="${report.status == 'RESOLVIDO'}">
-
-                                        <span class="
-                                            inline-flex
-                                            items-center
-                                            px-3
-                                            py-1
-                                            rounded-full
-                                            text-xs
-                                            font-medium
-                                            bg-green-100
-                                            text-green-700
-                                        ">
-                                            Resolvido
-                                        </span>
-
-                                    </c:when>
-
-                                </c:choose>
+                                <span class="
+                                    inline-flex
+                                    items-center
+                                    rounded-lg
+                                    bg-gray-100
+                                    text-gray-700
+                                    px-3
+                                    py-1
+                                    text-xs
+                                    font-medium
+                                ">
+                                        ${report.category}
+                                </span>
 
                             </td>
 
-                            <!-- MOTIVO -->
-                            <td class="px-6 py-5">
+                            <!-- DESCRIÇÃO -->
+                            <td class="
+                                px-6
+                                py-5
+                                max-w-lg
+                                break-words
+                            ">
 
-                                <div class="max-w-md">
+                                <p class="text-sm text-gray-700 leading-relaxed">
+                                        ${report.description}
+                                </p>
 
-                                    <span class="
-                                        inline-block
-                                        bg-red-100
-                                        text-red-700
-                                        text-xs
-                                        px-3
-                                        py-1
-                                        rounded-full
-                                        mb-2
-                                    ">
-                                        Reportação
-                                    </span>
+                            </td>
 
-                                    <p class="text-sm text-gray-700 leading-relaxed">
-                                            ${report.reason}
+                        </tr>
+
+                    </c:forEach>
+
+                    <!-- EMPTY STATE -->
+                    <c:if test="${empty meetingReportList}">
+
+                        <tr>
+
+                            <td colspan="7"
+                                class="px-6 py-16 text-center">
+
+                                <div class="space-y-2">
+
+                                    <h3 class="text-lg font-semibold text-gray-700">
+                                        Nenhuma denúncia encontrada
+                                    </h3>
+
+                                    <p class="text-sm text-gray-500">
+                                        Ainda não existem denúncias registradas na plataforma.
                                     </p>
 
                                 </div>
@@ -320,7 +362,7 @@
 
                         </tr>
 
-                    </c:forEach>
+                    </c:if>
 
                     </tbody>
 
@@ -337,4 +379,3 @@
 </body>
 
 </html>
-```

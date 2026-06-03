@@ -1,160 +1,61 @@
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>${user.name} | Infinity Aura</title>
-
+    <title>${not empty profile.name ? profile.name : 'Meu Perfil'} | Infinity Aura</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
 </head>
 
 <body class="bg-[#f5f7fb] min-h-screen text-slate-800 flex flex-col">
 
-<t:header paginaAtiva="financial"/>
+<t:header paginaAtiva="profile"/>
+
+<div id="toastNotification" class="fixed top-5 right-5 z-50 transform translate-y-[-20px] opacity-0 pointer-events-none transition-all duration-300 ease-out px-5 py-3.5 rounded-xl shadow-lg font-semibold text-sm flex items-center gap-2">
+    <span id="toastIcon"></span>
+    <span id="toastMessage"></span>
+</div>
 
 <div class="flex flex-1">
 
-    <t:menu paginaAtiva="financial"/>
+    <t:menu paginaAtiva="profile"/>
 
     <main class="flex-1 p-10">
 
-        <div class="w-full max-w-6xl flex flex-col gap-6">
+        <div class="w-full  flex flex-col gap-6">
 
-            <c:if test="${empty user}">
+            <section class="bg-white rounded-3xl p-6 border border-slate-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
 
-                <div class="min-h-[60vh] flex flex-col items-center justify-center gap-5">
+                    <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                        <div class="w-20 h-20 rounded-2xl bg-[#6d28d9] flex items-center justify-center text-white text-3xl font-black shadow-md">
+                            <c:out value="${not empty profile.name ? profile.name.substring(0,1).toUpperCase() : 'U'}" />
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-center sm:justify-start gap-2">
+                                <h1 class="text-2xl font-bold text-slate-900">${not empty profile.name ? profile.name : 'Nome não informado'}</h1>
+                            </div>
+                            <p class="text-sm text-slate-400 mt-1">${not empty profile.email ? profile.email : 'Email não cadastrado'}</p>
 
-                    <svg class="w-[70px] h-[70px] opacity-30"
-                         fill="none"
-                         stroke="currentColor"
-                         stroke-width="1.5"
-                         viewBox="0 0 24 24">
+                            <p class="text-sm text-violet-600 font-medium mt-0.5">
+                                ⭐ ${not empty averageRating ? averageRating : '0.0'} (${not empty totalReviews ? totalReviews : '0'} avaliações)
+                            </p>
+                        </div>
+                    </div>
 
-                        <circle cx="12" cy="8" r="4"/>
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-
-                    </svg>
-
-                    <h2 class="text-3xl font-black">
-                        Usuário não encontrado
-                    </h2>
-
-                    <a href="${pageContext.request.contextPath}/autenticado/users"
-                       class="text-violet-700 font-semibold hover:underline">
-
-                        Voltar
-
-                    </a>
+                    <div class="flex items-center gap-3 w-full sm:w-auto justify-center">
+                        </a>
+                        <button form="profileForm" type="submit" class="bg-[#6d28d9] hover:bg-violet-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer">
+                            Salvar alterações
+                        </button>
+                    </div>
 
                 </div>
-
-            </c:if>
-
-            <c:if test="${not empty user}">
-
-                <!-- BREADCRUMB -->
-                <nav class="flex items-center gap-2 text-sm text-slate-400">
-
-                    <a href="${pageContext.request.contextPath}/autenticado/users"
-                       class="hover:text-slate-600 transition">
-
-                        Usuários
-
-                    </a>
-
-                    <span>/</span>
-
-                    <span class="text-slate-600 font-semibold">
-                            ${user.name}
-                    </span>
-
-                </nav>
-
-                <!-- PROFILE -->
-                <section class="bg-white rounded-[28px]
-                                overflow-hidden
-                                border border-slate-200
-                                shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
-
-                    <!-- BANNER -->
-                    <div class="h-[170px]
-                                bg-gradient-to-br
-                                from-violet-800
-                                via-violet-600
-                                to-indigo-600">
-
-                    </div>
-
-                    <div class="relative px-5 sm:px-7 lg:px-9 pb-9">
-
-                        <!-- AVATAR -->
-                        <div class="w-[110px] h-[110px]
-                                    rounded-[28px]
-                                    bg-gradient-to-br
-                                    from-violet-600
-                                    to-violet-800
-                                    border-[6px] border-white
-                                    flex items-center justify-center
-                                    text-white text-5xl font-black
-                                    shadow-[0_12px_30px_rgba(109,40,217,0.30)]
-                                    -mt-[55px]
-                                    relative z-20">
-
-                                ${user.name.substring(0,1).toUpperCase()}
-
-                        </div>
-
-                        <!-- HEADER -->
-                        <div class="mt-6">
-
-                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-
-                                <!-- ESQUERDA -->
-                                <div>
-
-                                    <h1 class="text-3xl sm:text-4xl font-black">
-                                            ${user.name}
-                                    </h1>
-
-                                    <p class="text-sm text-violet-600 font-medium mt-0.5">
-                                        ⭐ ${not empty averageRating ? averageRating : '0.0'} (${not empty totalReviews ? totalReviews : '0'} avaliações)
-                                    </p>
-
-                                </div>
-
-                                <!-- DIREITA -->
-                                <a href="${pageContext.request.contextPath}/autenticado/meeting/register?teacherId=${user.id}"
-                                   class="inline-flex items-center justify-center
-                                          bg-gradient-to-br
-                                          from-violet-600
-                                          to-violet-800
-                                          text-white
-                                          px-7 py-3.5
-                                          rounded-2xl
-                                          font-bold
-                                          whitespace-nowrap
-                                          shadow-[0_10px_24px_rgba(109,40,217,0.22)]
-                                          hover:-translate-y-0.5
-                                          transition">
-
-                                    Solicitar Encontro
-
-                                </a>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
+            </section>
 
             <div class="flex border-b border-slate-200 bg-white rounded-t-2xl">
                 <button type="button" id="profileTab" class="flex-1 py-4 text-center text-sm font-semibold border-b-2 border-violet-700 text-violet-700 transition cursor-pointer">
@@ -167,11 +68,25 @@
 
             <form id="profileForm" action="${pageContext.request.contextPath}/autenticado/profile" method="POST">
                 <div id="profileSection" class="flex flex-col gap-6">
-                    <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <h2 class="text-lg font-bold text-slate-900 mb-1">Sobre mim</h2>
+                        <div class="flex flex-col gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Professional Bio</label>
+                                <textarea name="bio" rows="4" class="w-full border border-slate-200 rounded-xl p-3 text-slate-700 focus:outline-none focus:border-violet-500 transition resize-none"><c:out value="${profile.bio}" /></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telefone / Contato</label>
+                                <input type="text" name="phone" value="<c:out value='${profile.phone}' />" class="w-full md:w-1/2 border border-slate-200 rounded-xl p-3 text-slate-700 focus:outline-none focus:border-violet-500 transition">
+                            </div>
+                        </div>
+                    </div>
+                <!-- INTERESSES -->
+                <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
 
-                        <div class="flex items-center gap-3 mb-5">
+                    <div class="flex items-center gap-3 mb-5">
 
-                            <div class="w-7 h-7 rounded-xl
+                        <div class="w-7 h-7 rounded-xl
                                     bg-gradient-to-br
                                     from-violet-600
                                     to-violet-800
@@ -179,51 +94,21 @@
                                     flex items-center justify-center
                                     text-xs">
 
-                                ✦
-
-                            </div>
-
-                            <h2 class="text-xl font-black">
-                                Minha Jornada
-                            </h2>
+                            ✦
 
                         </div>
 
-                        <p class="text-slate-500 leading-8">
+                        <h2 class="text-xl font-black">
+                            Interesses & Habilidades
+                        </h2>
 
-                           ${profile.bio}
+                    </div>
 
-                        </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
-                    </section>
-                    <!-- INTERESSES -->
-                    <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+                        <c:forEach items="${user.interests}" var="interest">
 
-                        <div class="flex items-center gap-3 mb-5">
-
-                            <div class="w-7 h-7 rounded-xl
-                                    bg-gradient-to-br
-                                    from-violet-600
-                                    to-violet-800
-                                    text-white
-                                    flex items-center justify-center
-                                    text-xs">
-
-                                ✦
-
-                            </div>
-
-                            <h2 class="text-xl font-black">
-                                Interesses & Habilidades
-                            </h2>
-
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-
-                            <c:forEach items="${user.interests}" var="interest">
-
-                                <div class="bg-[#fafbff]
+                            <div class="bg-[#fafbff]
                                         border border-[#edf0f7]
                                         rounded-2xl
                                         p-5
@@ -231,36 +116,36 @@
                                         hover:-translate-y-0.5
                                         transition">
 
-                                    <h3 class="font-bold mb-1">
-                                            ${interest.name}
-                                    </h3>
+                                <h3 class="font-bold mb-1">
+                                        ${interest.name}
+                                </h3>
 
-                                    <p class="text-sm text-slate-500">
+                                <p class="text-sm text-slate-500">
 
-                                        <c:choose>
+                                    <c:choose>
 
-                                            <c:when test="${not empty interest.category}">
-                                                ${interest.category.name}
-                                            </c:when>
+                                        <c:when test="${not empty interest.category}">
+                                            ${interest.category.name}
+                                        </c:when>
 
-                                        </c:choose>
+                                    </c:choose>
 
-                                    </p>
+                                </p>
 
-                                </div>
+                            </div>
 
-                            </c:forEach>
+                        </c:forEach>
 
-                        </div>
+                    </div>
 
-                    </section>
+                </section>
 
-                    <!-- INFORMAÇÕES -->
-                    <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+                <!-- INFORMAÇÕES -->
+                <section class="bg-white border border-slate-200 rounded-3xl p-7 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
 
-                        <div class="flex items-center gap-3 mb-5">
+                    <div class="flex items-center gap-3 mb-5">
 
-                            <div class="w-7 h-7 rounded-xl
+                        <div class="w-7 h-7 rounded-xl
                                     bg-gradient-to-br
                                     from-violet-600
                                     to-violet-800
@@ -268,57 +153,57 @@
                                     flex items-center justify-center
                                     text-xs">
 
-                                ✦
-
-                            </div>
-
-                            <h2 class="text-xl font-black">
-                                Informações Pessoais
-                            </h2>
+                            ✦
 
                         </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <h2 class="text-xl font-black">
+                            Informações Pessoais
+                        </h2>
 
-                            <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
 
                             <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
                                 IDADE
                             </span>
 
-                                <strong class="text-slate-700">
-                                        ${user.age} anos
-                                </strong>
+                            <strong class="text-slate-700">
+                                ${user.age} anos
+                            </strong>
 
-                            </div>
+                        </div>
 
-                            <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
+                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5">
 
                             <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
                                 TELEFONE
                             </span>
 
-                                <strong class="text-slate-700">
-                                        ${user.phone}
-                                </strong>
+                            <strong class="text-slate-700">
+                                ${user.phone}
+                            </strong>
 
-                            </div>
+                        </div>
 
-                            <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5 lg:col-span-2">
+                        <div class="bg-[#fafbff] border border-[#edf0f7] rounded-2xl p-5 lg:col-span-2">
 
                             <span class="block text-xs font-bold tracking-widest text-slate-400 mb-2">
                                 ENDEREÇO
                             </span>
 
-                                <strong class="text-slate-700">
-                                        ${user.address}
-                                </strong>
-
-                            </div>
+                            <strong class="text-slate-700">
+                                ${user.address}
+                            </strong>
 
                         </div>
 
-                    </section>
+                    </div>
+
+                </section>
                 </div>
             </form>
 
@@ -342,7 +227,7 @@
 
                                             <div class="flex flex-col gap-1">
                                     <span class="text-sm font-semibold text-slate-900">
-                                            ${fb.fromUserName}
+                                        ${fb.fromUserName}
                                     </span>
 
                                                 <span class="text-xs text-slate-500">
@@ -544,9 +429,5 @@
         }
     });
 </script>
-
-<script src="${pageContext.request.contextPath}/assets/js/userProfile.js"></script>
-
-</c:if>
 </body>
 </html>

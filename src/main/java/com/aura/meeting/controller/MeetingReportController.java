@@ -2,9 +2,10 @@ package com.aura.meeting.controller;
 
 import com.aura.feedback.dao.FeedbackDao;
 import com.aura.meeting.dao.MeetingDao;
+import com.aura.meeting.dao.MeetingDao;
 import com.aura.meeting.dao.ReportDao;
 import com.aura.meeting.model.Meeting;
-import com.aura.notification.controller.NotificationWebController;
+import com.aura.meeting.model.ReportCategory;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.models.User;
 import jakarta.servlet.ServletException;
@@ -23,8 +24,8 @@ public class MeetingReportController extends BaseController {
     private final MeetingDao meetingDao = new MeetingDao();
     private final ReportDao reportDao = new ReportDao();
     private final FeedbackDao feedbackDao = new FeedbackDao();
-//    private final NotificationWebController notificationController = new NotificationWebController();
 
+    // GET — exibe formulário de report
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -39,6 +40,7 @@ public class MeetingReportController extends BaseController {
         forward(request, response, "autenticado/meetingReport.jsp");
     }
 
+    // POST — salva o report e atualiza status do meeting para 'reported'
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -52,20 +54,15 @@ public class MeetingReportController extends BaseController {
             Meeting meeting = resolveMeeting(request, response, user);
             if (meeting == null) return;
 
-            String reason = request.getParameter("reason");
-            if (reason == null || reason.isBlank())
-                throw new IllegalArgumentException("O motivo do report é obrigatório.");
+            ReportCategory reportCategory = ReportCategory.valueOf(request.getParameter("category"));
+            if(reportCategory == null) return;
 
-            reportDao.registerReport(meeting.getId(), user.getId(), reason.trim());
+            String description = request.getParameter("description");
+
+           reportDao.registerReport(meeting.getId(), user.getId(), reportCategory, description);
+
+            // atualiza status para 'reported' para bloquear novas avaliações
             meetingDao.updateStatus(meeting.getId(), "reported");
-
-            //por agr não
-//            notificationController.onMeetingReported(
-//                    meeting.getTeacher().getId(),
-//                    user.getName(),
-//                    meeting.getDescription(),
-//                    request.getContextPath()
-//            );
 
             session.setAttribute("successMsg", "Meeting reportado com sucesso. Nossa equipe irá analisá-lo.");
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
@@ -76,6 +73,7 @@ public class MeetingReportController extends BaseController {
         }
     }
 
+    // resolve e valida o meeting para GET e POST
     private Meeting resolveMeeting(HttpServletRequest request, HttpServletResponse response, User user)
             throws IOException, ServletException {
 
@@ -99,6 +97,7 @@ public class MeetingReportController extends BaseController {
         boolean isDone     = "done".equalsIgnoreCase(meeting.getStatus());
         boolean isReported = "reported".equalsIgnoreCase(meeting.getStatus());
 
+        // só permite reportar meetings concluídos ou já reportados por outro participante
         if (!isDone && !isReported) {
             session.setAttribute("erroMsg", "Apenas meetings concluídos podem ser reportados.");
             response.sendRedirect(request.getContextPath() + "/autenticado/meeting");
@@ -120,6 +119,8 @@ public class MeetingReportController extends BaseController {
             return null;
         }
 
+        // um meeting que possui feedback pode ser reportado,
+        // mas um meeting reportado bloqueia novas avaliações (tratado no FeedbackController)
         return meeting;
     }
 

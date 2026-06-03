@@ -49,6 +49,26 @@ services:
       CATALINA_OPTS:               ${JAVA_OPTS}
     ports:
       - "${APP_HOST_PORT}:8080"
+
+    volumes:
+    - ./evidenceuploads:/data/evidenceuploads
+
+    networks:
+      - aura-network
+
+#PgAdmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: aura-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "${PGADMIN_HOST_PORT}:80"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - aura-network
 
@@ -56,7 +76,6 @@ services:
 volumes:
   aura-pgdata:
     name: aura-pgdata
-
 # Rede interna
 networks:
   aura-network:

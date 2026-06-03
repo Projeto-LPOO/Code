@@ -2,6 +2,10 @@ package com.aura.user.controllers;
 
 import com.aura.availability.dao.AvailabilityDao;
 import com.aura.availability.models.Availability;
+import com.aura.feedback.dao.FeedbackDao;
+import com.aura.feedback.model.Feedback;
+import com.aura.profile.dao.ProfileDao;
+import com.aura.profile.models.Profile;
 import com.aura.shared.controllers.BaseController;
 import com.aura.user.dao.UserDao;
 import com.aura.user.models.CommercialUser;
@@ -17,7 +21,10 @@ import java.util.List;
 public class UsersController extends BaseController {
 
     private final UserDao userDao = new UserDao();
+    private final FeedbackDao feedbackDao = new FeedbackDao();
     private final AvailabilityDao availabilityDao = new AvailabilityDao();
+    private ProfileDao profileDao = new ProfileDao();
+
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class,
@@ -82,7 +89,21 @@ public class UsersController extends BaseController {
                                     : dayComp;
                         });
                     }
+                    List<Feedback> feedbacks = feedbackDao.findByToUserId(id);
 
+                    double somatorio = 0.0;
+                    for (Feedback fb : feedbacks) {
+                        CommercialUser commercialUser = userDao.findById(fb.getFromUserId());
+                        fb.setFromUserName(commercialUser.getName());
+                        somatorio += fb.getRating();
+                    }
+                    double media = feedbacks.isEmpty() ? 0.0 : somatorio / feedbacks.size();
+
+                    Profile profile = profileDao.findByUserId(id);
+                    request.setAttribute("profile", profile);
+                    request.setAttribute("totalReviews", feedbacks.size());
+                    request.setAttribute("feedbacks", feedbacks);
+                    request.setAttribute("averageRating", String.format(java.util.Locale.US, "%.1f", media));
                     request.setAttribute("user", user);
                     request.setAttribute("schedules", schedules);
 
