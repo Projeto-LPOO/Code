@@ -90,7 +90,9 @@ aura/
 O arquivo `.env` **não está versionado** no repositório por conter credenciais. Cada desenvolvedor deve criá-lo manualmente na raiz do projeto com o seguinte conteúdo:
 
 ```env
-# --- Banco de Dados ---
+# DATABASE
+POSTGRES_HOST=host.docker.internal
+POSTGRES_PORT=5433
 POSTGRES_DB=aura_projeto
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=sua_senha_aqui
@@ -106,6 +108,11 @@ DB_POOL_CONNECTION_TIMEOUT=30000
 APP_HOST_PORT=8080
 TOMCAT_CONTEXT_PATH=/aura
 JAVA_OPTS=-Xms256m -Xmx512m
+
+#--- Pg Admin ---
+PGADMIN_EMAIL=admin@admin.com
+PGADMIN_PASSWORD=admin
+PGADMIN_HOST_PORT=5080
 ```
 
 > Substitua `sua_senha_aqui` pela senha do PostgreSQL definida no seu ambiente.
